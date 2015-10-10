@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingLeft="@dimen/activity_horizontal_margin"
+		android:paddingRight="@dimen/activity_horizontal_margin"
+		android:paddingTop="@dimen/activity_vertical_margin"
+		android:paddingBottom="@dimen/activity_vertical_margin"
+		tools:context="com.diegoalejogm.enhueco.View.LoginActivity">
+
+	<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_centerInParent="true"
+			android:id="@+id/loginTextLayout"
+			>
+
+		<EditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="text"
+				android:text="test"
+				android:hint="@string/login"
+				android:id="@+id/loginText"
+
+				/>
+
+	</android.support.design.widget.TextInputLayout>
+
+	<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/passwordTextLayout"
+			android:layout_below="@id/loginTextLayout"
+			>
+
+		<EditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="textPassword"
+				android:ems="10"
+				android:hint="@string/contrasena"
+				android:text="test"
+				android:id="@+id/passwordText"
+
+				android:layout_centerHorizontal="true"/>
+	</android.support.design.widget.TextInputLayout>
+
+
+	<Button
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/ingresar"
+			android:id="@+id/button"
+			android:layout_below="@id/passwordTextLayout"
+			android:layout_centerHorizontal="true"
+			android:onClick="logIn"/>
+</RelativeLayout>

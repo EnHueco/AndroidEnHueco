@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.diegoalejogm.enhueco.View.MyProfileFragment">
+
+
+	<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/fragmentMyProfile_imageView"
+			android:minHeight="200dp"
+			android:background="@color/colorPrimary"
+			android:minWidth="200dp"
+			android:layout_marginTop="86dp"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Name"
+			android:id="@+id/fragmentMyProfile_firstNameTextView"
+			android:layout_marginTop="30dp"
+			android:textSize="20dp"
+			android:layout_below="@+id/fragmentMyProfile_imageView"
+			android:layout_centerHorizontal="true"/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Last Name"
+			android:id="@+id/fragmentMyProfile_lastNameTextView"
+			android:textSize="20dp"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/fragmentMyProfile_firstNameTextView"
+			/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Username"
+			android:id="@+id/fragmentMyProfile_userNameTextView"
+			android:textSize="15dp"
+			android:layout_marginTop="10dp"
+			android:layout_below="@id/fragmentMyProfile_lastNameTextView"
+			android:layout_centerHorizontal="true"/>
+</RelativeLayout>

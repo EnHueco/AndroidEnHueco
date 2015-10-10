@@ -1,3 +1,17 @@
 <resources>
 	<string name="app_name">EnHueco</string>
+
+	<string name="login">Login</string>
+	<string name="ingresar">Ingresar</string>
+	<string name="contrasena">Contraseña</string>
+	<string name="title_activity_main_tabbed">MainTabbedActivity</string>
+	<string name="action_settings">Settings</string>
+	<string name="section_format">Hello World from section: %1$d</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="search">Buscar</string>
+	<string name="LogOut">Salir</string>
+	<string name="MyQRCode">Mi código</string>
+	<string name="addFriend">Agregar</string>
 </resources>
