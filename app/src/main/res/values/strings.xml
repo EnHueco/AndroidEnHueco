@@ -8,10 +8,24 @@
 	<string name="action_settings">Settings</string>
 	<string name="section_format">Hello World from section: %1$d</string>
 
-<!-- TODO: Remove or change this placeholder text -->
 	<string name="hello_blank_fragment">Hello blank fragment</string>
 	<string name="search">Buscar</string>
 	<string name="LogOut">Salir</string>
 	<string name="MyQRCode">Mi código</string>
 	<string name="addFriend">Agregar</string>
+	<string name="mySchedule">Horario</string>
+	<string name="new_event">Agregar</string>
+	<string name="event_name">Nombre (opcional)</string>
+	<string name="event_location">Ubicación (opcional)</string>
+	<string name="week_days">Días</string>
+
+	<string-array name="weekDay_array">
+		<item>Domingo</item>
+		<item>Lunes</item>
+		<item>Martes</item>
+		<item>Miercoles</item>
+		<item>Jueves</item>
+		<item>Viernes</item>
+		<item>Sabado</item>
+	</string-array>
 </resources>

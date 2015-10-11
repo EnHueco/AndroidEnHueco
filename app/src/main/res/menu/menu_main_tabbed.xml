@@ -3,25 +3,39 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.diegoalejogm.enhueco.View.MainTabbedActivity">
 
-	<item android:id="@+id/action_search"
-	      android:title="@string/search"
-	      android:orderInCategory="100"
-	      app:showAsAction="ifRoom"/>
+	<item
+			android:id="@+id/action_search"
+			android:title="@string/search"
+			android:orderInCategory="100"
+			app:showAsAction="ifRoom"/>
 
-	<item android:id="@+id/action_add_friend"
-	      android:title="@string/addFriend"
-	      android:orderInCategory="101"
-	      app:showAsAction="ifRoom"/>
+	<item
+			android:id="@+id/action_add_friend"
+			android:title="@string/addFriend"
+			android:orderInCategory="101"
+			app:showAsAction="ifRoom"
+			android:onClick="addFriend"/>
 
+	<item
+			android:id="@+id/action_schedule"
+			android:title="@string/mySchedule"
+			android:orderInCategory="102"
+			app:showAsAction="ifRoom"
+			android:onClick="showSchedule"/>
 
-	<item android:id="@+id/action_qr_code"
-	      android:title="@string/MyQRCode"
-	      android:orderInCategory="102"
-	      app:showAsAction="ifRoom"/>
+	<item
+			android:id="@+id/action_qr_code"
+			android:title="@string/MyQRCode"
+			android:orderInCategory="103"
+			app:showAsAction="ifRoom"
+			android:onClick="showQRCode"/>
 
-	<item android:id="@+id/action_log_out"
-	      android:title="@string/LogOut"
-	      android:orderInCategory="103"
-	      app:showAsAction="ifRoom"/>
+	<item
+			android:id="@+id/action_log_out"
+			android:title="@string/LogOut"
+			android:orderInCategory="104"
+			app:showAsAction="ifRoom"
+			android:onClick="logOut"/>
+
 
 </menu>

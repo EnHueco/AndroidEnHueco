@@ -105,7 +105,7 @@ public class InGapFragment extends ListFragment
     }
 
 
-    class InGapArrayAdapter extends ArrayAdapter<User>
+    static class InGapArrayAdapter extends ArrayAdapter<User>
     {
 
         Context context;

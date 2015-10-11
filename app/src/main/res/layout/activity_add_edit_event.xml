@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+
+		tools:context="com.diegoalejogm.enhueco.View.AddEditEventActivity"
+		android:contextClickable="false"
+		>
+
+
+	<android.support.design.widget.AppBarLayout
+			android:id="@+id/appbar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="@dimen/appbar_padding_top"
+			android:theme="@style/AppTheme.AppBarOverlay">
+
+		<android.support.v7.widget.Toolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				android:background="?attr/colorPrimary"
+				app:popupTheme="@style/AppTheme.PopupOverlay"
+				app:layout_scrollFlags="scroll|enterAlways">
+
+		</android.support.v7.widget.Toolbar>
+
+
+	</android.support.design.widget.AppBarLayout>
+	<!--/>-->
+
+	<ScrollView
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/scrollView"
+
+			android:paddingLeft="@dimen/activity_horizontal_margin"
+			android:paddingRight="@dimen/activity_horizontal_margin"
+			android:paddingTop="@dimen/activity_vertical_margin"
+			android:paddingBottom="@dimen/activity_vertical_margin"
+			android:layout_below="@+id/appbar"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			>
+
+		<RelativeLayout
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+
+				>
+
+			<RadioGroup
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:id="@+id/eventTypeRadioGroup"
+					android:orientation="horizontal"
+					android:gravity="center_horizontal">
+
+				<RadioButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Hueco"
+						android:id="@+id/radioButton"
+						android:checked="true"/>
+
+				<RadioButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Clase"
+						android:id="@+id/radioButton2"
+						android:checked="false"
+						android:layout_gravity="center_horizontal"/>
+
+			</RadioGroup>
+
+			<android.support.design.widget.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_below="@id/eventTypeRadioGroup"
+					android:layout_height="wrap_content"
+					android:id="@+id/eventNameTextLayout">
+
+				<EditText
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:hint="@string/event_name"
+						android:inputType="text"
+						/>
+
+			</android.support.design.widget.TextInputLayout>
+
+			<android.support.design.widget.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/eventLocationTextLayout"
+					android:layout_below="@id/eventNameTextLayout">
+
+				<EditText
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:hint="@string/event_location"
+						android:inputType="text"
+						/>
+
+			</android.support.design.widget.TextInputLayout>
+
+
+			<android.support.design.widget.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/eventStartDateTextLayout"
+					android:layout_below="@id/eventLocationTextLayout">
+
+				<EditText
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center_horizontal"
+						android:hint="Inicio"
+				        android:id="@+id/startTimeEditText"
+						android:layout_gravity="center_horizontal"
+				        android:focusable="false"
+						android:inputType="text"
+						/>
+
+			</android.support.design.widget.TextInputLayout>
+
+
+			<android.support.design.widget.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/eventEndDateTextLayout"
+					android:layout_below="@id/eventStartDateTextLayout">
+
+				<EditText
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:hint="Fin"
+						android:layout_gravity="center_horizontal"
+						android:id="@+id/endTimeEditText"
+						android:focusable="false"
+						android:gravity="center_horizontal"
+				        android:inputType="text"
+						/>
+
+			</android.support.design.widget.TextInputLayout>
+			
+			<android.support.design.widget.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/eventWeekDaysTextLayout"
+					android:layout_below="@id/eventEndDateTextLayout">
+				
+				<EditText
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:hint="@string/week_days"
+						android:layout_gravity="center_horizontal"
+						android:id="@+id/weekDaysEditText"
+						android:focusable="false"
+						android:gravity="center_horizontal"
+						android:inputType="text"
+						/>
+			
+			</android.support.design.widget.TextInputLayout>
+
+
+			<!--android:background="@android:color/transparent"-->
+
+
+			<!--android:background="@android:color/transparent"-->
+
+
+		</RelativeLayout>
+
+
+	</ScrollView>
+
+</RelativeLayout>
+
+
+		<!-- HOLA TICA <3 -->

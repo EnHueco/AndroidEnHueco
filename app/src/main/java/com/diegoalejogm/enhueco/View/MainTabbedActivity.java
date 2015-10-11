@@ -1,6 +1,9 @@
 package com.diegoalejogm.enhueco.View;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -9,13 +12,20 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListAdapter;
+import com.diegoalejogm.enhueco.Model.User;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainTabbedActivity extends AppCompatActivity implements FriendsFragment.OnFragmentInteractionListener, InGapFragment.OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
+import static com.diegoalejogm.enhueco.View.InGapFragment.*;
+
+public class MainTabbedActivity extends AppCompatActivity implements FriendsFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
 
     /**
@@ -71,6 +81,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         if (tabLayout.getSelectedTabPosition() == 0)
         {
             menu.findItem(R.id.action_add_friend).setVisible(false);
+            menu.findItem(R.id.action_schedule).setVisible(false);
             menu.findItem(R.id.action_log_out).setVisible(false);
             menu.findItem(R.id.action_qr_code).setVisible(false);
         }
@@ -79,6 +90,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         {
             menu.findItem(R.id.action_log_out).setVisible(false);
             menu.findItem(R.id.action_qr_code).setVisible(false);
+            menu.findItem(R.id.action_schedule).setVisible(false);
         }
         if (tabLayout.getSelectedTabPosition() == 2)
         {
@@ -129,6 +141,54 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     public void onTabReselected(TabLayout.Tab tab)
     {
 
+    }
+
+    public void logOut(MenuItem item)
+    {
+        // TODO: Delete persistence
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void showSchedule(MenuItem item)
+    {
+        // TODO: Add transition to schedule view
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
+
+    }
+
+    public void showQRCode(MenuItem item)
+    {
+    }
+
+    public void addFriend(MenuItem item)
+    {
+        AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(
+                this);
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View view = factory.inflate(R.layout.item_enhueco, null);
+
+        List<DialogOption> data = new ArrayList<DialogOption>();
+        data.add(new DialogOption("Buscar amigo", null));
+        data.add(new DialogOption("Agregar por código QR", null ));
+        ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
+
+        addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        addFriendMethodDialog.show();
+
+//        Intent intent = new Intent(this, AddFriendSelectActivity.class);
+//        startActivity(intent);
     }
 
 
