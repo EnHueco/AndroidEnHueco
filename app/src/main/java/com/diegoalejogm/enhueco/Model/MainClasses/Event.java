@@ -7,13 +7,14 @@ import java.util.Calendar;
 /**
  * Created by Diego on 10/9/15.
  */
+
 public class Event
 {
     public enum EventType
     {
         GAP, CLASS
     }
-
+    
     private DaySchedule daySchedule;
 
     private Optional<String> name;
