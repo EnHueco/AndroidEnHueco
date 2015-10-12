@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
-import com.diegoalejogm.enhueco.Model.User;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.ArrayList;

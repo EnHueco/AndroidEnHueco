@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.User;
+import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,8 +43,8 @@ public class FriendsFragment extends ListFragment
         super.onCreate(savedInstanceState);
 
         List<User> data = new ArrayList<User>();
-        data.add(new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", null));
-        data.add(new User("d.montoya10", "Diego", "Montoya Sefair", "3176694189", null));
+        data.add(new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", null, "da.gomez11", new Date()));
+        data.add(new User("d.montoya10", "Diego", "Montoya Sefair", "3176694189", null, "d.montoya10", new Date()));
         // TODO: Change Adapter to display your content
         setListAdapter(new FriendsArrayAdapter(getActivity(),
                 0, data));
