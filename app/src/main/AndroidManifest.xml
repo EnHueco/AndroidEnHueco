@@ -23,8 +23,7 @@
 		<activity
 				android:name=".View.ScheduleActivity"
 				android:parentActivityName=".View.MainTabbedActivity"
-				android:theme="@style/AppTheme.NoActionBar"
-				>
+				android:theme="@style/AppTheme.NoActionBar">
 		</activity>
 		<activity
 				android:name=".View.AddEditEventActivity"
@@ -32,8 +31,20 @@
 				android:theme="@style/AppTheme.NoActionBar"
 				android:windowSoftInputMode="stateHidden">
 		</activity>
-		<activity android:name=".View.AddFriendSelectActivity"
+		<activity
+				android:name=".View.AddFriendSelectActivity"
 				android:parentActivityName=".View.MainTabbedActivity">
+		</activity>
+		<activity
+				android:name=".View.CaptureQRActivityAnyOrientation"
+				android:screenOrientation="fullSensor"
+				android:stateNotNeeded="true"
+				android:theme="@style/zxing_CaptureTheme"
+				android:windowSoftInputMode="stateAlwaysHidden">
+		</activity>
+		<activity
+				android:name=".View.ShowQRActivity"
+				android:theme="@style/AppTheme.NoActionBar">
 		</activity>
 	</application>
 

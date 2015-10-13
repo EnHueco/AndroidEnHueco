@@ -17,8 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
-import com.diegoalejogm.enhueco.Model.User;
 import com.diegoalejogm.enhueco.R;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,7 +173,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
 
         List<DialogOption> data = new ArrayList<DialogOption>();
         data.add(new DialogOption("Buscar amigo", null));
-        data.add(new DialogOption("Agregar por código QR", null ));
+        data.add(new DialogOption("Escanear código de amigo", null ));
+        data.add(new DialogOption("Mostrar mi código", null ));
         ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
 
         addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
@@ -181,6 +182,17 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
+                switch (which)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        new IntentIntegrator(MainTabbedActivity.this).setCaptureActivity(CaptureQRActivityAnyOrientation.class).initiateScan();
+                        break;
+                    case 2:
+                        startActivity(new Intent(MainTabbedActivity.this,ShowQRActivity.class));
+                        break;
+                }
                 dialog.dismiss();
             }
         });
@@ -199,6 +211,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     public class MainPagerAdapter extends FragmentPagerAdapter
     {
 
+        final String[] tabNames = {"En Hueco", "Amigos", "Mi perfil"};
         public MainPagerAdapter(FragmentManager fm)
         {
             super(fm);
@@ -230,18 +243,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         }
 
         @Override
-        public CharSequence getPageTitle(int position)
-        {
-            switch (position)
-            {
-                case 0:
-                    return "En Hueco";
-                case 1:
-                    return "Amigos";
-                case 2:
-                    return "Mi Perfil";
-            }
-            return null;
-        }
+        public CharSequence getPageTitle(int position) { return tabNames[position]; }
     }
 }
