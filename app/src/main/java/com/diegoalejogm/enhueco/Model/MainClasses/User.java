@@ -3,6 +3,7 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
 import android.net.Uri;
 import com.google.common.base.Optional;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -10,14 +11,14 @@ import java.util.Date;
  */
 public class User extends EHSynchronizable
 {
-    private String username;
-    private String firstNames;
-    private String lastNames;
+    private final String username;
+    private final String firstNames;
+    private final String lastNames;
 
     private Optional<Uri> imageURL;
     private String phoneNumber;
 
-    private Schedule schedule = new Schedule();
+    private final Schedule schedule = new Schedule();
 
     public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<Uri> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -47,10 +48,29 @@ public class User extends EHSynchronizable
         return firstNames + " " + lastNames;
     }
 
+    /** Returns user current gap, or nil if user is not in a gap. */
     public Optional<Event> getCurrentGap ()
     {
-        // TODO
-        return null;
+        Date currentDate = new Date();
+
+        Calendar localCalendar = Calendar.getInstance();
+        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
+        {
+            if (event.getType().equals(Event.EventType.GAP))
+            {
+                Date startHourInCurrentDate = event.getStartHourInDate(currentDate);
+                Date endHourInCurrentDate = event.getEndHourInDate(currentDate);
+
+                if(currentDate.after(startHourInCurrentDate) && currentDate.before(endHourInCurrentDate))
+                {
+                    return Optional.of(event);
+                }
+            }
+        }
+
+        return Optional.absent();
     }
 
     public Optional<Event> getNextEvent ()

@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import android.net.Uri;
+import com.diegoalejogm.enhueco.Model.Other.Tuple;
 import com.google.common.base.Optional;
 
 import java.util.ArrayList;
@@ -26,5 +27,26 @@ public class AppUser extends User
     public List<User> getFriends()
     {
         return friends;
+    }
+
+    /**
+        Returns all friends that are currently in gap.
+        @return Friend in gap with their current gap
+     */
+    public List<Tuple<User, Event>> getFriendsCurrentlyInGap ()
+    {
+        List<Tuple<User, Event>> friendsAndGaps =  new ArrayList<>();
+
+        for (User friend: friends)
+        {
+            Optional<Event> currentGap = friend.getCurrentGap();
+
+            if (currentGap.isPresent())
+            {
+                friendsAndGaps.add(new Tuple<User, Event>(friend, currentGap.get()));
+            }
+        }
+
+        return  friendsAndGaps;
     }
 }
