@@ -84,7 +84,7 @@ public class AppUser extends User
                         if (!(endHourInCurrentDate1.before(startHourInCurrentDate2) || startHourInCurrentDate1.after(endHourInCurrentDate2)))
                         {
                             Calendar startHour = ((startHourInCurrentDate1.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2))? gap1.getStartHour() : gap2.getStartHour());
-                            Calendar endHour = ((endHourInCurrentDate2.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2))? gap1.getStartHour() : gap2.getStartHour());
+                            Calendar endHour = ((endHourInCurrentDate1.after(startHourInCurrentDate2) && endHourInCurrentDate1.before(endHourInCurrentDate2))? gap1.getEndHour() : gap2.getEndHour());
 
                             newCommonGaps.add(new Event(Event.EventType.GAP, startHour, endHour));
                         }
