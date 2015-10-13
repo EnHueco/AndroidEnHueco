@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 import java.util.*;
 
@@ -14,14 +15,14 @@ public class DaySchedule
 
     public DaySchedule(String weekDayName) { this.weekDayName = weekDayName; }
 
-    public List<Event> getEvents()
+    public Collection<Event> getEvents()
     {
         return Collections.unmodifiableList(events);
     }
 
-    public void setEvents(ArrayList<Event> events)
+    public void setEvents(Collection<Event> events)
     {
-        this.events = events;
+        this.events = Lists.newArrayList(events);
     }
 
     /** Returns true if event doesn't overlap with any gap or class, excluding eventToExclude. */

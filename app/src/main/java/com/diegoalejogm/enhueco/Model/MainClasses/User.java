@@ -43,6 +43,31 @@ public class User extends EHSynchronizable
         return username;
     }
 
+    public String getFirstNames()
+    {
+        return firstNames;
+    }
+
+    public String getLastNames()
+    {
+        return lastNames;
+    }
+
+    public Optional<Uri> getImageURL()
+    {
+        return imageURL;
+    }
+
+    public String getPhoneNumber()
+    {
+        return phoneNumber;
+    }
+
+    public Schedule getSchedule()
+    {
+        return schedule;
+    }
+
     public String name()
     {
         return firstNames + " " + lastNames;

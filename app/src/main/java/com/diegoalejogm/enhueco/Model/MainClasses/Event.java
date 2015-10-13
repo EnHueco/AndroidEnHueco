@@ -35,6 +35,15 @@ public class Event
         this.location = location;
     }
 
+    public Event(EventType type, Calendar startHour, Calendar endHour)
+    {
+        this.type = type;
+        this.name = Optional.absent();
+        this.startHour = startHour;
+        this.endHour = endHour;
+        this.location = Optional.absent();
+    }
+
     public DaySchedule getDaySchedule()
     {
         return daySchedule;
