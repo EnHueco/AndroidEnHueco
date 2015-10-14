@@ -2,6 +2,10 @@ package com.diegoalejogm.enhueco.Model.Other;
 
 import android.os.AsyncTask;
 import com.diegoalejogm.enhueco.Model.MainClasses.EHSynchronizable;
+import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManager;
+import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompletionHandler;
+import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompoundError;
+import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerRequest;
 import org.json.JSONObject;
 
 import java.util.Queue;
@@ -18,15 +22,15 @@ public class SynchronizationManager
     private class SynchronizationManagerQueueItem
     {
         /** ConnectionManagerRequest that was attempted*/
-        public ConnectionManager.ConnectionManagerRequest request;
+        public ConnectionManagerRequest request;
 
         /** CompletionHandler to be called when reattempting the request */
-        public ConnectionManager.ConnectionManagerCompletionHandler completionHandler;
+        public ConnectionManagerCompletionHandler completionHandler;
 
         /** Object associated with the request (For example, the Gap that was going to be updated). */
          public EHSynchronizable associatedObject;
 
-        public SynchronizationManagerQueueItem(ConnectionManager.ConnectionManagerRequest request, ConnectionManager.ConnectionManagerCompletionHandler completionHandler, EHSynchronizable associatedObject)
+        public SynchronizationManagerQueueItem(ConnectionManagerRequest request, ConnectionManagerCompletionHandler completionHandler, EHSynchronizable associatedObject)
         {
             this.request = request;
             this.completionHandler = completionHandler;
@@ -47,8 +51,8 @@ public class SynchronizationManager
         return sharedManager;
     }
 
-    private void addFailedRequestToQueue(ConnectionManager.ConnectionManagerRequest request,
-                                         ConnectionManager.ConnectionManagerCompletionHandler completionHandler,
+    private void addFailedRequestToQueue(ConnectionManagerRequest request,
+                                         ConnectionManagerCompletionHandler completionHandler,
                                          EHSynchronizable associatedObject)
     {
         pendingRequestsQueue.add(new SynchronizationManagerQueueItem(request, completionHandler, associatedObject));
@@ -84,11 +88,11 @@ public class SynchronizationManager
        @param completionHandler: CompletionHandler to be called when reattempting the request.
        @param associatedObject: Object associated with the request (For example, the Gap that was going to be updated).
      */
-    public void trySendingAsyncRequestToURL(final ConnectionManager.ConnectionManagerRequest request,
-                                               final ConnectionManager.ConnectionManagerCompletionHandler completionHandler,
+    public void trySendingAsyncRequestToURL(final ConnectionManagerRequest request,
+                                               final ConnectionManagerCompletionHandler completionHandler,
                                                final EHSynchronizable associatedObject)
     {
-        ConnectionManager.ConnectionManagerCompletionHandler modifiedCompletionHandler = new ConnectionManager.ConnectionManagerCompletionHandler()
+        ConnectionManagerCompletionHandler modifiedCompletionHandler = new ConnectionManagerCompletionHandler()
         {
             @Override
             public void onSuccess(JSONObject responseJSON)
@@ -97,7 +101,7 @@ public class SynchronizationManager
             }
 
             @Override
-            public void onFailure(ConnectionManager.ConnectionManagerCompoundError error)
+            public void onFailure(ConnectionManagerCompoundError error)
             {
                 completionHandler.onFailure(error);
 
@@ -130,7 +134,7 @@ public class SynchronizationManager
         }
         catch (ExecutionException | InterruptedException e)
         {
-            item.completionHandler.onFailure(new ConnectionManager.ConnectionManagerCompoundError(e, item.request));
+            item.completionHandler.onFailure(new ConnectionManagerCompoundError(e, item.request));
 
             return false;
         }

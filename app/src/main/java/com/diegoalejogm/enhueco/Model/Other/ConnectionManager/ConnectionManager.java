@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Other;
+package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
@@ -8,48 +8,8 @@ import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by Diego on 10/11/15.
- */
 public class ConnectionManager
 {
-    public enum HTTPMethod
-    {
-        GET, POST;
-    }
-
-    public static class ConnectionManagerCompoundError
-    {
-        public final Exception error;
-        public final ConnectionManagerRequest request;
-
-        public ConnectionManagerCompoundError(Exception error, ConnectionManagerRequest request)
-        {
-            this.error = error;
-            this.request = request;
-        }
-    }
-
-    public class ConnectionManagerRequest
-    {
-        public final String URL;
-        public final HTTPMethod method;
-        public final Optional<JSONObject> params;
-
-        public ConnectionManagerRequest(String URL, HTTPMethod method, Optional<JSONObject> params)
-        {
-            this.URL = URL;
-            this.method = method;
-            this.params = params;
-        }
-    }
-
-    public interface ConnectionManagerCompletionHandler
-    {
-        void onSuccess(JSONObject responseJSON);
-        void onFailure(ConnectionManagerCompoundError error);
-    }
-
     static RequestQueue requestQueue = Volley.newRequestQueue(EHApplication.getAppContext());
 
     public static void sendAsyncRequest (final ConnectionManagerRequest request, final ConnectionManagerCompletionHandler completionHandler)

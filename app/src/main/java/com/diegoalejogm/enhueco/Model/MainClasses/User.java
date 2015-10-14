@@ -1,8 +1,13 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import android.net.Uri;
+import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.net.URL;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,12 +20,12 @@ public class User extends EHSynchronizable
     private final String firstNames;
     private final String lastNames;
 
-    private Optional<Uri> imageURL;
+    private Optional<String> imageURL;
     private String phoneNumber;
 
     private final Schedule schedule = new Schedule();
 
-    public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<Uri> imageURL, String ID, Date lastUpdatedOn)
+    public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
         super(ID, lastUpdatedOn);
 
@@ -30,6 +35,17 @@ public class User extends EHSynchronizable
         this.lastNames = lastNames;
         this.phoneNumber = phoneNumber;
         this.imageURL = imageURL;
+    }
+
+    public static User userFromJSONObject (JSONObject object) throws JSONException, ParseException
+    {
+        String username = object.getString("login");
+        String firstNames = object.getString("firstNames");
+        String lastNames = object.getString("lastNames");
+        String imageURL = object.getString("imageURL");
+        Date lastUpdatedOn = Utilities.dateFromServerFormattedString(object.getString("lastUpdatedOn"));
+
+        return new User(username, firstNames, lastNames, null, Optional.of(imageURL), username, lastUpdatedOn);
     }
 
     @Override
@@ -53,7 +69,7 @@ public class User extends EHSynchronizable
         return lastNames;
     }
 
-    public Optional<Uri> getImageURL()
+    public Optional<String> getImageURL()
     {
         return imageURL;
     }
