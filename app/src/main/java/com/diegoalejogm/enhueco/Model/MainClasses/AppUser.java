@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Diego on 10/11/15.
@@ -71,10 +72,43 @@ public class AppUser extends User
      */
     public void fetchUpdatesForFriendRequests()
     {
+        final JSONObject params = new JSONObject();
 
+        try
+        {
+            params.put(EHParameters.USER_ID, getUsername());
+            params.put(EHParameters.TOKEN, getToken());
+
+            ConnectionManagerRequest outgoingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params));
+            ConnectionManager.sendAsyncRequest(outgoingRequestsRequest, new ConnectionManagerCompletionHandler()
+            {
+                @Override
+                public void onSuccess(JSONObject responseJSON)
+                {
+                    try
+                    {
+                        ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params));
+                        JSONObject response = ConnectionManager.sendSyncRequest(incomingRequestsRequest);
+
+                        // TODO
+                    }
+                    catch (ExecutionException | InterruptedException e) { e.printStackTrace(); }
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+
+                }
+            });
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
     }
 
-    /**
+        /**
      * Fetches full friends and schedule information from the server and notifies the result via Notification Center.
      *
      * Notifications
@@ -96,6 +130,8 @@ public class AppUser extends User
                 {
                     try
                     {
+                        Collection<User> newFriends = new ArrayList<User>();
+
                         Date currentDate = new Date();
 
                         Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -117,15 +153,26 @@ public class AppUser extends User
                             for (int j = 0; j < eventsJSON.length(); j++)
                             {
                                 JSONObject eventJSON = eventsJSON.getJSONObject(j);
+                                Event newEvent = Event.eventFromJSONObject(eventJSON);
 
-                                //globalCalendar.set(Calendar.DAY_OF_WEEK);
+                                //Locate event in local array of weekdays based on its UTC startHour
 
-                                // TODO: Finish
+                                globalCalendar.set(Calendar.DAY_OF_WEEK, newEvent.getStartHour().get(Calendar.DAY_OF_WEEK));
+                                globalCalendar.set(Calendar.HOUR, newEvent.getStartHour().get(Calendar.HOUR));
+                                globalCalendar.set(Calendar.MINUTE, newEvent.getStartHour().get(Calendar.MINUTE));
+
+                                localCalendar.setTime(globalCalendar.getTime());
+
+                                int localStartHourWeekDay = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+                                DaySchedule daySchedule = newFriend.getSchedule().getWeekDays()[localStartHourWeekDay];
+                                daySchedule.addEvent(newEvent);
                             }
+
+                            newFriends.add(newFriend);
                         }
 
-                        String token = responseJSON.getString("token");
-                        String username = responseJSON.getString("login");
+                        friends = newFriends;
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
                     }
@@ -145,7 +192,6 @@ public class AppUser extends User
         {
             e.printStackTrace();
         }
-
     }
 
 
@@ -180,7 +226,7 @@ public class AppUser extends User
 
         if (users.length < 2) return commonGapsSchedule;
 
-        for (int i = 0; i < getSchedule().getWeekDays().length; i++)
+        for (int i = 1; i < getSchedule().getWeekDays().length; i++)
         {
             Predicate<Event> eventsFilterPredicate = new Predicate<Event>()
             {
@@ -220,5 +266,34 @@ public class AppUser extends User
         }
 
         return commonGapsSchedule;
+    }
+
+    /**
+     * Sends a friend request to the username provided and notifies the result via Notification Center.
+     *
+     * Notifications
+     * - EHSystemNotification.SystemDidSendFriendRequest in case of success
+     * - EHSystemNotification.SystemDidFailToSendFriendRequest in case of failure
+     */
+    public void sendFriendRequestToUserRequestWithUsername (String username)
+    {
+        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<JSONObject>absent());
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(JSONObject responseJSON)
+            {
+                // TODO
+
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_SEND_FRIEND_REQUEST));
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+            }
+        });
     }
 }

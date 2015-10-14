@@ -1,6 +1,9 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +45,30 @@ public class Event
         this.startHour = startHour;
         this.endHour = endHour;
         this.location = Optional.absent();
+    }
+
+    public static Event eventFromJSONObject (JSONObject object) throws JSONException
+    {
+        String typeString = object.getString("type");
+        EventType type = typeString.equals("GAP")? EventType.GAP : EventType.CLASS;
+
+        String name = object.getString("day");
+        String location = object.getString("location");
+
+        String[] startHourStringComponents = object.getString("start_hour").split(":");
+        int globalStartHourWeekDay = Integer.parseInt(startHourStringComponents[0]);
+        int startHour = Integer.parseInt(startHourStringComponents[1]);
+        int startMinute = Integer.parseInt(startHourStringComponents[3]);
+
+        String[] endHourStringComponents = object.getString("start_hour").split(":");
+        int globalEndHourWeekDay = Integer.parseInt(endHourStringComponents[0]);
+        int endHour = Integer.parseInt(endHourStringComponents[1]);
+        int endMinute = Integer.parseInt(endHourStringComponents[3]);
+
+        Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalStartHourWeekDay, startHour, startMinute);
+        Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalEndHourWeekDay, endHour, endMinute);
+
+        return new Event(type, Optional.of(name), startHourCalendar, endHourCalendar, Optional.of(location));
     }
 
     public DaySchedule getDaySchedule()

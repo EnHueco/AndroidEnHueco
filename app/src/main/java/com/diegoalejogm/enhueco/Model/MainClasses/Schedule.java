@@ -5,13 +5,13 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
  */
 public class Schedule
 {
-    private final DaySchedule[] weekDays = new DaySchedule[7];
+    private final DaySchedule[] weekDays = new DaySchedule[8];
 
     public Schedule ()
     {
         String[] weekDayNames = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 
-        for (int i = 0 ; i < weekDayNames.length ; i++)
+        for (int i = 1 ; i < weekDayNames.length ; i++)
         {
             weekDays[i] = new DaySchedule(weekDayNames[i]);
         }
