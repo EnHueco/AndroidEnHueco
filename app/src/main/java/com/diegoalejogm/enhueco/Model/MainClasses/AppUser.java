@@ -1,8 +1,11 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.format.DateUtils;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHParameters;
@@ -18,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 

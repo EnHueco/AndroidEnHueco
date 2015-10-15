@@ -8,6 +8,7 @@ import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerC
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerRequest;
 import org.json.JSONObject;
 
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -66,10 +67,10 @@ public class SynchronizationManager
      */
     public void retryPendingRequests()
     {
-        class RetryPendingRequestsTask extends AsyncTask
+        class RetryPendingRequestsTask extends AsyncTask<Void, Void, Void>
         {
             @Override
-            protected Object doInBackground(Object[] params)
+            protected Void doInBackground(Void... params)
             {
                 while (trySendingSyncRequestInQueue());
 
@@ -77,7 +78,7 @@ public class SynchronizationManager
             }
         }
 
-        RetryPendingRequestsTask.execute(null);
+        new RetryPendingRequestsTask().execute();
     }
 
     /**
