@@ -1,10 +1,14 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.Editable;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -13,8 +17,10 @@ import java.util.TimeZone;
  * Created by Diego on 10/9/15.
  */
 
-public class Event
+public class Event implements Serializable
 {
+
+
     public enum EventType
     {
         GAP, CLASS
@@ -29,7 +35,8 @@ public class Event
     private final Calendar endHour;
     private final Optional<String> location;
 
-    public Event(EventType type, Optional<String> name, Calendar startHour, Calendar endHour, Optional<String> location)
+
+    public Event(EventType type, Optional<String> name, Optional<String> location, Calendar startHour, Calendar endHour)
     {
         this.type = type;
         this.name = name;
@@ -45,6 +52,24 @@ public class Event
         this.startHour = startHour;
         this.endHour = endHour;
         this.location = Optional.absent();
+    }
+
+    public Event(EventType type, Optional<String> name, Optional<String> location, int startHour, int startMinute, int endHour, int endMinute)
+    {
+        this.type = type;
+        this.name = name;
+        this.location = location;
+
+        Calendar startCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        startCalendar.set(Calendar.HOUR_OF_DAY, startHour);
+        startCalendar.set(Calendar.MINUTE, startMinute);
+        this.startHour = startCalendar;
+
+        Calendar endCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        endCalendar.set(Calendar.HOUR_OF_DAY, endHour);
+        endCalendar.set(Calendar.MINUTE, endMinute);
+        this.endHour = startCalendar;
+
     }
 
     public static Event eventFromJSONObject (JSONObject object) throws JSONException
@@ -68,7 +93,7 @@ public class Event
         Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalStartHourWeekDay, startHour, startMinute);
         Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalEndHourWeekDay, endHour, endMinute);
 
-        return new Event(type, Optional.of(name), startHourCalendar, endHourCalendar, Optional.of(location));
+        return new Event(type, Optional.of(name), Optional.of(location), startHourCalendar, endHourCalendar);
     }
 
     public DaySchedule getDaySchedule()

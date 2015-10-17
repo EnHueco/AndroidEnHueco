@@ -2,20 +2,28 @@ package com.diegoalejogm.enhueco.View;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.Inflater;
+
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 /**
  * A fragment representing a list of Items.
@@ -28,6 +36,7 @@ public class FriendsFragment extends ListFragment
 {
 
     private OnFragmentInteractionListener mListener;
+    FriendsArrayAdapter friendArrayAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,15 +50,9 @@ public class FriendsFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        List<User> data = new ArrayList<User>();
-        data.add(new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", null, "da.gomez11", new Date()));
-        data.add(new User("d.montoya10", "Diego", "Montoya Sefair", "3176694189", null, "d.montoya10", new Date()));
-        // TODO: Change Adapter to display your content
-        setListAdapter(new FriendsArrayAdapter(getActivity(),
-                0, data));
+        friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
+        setListAdapter(friendArrayAdapter);
     }
-
 
     @Override
     public void onAttach(Activity activity)
@@ -84,6 +87,17 @@ public class FriendsFragment extends ListFragment
             // fragment is attached to one) that an item has been selected.
 //            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
         }
+    }
+
+    public void refresh()
+    {
+        friendArrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
     }
 
     /**

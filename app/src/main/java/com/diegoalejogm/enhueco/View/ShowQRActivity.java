@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
 import android.widget.ImageView;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.R;
 import net.glxn.qrgen.android.QRCode;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
 
 public class ShowQRActivity extends AppCompatActivity
@@ -25,9 +27,8 @@ public class ShowQRActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_qr);
 
-
-        ;
-        Bitmap myBitmap = QRCode.from("www.example.org").withSize(width,width).bitmap();
+        String encodedUser = System.instance.getAppUser().getEncodedRepresentation();
+        Bitmap myBitmap = QRCode.from(encodedUser).withSize(width,width).bitmap();
         ImageView myImage = (ImageView) findViewById(R.id.imageView);
         myImage.setImageBitmap(myBitmap);
     }

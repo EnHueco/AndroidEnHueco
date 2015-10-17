@@ -1,19 +1,24 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import java.io.Serializable;
+
 /**
  * Created by Diego on 10/11/15.
  */
-public class Schedule
+public class Schedule implements Serializable
 {
-    private final DaySchedule[] weekDays = new DaySchedule[8];
+    private final DaySchedule[] weekDays;
 
-    public Schedule ()
+    public static final String[] weekDayNames = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
+
+    public Schedule()
     {
-        String[] weekDayNames = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
+        weekDays = new DaySchedule[8];
 
-        for (int i = 1 ; i < weekDayNames.length ; i++)
+
+        for (int i = 1; i < weekDays.length; i++)
         {
-            weekDays[i] = new DaySchedule(weekDayNames[i]);
+            weekDays[i] = new DaySchedule(weekDayNames[i - 1]);
         }
     }
 

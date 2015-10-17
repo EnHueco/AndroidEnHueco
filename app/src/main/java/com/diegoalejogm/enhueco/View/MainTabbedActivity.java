@@ -2,6 +2,7 @@ package com.diegoalejogm.enhueco.View;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +13,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
+import android.widget.Toast;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +124,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onTabSelected(TabLayout.Tab tab)
     {
@@ -126,27 +131,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         viewPager.setCurrentItem(tab.getPosition());
     }
 
-    @Override
-    public void onFragmentInteraction(String id)
-    {
-
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab)
-    {
-    }
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab)
-    {
-
-    }
-
     public void logOut(MenuItem item)
     {
         // TODO: Delete persistence
-
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -154,14 +141,44 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
 
     public void showSchedule(MenuItem item)
     {
-        // TODO: Add transition to schedule view
         Intent intent = new Intent(this, ScheduleActivity.class);
+        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.instance.getAppUser().getSchedule());
         startActivity(intent);
-
     }
 
     public void showQRCode(MenuItem item)
     {
+        showQRCode();
+    }
+
+    public void showQRCode()
+    {
+        startActivity(new Intent(MainTabbedActivity.this, ShowQRActivity.class));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result.getContents() == null) {
+            Log.d("MainActivity", "Cancelled scan");
+            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+        } else {
+            Log.d("MainActivity", "Scanned");
+            try
+            {
+                User friend = System.instance.getAppUser().addFriendFromStringEncodedFriendRepresentation(result.getContents());
+                FriendsFragment fr = (FriendsFragment) mainPagerAdapter.getItem(1);
+                fr.refresh();
+                Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void addFriend(MenuItem item)
@@ -187,10 +204,10 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
                     case 0:
                         break;
                     case 1:
-                        new IntentIntegrator(MainTabbedActivity.this).setCaptureActivity(CaptureQRActivityAnyOrientation.class).initiateScan();
+                        MainTabbedActivity.this.scanQR();
                         break;
                     case 2:
-                        startActivity(new Intent(MainTabbedActivity.this,ShowQRActivity.class));
+                        MainTabbedActivity.this.showQRCode();
                         break;
                 }
                 dialog.dismiss();
@@ -198,12 +215,29 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         });
 
         addFriendMethodDialog.show();
-
-//        Intent intent = new Intent(this, AddFriendSelectActivity.class);
-//        startActivity(intent);
     }
 
+    private void scanQR()
+    {
+        new IntentIntegrator(this).setCaptureActivity(CaptureQRActivityAnyOrientation.class).setBeepEnabled(true).setOrientationLocked(false).initiateScan();
+    }
 
+    @Override
+    public void onFragmentInteraction(String id)
+    {
+
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab)
+    {
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab)
+    {
+
+    }
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -212,9 +246,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     {
 
         final String[] tabNames = {"En Hueco", "Amigos", "Mi perfil"};
+        Fragment fragment[];
         public MainPagerAdapter(FragmentManager fm)
         {
             super(fm);
+            fragment = new Fragment[3];
+            fragment[0] = new InGapFragment();
+            fragment[1] = new FriendsFragment();
+            fragment[2] = new MyProfileFragment();
+
         }
 
         @Override
@@ -222,16 +262,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position)
-            {
-                case 0:
-                    return new InGapFragment();
-                case 1:
-                    return new FriendsFragment();
-                case 2:
-                    return new MyProfileFragment();
-            }
-            return null;
+
+            return fragment[position];
 
         }
 

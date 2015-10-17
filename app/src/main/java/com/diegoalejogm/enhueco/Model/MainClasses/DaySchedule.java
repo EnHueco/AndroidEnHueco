@@ -3,19 +3,29 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by Diego on 10/9/15.
  */
-public class DaySchedule
+public class DaySchedule implements Serializable
 {
+    public String getWeekDayName()
+    {
+        return weekDayName;
+    }
+
     private final String weekDayName;
     private ArrayList<Event> events;
 
-    public DaySchedule(String weekDayName) { this.weekDayName = weekDayName; }
+    public DaySchedule(String weekDayName)
+    {
+        this.weekDayName = weekDayName;
+        events = new ArrayList<>();
+    }
 
-    public Collection<Event> getEvents()
+    public List<Event> getEvents()
     {
         return Collections.unmodifiableList(events);
     }
@@ -25,15 +35,17 @@ public class DaySchedule
         this.events = Lists.newArrayList(events);
     }
 
-    /** Returns true if event doesn't overlap with any gap or class, excluding eventToExclude. */
-    public boolean canAddEvent (Event newEvent, Optional<Event> eventToExclude)
+    /**
+     * Returns true if event doesn't overlap with any gap or class, excluding eventToExclude.
+     */
+    public boolean canAddEvent(Event newEvent, Optional<Event> eventToExclude)
     {
         Date currentDate = new Date();
 
         Date newEventStartHourInCurrentDate = newEvent.getStartHourInDate(currentDate);
         Date newEventEndHourInCurrentDate = newEvent.getEndHourInDate(currentDate);
 
-        for (Event event: events)
+        for (Event event : events)
         {
             if (!eventToExclude.isPresent() || !eventToExclude.get().equals(newEvent))
             {
@@ -50,8 +62,10 @@ public class DaySchedule
         return true;
     }
 
-    /** Adds event if it doesn't overlap with any other event */
-    public boolean addEvent (Event newEvent)
+    /**
+     * Adds event if it doesn't overlap with any other event
+     */
+    public boolean addEvent(Event newEvent)
     {
         if (canAddEvent(newEvent, Optional.<Event>absent()))
         {
@@ -64,29 +78,32 @@ public class DaySchedule
     }
 
     /**
-        Adds all events if they don't overlap with any other event. The new events *must* not overlap with themselves, otherwise the method will not be
-        able to add them all.
-
-        @return True if all events could be added correctly
+     * Adds all events if they don't overlap with any other event. The new events *must* not overlap with themselves, otherwise the method will not be
+     * able to add them all.
+     *
+     * @return True if all events could be added correctly
      */
     public boolean addEvents(Event[] newEvents)
     {
         for (Event newEvent : newEvents)
         {
-            if (!addEvent(newEvent)) { return false; }
+            if (!addEvent(newEvent))
+            {
+                return false;
+            }
         }
 
         return true;
     }
 
-    public boolean removeEvent (Event event)
+    public boolean removeEvent(Event event)
     {
         return events.remove(event);
     }
 
-    public Optional<Event> eventWithStartHour (Calendar startHour)
+    public Optional<Event> eventWithStartHour(Calendar startHour)
     {
-        for (Event event: events)
+        for (Event event : events)
         {
             if (event.getStartHour().get(Calendar.DAY_OF_WEEK) == startHour.get(Calendar.DAY_OF_WEEK) &&
                     event.getStartHour().get(Calendar.HOUR) == startHour.get(Calendar.HOUR) &&

@@ -87,6 +87,7 @@
 						android:layout_height="wrap_content"
 						android:hint="@string/event_name"
 						android:inputType="text"
+				        android:id="@+id/eventNameTextEdit"
 						/>
 
 			</android.support.design.widget.TextInputLayout>
@@ -102,6 +103,7 @@
 						android:layout_height="wrap_content"
 						android:hint="@string/event_location"
 						android:inputType="text"
+						android:id="@+id/eventLocationTextEdit"
 						/>
 
 			</android.support.design.widget.TextInputLayout>

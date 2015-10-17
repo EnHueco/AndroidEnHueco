@@ -1,10 +1,7 @@
-<resources>>
-	<style name="AppTheme.NoActionBar">
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
-		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
-	</style>
+<resources>
+	<!--<style name="AppTheme.NoActionBar">-->
+		<!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+	<!--</style>-->
 	<style name="Dialog" parent="AppTheme.NoActionBar">
 		<item name="android:timePickerStyle">@style/AppTheme.NoActionBar</item>
 	</style>
