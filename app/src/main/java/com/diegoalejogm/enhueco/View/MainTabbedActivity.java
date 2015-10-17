@@ -133,7 +133,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
 
     public void logOut(MenuItem item)
     {
-        // TODO: Delete persistence
+
+        System.instance.logout(getApplicationContext());
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();

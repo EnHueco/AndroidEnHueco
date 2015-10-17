@@ -1,5 +1,6 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.diegoalejogm.enhueco.Model.EHApplication;
@@ -10,6 +11,7 @@ import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,9 +40,10 @@ public class System
         return appUser;
     }
     
-    public void createTestAppUser ()
+    public void createTestAppUser (Context context)
     {
         appUser = new AppUser("pa.perez11", "", "Diego", "Montoya Sefair", "000000000", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
+        persistData(context);
     }
 
     public void login (String username, String password)
@@ -86,19 +89,61 @@ public class System
         }
     }
 
-    public void logout ()
+    public void logout (Context context)
     {
-        // TODO
+        deletePersistence(context);
     }
-    
-    public void persistData ()
+
+    private void deletePersistence(Context context)
     {
-        
+        context.deleteFile(AppUser.FILE_NAME);
     }
-    
-    public boolean loadDataFromPersistence ()
+
+    public boolean persistData(Context context)
     {
-        // TODO
+        try
+        {
+            FileOutputStream fos = context.openFileOutput(AppUser.FILE_NAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(appUser);
+            os.close();
+            fos.close();
+            return true;
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean loadDataFromPersistence(Context context)
+    {
+        try
+        {
+            FileInputStream fis = context.openFileInput(AppUser.FILE_NAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            appUser = (AppUser) is.readObject();
+            is.close();
+            fis.close();
+            return true;
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
         return false;
     }
 }

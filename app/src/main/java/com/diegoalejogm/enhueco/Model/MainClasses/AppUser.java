@@ -2,6 +2,7 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import android.app.VoiceInteractor;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,14 +32,19 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by Diego on 10/11/15.
  */
-public class AppUser extends User
+public class AppUser extends User implements Serializable
 {
+
     private String token;
 
     private List<User> friends = new ArrayList<>();
     private List<User> outgoingFriendRequests = new ArrayList<>();
     private List<User> incomingFriendRequests = new ArrayList<>();
 
+    // Values for persistence
+    public static final String FILE_NAME = "appUser";
+
+    // Values for QR encoding
     private static final char splitCharacter = '\\';
     private static final char separationCharacter = '-';
     private static final char multipleElementsCharacter = ',';
@@ -386,13 +393,13 @@ public class AppUser extends User
         newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, new Date());
 
         String[] gaps = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(multipleElementsCharacter));
-        for(String gap : gaps)
+        for (String gap : gaps)
         {
             String[] gapValues = gap.split(Character.toString(separationCharacter));
             Calendar startTime = Calendar.getInstance();
             Calendar endTime = Calendar.getInstance();
 
-            Event.EventType eventType = gapValues[0].equals("G") ? Event.EventType.GAP : Event.EventType.CLASS ;
+            Event.EventType eventType = gapValues[0].equals("G") ? Event.EventType.GAP : Event.EventType.CLASS;
             int weekday = Integer.parseInt(gapValues[1]);
             // Get Start Date
             String[] startTimeValues = gapValues[2].split(Character.toString(hourMinuteSeparationChacter));
@@ -409,16 +416,16 @@ public class AppUser extends User
 
         // TODO: Check if existing with a HashMap.
         boolean existing = false;
-        for(int i = 0; i < System.instance.getAppUser().friends.size() && !existing; i++)
+        for (int i = 0; i < System.instance.getAppUser().friends.size() && !existing; i++)
         {
             // If friend already exist
-            if(System.instance.getAppUser().friends.get(i).getUsername().equals(newFriend.getUsername()))
+            if (System.instance.getAppUser().friends.get(i).getUsername().equals(newFriend.getUsername()))
             {
                 existing = true;
                 System.instance.getAppUser().friends.set(i, newFriend);
             }
         }
-        if(!existing) friends.add(newFriend);
+        if (!existing) friends.add(newFriend);
 
         return newFriend;
     }
