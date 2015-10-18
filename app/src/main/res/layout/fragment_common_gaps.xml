@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="com.diegoalejogm.enhueco.View.CommonGapsFragment"
+              android:weightSum="1000"
+              android:orientation="vertical">
+
+    <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:id="@+id/searchView"/>
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/scrollView2"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="150">
+
+        <com.wefika.flowlayout.FlowLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|top">
+
+        </com.wefika.flowlayout.FlowLayout>
+
+    </ScrollView>
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="0dp"
+                  android:orientation="vertical"
+                  android:id="@+id/fragment_container"
+                  android:layout_weight="840">
+    </LinearLayout>
+
+</LinearLayout>

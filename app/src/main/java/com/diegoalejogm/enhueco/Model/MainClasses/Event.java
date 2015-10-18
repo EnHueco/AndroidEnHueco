@@ -113,7 +113,7 @@ public class Event
         globalCalendar.setTime(date);
 
         globalCalendar.set(Calendar.DAY_OF_WEEK, startHour.get(Calendar.DAY_OF_WEEK));
-        globalCalendar.set(Calendar.HOUR, startHour.get(Calendar.HOUR));
+        globalCalendar.set(Calendar.HOUR_OF_DAY, startHour.get(Calendar.HOUR_OF_DAY));
         globalCalendar.set(Calendar.MINUTE, startHour.get(Calendar.MINUTE));
         globalCalendar.set(Calendar.SECOND, 0);
 
@@ -127,7 +127,7 @@ public class Event
         globalCalendar.setTime(date);
 
         globalCalendar.set(Calendar.DAY_OF_WEEK, endHour.get(Calendar.DAY_OF_WEEK));
-        globalCalendar.set(Calendar.HOUR, endHour.get(Calendar.HOUR));
+        globalCalendar.set(Calendar.HOUR_OF_DAY, endHour.get(Calendar.HOUR_OF_DAY));
         globalCalendar.set(Calendar.MINUTE, endHour.get(Calendar.MINUTE));
         globalCalendar.set(Calendar.SECOND, 0);
 

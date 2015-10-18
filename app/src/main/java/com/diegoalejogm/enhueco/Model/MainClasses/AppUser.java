@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import com.diegoalejogm.enhueco.Model.EHApplication;
@@ -162,7 +163,7 @@ public class AppUser extends User
                                 //Locate event in local array of weekdays based on its UTC startHour
 
                                 globalCalendar.set(Calendar.DAY_OF_WEEK, newEvent.getStartHour().get(Calendar.DAY_OF_WEEK));
-                                globalCalendar.set(Calendar.HOUR, newEvent.getStartHour().get(Calendar.HOUR));
+                                globalCalendar.set(Calendar.HOUR_OF_DAY, newEvent.getStartHour().get(Calendar.HOUR_OF_DAY));
                                 globalCalendar.set(Calendar.MINUTE, newEvent.getStartHour().get(Calendar.MINUTE));
 
                                 localCalendar.setTime(globalCalendar.getTime());
@@ -299,5 +300,77 @@ public class AppUser extends User
                 LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
             }
         });
+    }
+
+    public void importFromCalendarWithID (String calendarID, boolean generateGapsBetweenClasses)
+    {
+        Collection<Event> importedEvents = new ArrayList<>();
+
+        Calendar lastMondayAtStartOfDay = Calendar.getInstance();
+        lastMondayAtStartOfDay.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        lastMondayAtStartOfDay.set(Calendar.HOUR_OF_DAY, 0);
+        lastMondayAtStartOfDay.set(Calendar.MINUTE, 0);
+        lastMondayAtStartOfDay.set(Calendar.SECOND, 0);
+
+        Calendar nextFridayAtEndOfDay = Calendar.getInstance();
+        nextFridayAtEndOfDay.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+        nextFridayAtEndOfDay.set(Calendar.HOUR_OF_DAY, 23);
+        nextFridayAtEndOfDay.set(Calendar.MINUTE, 59);
+        nextFridayAtEndOfDay.set(Calendar.SECOND, 59);
+
+        String selection = "((" + CalendarContract.Calendars._ID + calendarID + ") AND ( " + CalendarContract.Events.DTSTART + " >= " + lastMondayAtStartOfDay.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + nextFridayAtEndOfDay.getTimeInMillis() + " ))";
+
+        // Get events between last Monday and next friday
+        Cursor cursor = EHApplication.getAppContext().getContentResolver()
+                .query(Uri.parse("content://com.android.calendar/events"),
+                        new String[]{"calendar_id", "title", "description", "dtstart", "dtend", "eventLocation"},
+                        selection,
+                        null,
+                        null);
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast())
+        {
+            String name = cursor.getString(1);
+
+            Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+            Calendar startHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            startHour.set(0, 0, 0, 0, 0, 0);
+
+            globalCalendar.setTimeInMillis(Long.parseLong(cursor.getString(3)));
+            startHour.set(Calendar.DAY_OF_WEEK, globalCalendar.get(Calendar.DAY_OF_WEEK));
+            startHour.set(Calendar.HOUR_OF_DAY, globalCalendar.get(Calendar.HOUR_OF_DAY));
+            startHour.set(Calendar.MINUTE, globalCalendar.get(Calendar.MINUTE));
+            startHour.set(Calendar.SECOND, 0);
+
+            Calendar endHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            endHour.set(0, 0, 0, 0, 0, 0);
+
+            globalCalendar.setTimeInMillis(Long.parseLong(cursor.getString(4)));
+            endHour.set(Calendar.DAY_OF_WEEK, globalCalendar.get(Calendar.DAY_OF_WEEK));
+            endHour.set(Calendar.HOUR_OF_DAY, globalCalendar.get(Calendar.HOUR_OF_DAY));
+            endHour.set(Calendar.MINUTE, globalCalendar.get(Calendar.MINUTE));
+            endHour.set(Calendar.SECOND, 0);
+
+            String location = cursor.getString(5);
+
+            Calendar localCalendarWithStartDate = Calendar.getInstance();
+            localCalendarWithStartDate.setTimeInMillis(Long.parseLong(cursor.getString(3)));
+            int localWeekDayNumber = localCalendarWithStartDate.get(Calendar.DAY_OF_WEEK);
+
+            Event newEvent = new Event(Event.EventType.CLASS, Optional.of(name), startHour, endHour, Optional.of(location));
+
+            DaySchedule weekDayDaySchedule = getSchedule().getWeekDays()[localWeekDayNumber];
+            weekDayDaySchedule.addEvent(newEvent);
+
+            cursor.moveToNext();
+        }
+
+        if (generateGapsBetweenClasses)
+        {
+            //TODO: Calculate Gaps and add them
+        }
     }
 }
