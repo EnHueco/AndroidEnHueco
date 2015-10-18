@@ -132,7 +132,7 @@ public class Event implements Serializable
     }
 
     /** Returns the start hour (Weekday, Hour, Minute) by setting the components to the date provided. */
-    public Date getStartHourInDate (Date date)
+    public Date     getStartHourInDate (Date date)
     {
         Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         globalCalendar.setTime(date);

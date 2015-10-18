@@ -14,8 +14,10 @@ import org.json.JSONObject;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by Diego on 10/11/15.
@@ -42,7 +44,18 @@ public class System
     
     public void createTestAppUser (Context context)
     {
-        appUser = new AppUser("pa.perez11", "", "Diego", "Montoya Sefair", "000000000", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
+        appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "000000000", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
+        User friend1 = new User("da.gomez11","Diego Alejandro", "Gomez Mosquera", "0000001", Optional.<String>absent(), "7", new Date());
+        User friend2 = new User("cl.jimenez12","Claudia Lucía", "Jiménez Guarín", "0000002", Optional.<String>absent(), "4", new Date());
+        appUser.getFriends().add(friend1);
+
+        Calendar startHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        startHour.add(Calendar.HOUR_OF_DAY, -2);
+        Calendar endHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        endHour.add(Calendar.HOUR_OF_DAY, 2);
+        Calendar localCalendar = Calendar.getInstance();
+        friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.GAP, startHour, endHour));
+        appUser.getFriends().add(friend2);
         persistData(context);
     }
 

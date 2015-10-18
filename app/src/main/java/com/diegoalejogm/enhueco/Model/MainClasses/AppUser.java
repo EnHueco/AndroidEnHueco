@@ -429,4 +429,9 @@ public class AppUser extends User implements Serializable
 
         return newFriend;
     }
+
+    public List<User> getIncomingFriendRequests()
+    {
+        return incomingFriendRequests;
+    }
 }

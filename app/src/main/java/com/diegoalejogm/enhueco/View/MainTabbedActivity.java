@@ -1,11 +1,15 @@
 package com.diegoalejogm.enhueco.View;
 
+import android.app.DownloadManager;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -34,6 +38,7 @@ import static com.diegoalejogm.enhueco.View.InGapFragment.*;
 public class MainTabbedActivity extends AppCompatActivity implements FriendsFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
 
+    private static final String LOG = "MainTabbedActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -49,7 +54,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
      */
     private ViewPager viewPager;
     private ArrayList<Integer> hiddenMenuItems;
-    TabLayout tabLayout;
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,6 +93,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         {
             menu.findItem(R.id.action_add_friend).setVisible(false);
             menu.findItem(R.id.action_schedule).setVisible(false);
+            menu.findItem(R.id.action_requests).setVisible(false);
             menu.findItem(R.id.action_log_out).setVisible(false);
             menu.findItem(R.id.action_qr_code).setVisible(false);
         }
@@ -101,8 +107,10 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         if (tabLayout.getSelectedTabPosition() == 2)
         {
             menu.findItem(R.id.action_search).setVisible(false);
+            menu.findItem(R.id.action_requests).setVisible(false);
             menu.findItem(R.id.action_add_friend).setVisible(false);
         }
+
         return true;
     }
 
@@ -129,6 +137,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     {
         invalidateOptionsMenu();
         viewPager.setCurrentItem(tab.getPosition());
+        Log.v(LOG, "New position: " + tab.getPosition());
     }
 
     public void logOut(MenuItem item)
@@ -155,6 +164,12 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     public void showQRCode()
     {
         startActivity(new Intent(MainTabbedActivity.this, ShowQRActivity.class));
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
     }
 
     @Override
@@ -203,6 +218,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
                 switch (which)
                 {
                     case 0:
+                        MainTabbedActivity.this.searchFriends();
                         break;
                     case 1:
                         MainTabbedActivity.this.scanQR();
@@ -216,6 +232,12 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         });
 
         addFriendMethodDialog.show();
+    }
+
+    private void searchFriends()
+    {
+        Intent intent = new Intent(this, SearchNewFriendsActivity.class);
+        startActivity(intent);
     }
 
     private void scanQR()
@@ -239,6 +261,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     {
 
     }
+
+    public void showRequests(MenuItem item)
+    {
+        Intent intent = new Intent(this, RequestsActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

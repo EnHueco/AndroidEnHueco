@@ -25,6 +25,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
 
     public static final String SCHEDULE_EXTRA = "Schedule";
+    private static final String LOG = "ScheduleActivity";
     WeekView mWeekView;
     Schedule schedule;
 
@@ -108,21 +109,28 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
                 Event currentEvent = currentWeekDayEvents.get(j);
 
                 // Update global Calendar to match start time
+                Log.v(LOG, "Event start: " + currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getStartHour().get(Calendar.MINUTE));
+                Log.v(LOG, "Event end: " + currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getEndHour().get(Calendar.MINUTE));
                 globalCalendar.set(Calendar.HOUR_OF_DAY, currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY));
                 globalCalendar.set(Calendar.MINUTE, currentEvent.getStartHour().get(Calendar.MINUTE));
 
                 // Set global calendar time in start local calendar
-                Calendar startCalendarLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                Calendar startCalendarLocal = Calendar.getInstance();
                 startCalendarLocal.setTimeInMillis(globalCalendar.getTimeInMillis());
+                startCalendarLocal.set(Calendar.DAY_OF_MONTH, globalCalendar.get(Calendar.DAY_OF_MONTH));
+                Log.v(LOG, "Event start: " + startCalendarLocal.get(Calendar.HOUR_OF_DAY) + ":" + startCalendarLocal.get(Calendar.MINUTE));
+
 
                 // Update global Calendar to match end time
                 globalCalendar.set(Calendar.HOUR_OF_DAY, currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY));
                 globalCalendar.set(Calendar.MINUTE, currentEvent.getEndHour().get(Calendar.MINUTE));
 
                 // Set global calendar time in end local calendar
-                Calendar endCalendarLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                Calendar endCalendarLocal = Calendar.getInstance();
                 endCalendarLocal.setTimeInMillis(globalCalendar.getTimeInMillis());
+                endCalendarLocal.set(Calendar.DAY_OF_MONTH, globalCalendar.get(Calendar.DAY_OF_MONTH));
 
+                Log.v(LOG, "Event end: " + endCalendarLocal.get(Calendar.HOUR_OF_DAY) + ":" + endCalendarLocal.get(Calendar.MINUTE));
                 // Add weekViewEvent
                 events.add(new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal));
             }

@@ -24,5 +24,15 @@
 			android:layout_toRightOf="@+id/userIcon"
 			android:layout_toEndOf="@+id/userIcon"/>
 
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="Small Text"
+			android:id="@+id/gapRemainingTimeText"
+			android:layout_below="@+id/enHuecoItem_nameTextView"
+			android:layout_toRightOf="@+id/userIcon"
+			android:layout_toEndOf="@+id/userIcon"/>
+
 
 </RelativeLayout>

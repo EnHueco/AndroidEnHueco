@@ -5,12 +5,12 @@ package com.diegoalejogm.enhueco.Model.Other;
  */
 public class Tuple<A, B>
 {
-    public A a;
-    public B b;
+    public A first;
+    public B second;
 
-    public Tuple(A a, B b)
+    public Tuple(A first, B second)
     {
-        this.a = a;
-        this.b = b;
+        this.first = first;
+        this.second = second;
     }
 }

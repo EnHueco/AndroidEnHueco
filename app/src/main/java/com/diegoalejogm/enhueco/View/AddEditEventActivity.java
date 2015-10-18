@@ -29,6 +29,7 @@ import java.util.TimeZone;
 public class AddEditEventActivity extends AppCompatActivity implements View.OnClickListener
 {
 
+    private static final String LOG = "AddEditEventActivity";
     RadioGroup eventType;
     RadioButton gapEventType;
     EditText eventName, eventLocation;
@@ -62,7 +63,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
         startTime = Calendar.getInstance();
         endTime = Calendar.getInstance();
-        endTime.add(Calendar.MINUTE, 5);
+        endTime.add(Calendar.MINUTE, 30);
         selectedWeekDays = new boolean[7];
         weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
 
@@ -189,7 +190,14 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
             {
                 if (!selectedWeekDays[i]) continue;
                 Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
+                Log.v(LOG, "Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
+                startTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Log.v(LOG, "Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
+                Log.v(LOG, "*Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
+                endTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Log.v(LOG, "*Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
                 weekDaysSchedule[i + 1].addEvent(new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime));
+                System.instance.persistData(getApplicationContext());
             }
         }
         finish();

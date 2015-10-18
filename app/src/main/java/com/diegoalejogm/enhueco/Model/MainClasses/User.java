@@ -38,6 +38,8 @@ public class User extends EHSynchronizable implements Serializable
         this.imageURL = imageURL;
     }
 
+
+
     public static User userFromJSONObject (JSONObject object) throws JSONException, ParseException
     {
         String username = object.getString("login");
