@@ -382,7 +382,7 @@ public class AppUser extends User implements Serializable
             localCalendarWithStartDate.setTimeInMillis(Long.parseLong(cursor.getString(3)));
             int localWeekDayNumber = localCalendarWithStartDate.get(Calendar.DAY_OF_WEEK);
 
-            Event newEvent = new Event(Event.EventType.CLASS, Optional.of(name), startHour, endHour, Optional.of(location));
+            Event newEvent = new Event(Event.EventType.CLASS, Optional.of(name), Optional.of(location), startHour, endHour);
 
             DaySchedule weekDayDaySchedule = getSchedule().getWeekDays()[localWeekDayNumber];
             weekDayDaySchedule.addEvent(newEvent);

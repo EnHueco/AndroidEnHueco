@@ -67,6 +67,7 @@ public class CommonGapsFragment extends Fragment
             @Override
             public boolean onQueryTextChange(String newText)
             {
+                commonGapsSearchFriendToAddFragment.filterContentForSearchText(newText);
                 return false;
             }
         });

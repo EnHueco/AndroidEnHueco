@@ -19,8 +19,6 @@ import java.util.TimeZone;
 
 public class Event implements Serializable
 {
-
-
     public enum EventType
     {
         GAP, CLASS

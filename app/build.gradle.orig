@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        applicationId "com.diegoalejogm.enhueco"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:design:23.0.1'
+
+    //External dependencies
+    compile 'com.github.alamkanak:android-week-view:1.2.3'
+    compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
+    compile 'com.google.zxing:core:3.2.0'
+    compile ("net.glxn.qrgen:android:2.1-SNAPSHOT")
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+<<<<<<< HEAD
+    compile "com.wefika:flowlayout:0.4.1"
+=======
+    compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56' // commit hash
+    compile 'com.github.medyo:fancybuttons:1.5@aar'
+
+>>>>>>> 2d465da9b2d0ed2ab778ffce956c51757c429aac
+}

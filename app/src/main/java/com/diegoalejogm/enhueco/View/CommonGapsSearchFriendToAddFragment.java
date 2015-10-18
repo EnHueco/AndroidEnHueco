@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CommonGapsSearchFriendToAddFragment extends ListFragment
 {
-    //private List<User> filteredFriends = System.instance.getAppUser().getFriends();
+    private List<User> filteredFriends = System.instance.getAppUser().getFriends();
 
     private OnFragmentInteractionListener mListener;
 
@@ -34,15 +34,18 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
 
 
         // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
     }
     
     public void filterContentForSearchText (String searchText)
     {
         if (searchText.equals(""))
         {
-
+            filteredFriends = System.instance.getAppUser().getFriends();
+        }
+        else
+        {
+            //filteredFriends = System.instance.getAppUser().getFriends()
         }
     }
 
