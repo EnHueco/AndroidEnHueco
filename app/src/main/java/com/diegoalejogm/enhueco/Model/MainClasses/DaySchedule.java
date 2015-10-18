@@ -17,7 +17,7 @@ public class DaySchedule implements Serializable
     }
 
     private final String weekDayName;
-    private ArrayList<Event> events;
+    private ArrayList<Event> events = new ArrayList<>();
 
     public DaySchedule(String weekDayName)
     {
