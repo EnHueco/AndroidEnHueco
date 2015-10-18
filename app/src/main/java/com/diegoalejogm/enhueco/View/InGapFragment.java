@@ -4,18 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.User;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.Model.Other.Tuple;
 import com.diegoalejogm.enhueco.R;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * A fragment representing a list of Items.
@@ -44,9 +46,7 @@ public class InGapFragment extends ListFragment
 
         // TODO: Change Adapter to display your content
 
-        List<User> data = new ArrayList<User>();
-        data.add(new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", null, "da.gomez11", new Date()));
-        data.add(new User("d.montoya10", "Diego", "Montoya Sefair", "3176694189", null, "d.montoya10", new Date()));
+        List<Tuple<User, Event>> data = System.instance.getAppUser().getFriendsCurrentlyInGap();
 
         setListAdapter(new InGapArrayAdapter(getActivity(),
                 0, data));
@@ -105,13 +105,13 @@ public class InGapFragment extends ListFragment
     }
 
 
-    static class InGapArrayAdapter extends ArrayAdapter<User>
+    static class InGapArrayAdapter extends ArrayAdapter<Tuple<User, Event>>
     {
 
         Context context;
-        List<User> objects;
+        List<Tuple<User, Event>> objects;
 
-        public InGapArrayAdapter(Context context, int resource, List<User> objects)
+        public InGapArrayAdapter(Context context, int resource, List<Tuple<User, Event>> objects)
         {
             super(context, resource, objects);
             this.context = context;
@@ -121,13 +121,31 @@ public class InGapFragment extends ListFragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            User user = objects.get(position);
+            User user = objects.get(position).first;
+            Event event = objects.get(position).second;
+
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
             View view = inflater.inflate(R.layout.item_enhueco, null);
             TextView tv1 = (TextView) view.findViewById(R.id.enHuecoItem_nameTextView);
             tv1.setText(user.toString());
 
+            TextView tv2 = (TextView) view.findViewById(R.id.gapRemainingTimeText);
+            Calendar localTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+            int remainingMinutes = (event.getEndHour().get(Calendar.HOUR_OF_DAY) * 60 + event.getEndHour().get(Calendar.MINUTE))
+                    - (localTime.get(Calendar.HOUR_OF_DAY) * 60 + localTime.get(Calendar.MINUTE));
+
+            Log.v("InGapFragment", remainingMinutes+"");
+            int remainingHour = remainingMinutes / 60;
+            remainingMinutes -= remainingHour * 60;
+
+            DecimalFormat mFormat = new DecimalFormat("00");
+
+
+            String timeRemaining = remainingHour > 0 ? mFormat.format(remainingHour) + ":" + mFormat.format(remainingMinutes) + " horas" :
+                    mFormat.format(remainingMinutes) + " min";
+            tv2.setText(timeRemaining);
             return view;
         }
     }

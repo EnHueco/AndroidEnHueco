@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -14,7 +15,7 @@ import java.util.Date;
 /**
  * Created by Diego on 10/9/15.
  */
-public class User extends EHSynchronizable
+public class User extends EHSynchronizable implements Serializable
 {
     private final String username;
     private final String firstNames;
@@ -36,6 +37,8 @@ public class User extends EHSynchronizable
         this.phoneNumber = phoneNumber;
         this.imageURL = imageURL;
     }
+
+
 
     public static User userFromJSONObject (JSONObject object) throws JSONException, ParseException
     {

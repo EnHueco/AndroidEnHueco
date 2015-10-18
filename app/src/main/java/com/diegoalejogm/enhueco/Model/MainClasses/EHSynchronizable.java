@@ -1,11 +1,12 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Diego on 10/11/15.
  */
-public class EHSynchronizable
+public class EHSynchronizable implements Serializable
 {
     private String ID;
     private Date lastUpdatedOn;

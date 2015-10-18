@@ -1,6 +1,8 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import android.app.VoiceInteractor;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,13 +33,23 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by Diego on 10/11/15.
  */
-public class AppUser extends User
+public class AppUser extends User implements Serializable
 {
+
     private String token;
 
-    private Collection<User> friends = new ArrayList<>();
-    private Collection<User> outgoingFriendRequests = new ArrayList<>();
-    private Collection<User> incomingFriendRequests = new ArrayList<>();
+    private List<User> friends = new ArrayList<>();
+    private List<User> outgoingFriendRequests = new ArrayList<>();
+    private List<User> incomingFriendRequests = new ArrayList<>();
+
+    // Values for persistence
+    public static final String FILE_NAME = "appUser";
+
+    // Values for QR encoding
+    private static final char splitCharacter = '\\';
+    private static final char separationCharacter = '-';
+    private static final char multipleElementsCharacter = ',';
+    private static final char hourMinuteSeparationChacter = ':';
 
     public AppUser(String username, String token, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -44,7 +58,7 @@ public class AppUser extends User
         this.token = token;
     }
 
-    public static AppUser appUserFromJSONObject (JSONObject object) throws JSONException, ParseException
+    public static AppUser appUserFromJSONObject(JSONObject object) throws JSONException, ParseException
     {
         User user = User.userFromJSONObject(object);
         String token = object.getString("token");
@@ -56,22 +70,22 @@ public class AppUser extends User
         return token;
     }
 
-    public Collection<User> getFriends()
+    public List<User> getFriends()
     {
         return friends;
     }
 
     /**
-        Checks for and downloads any updates from the server including Session Status, Friend list, Friends Schedule, User's Info
+     * Checks for and downloads any updates from the server including Session Status, Friend list, Friends Schedule, User's Info
      */
-    public void fetchUpdates ()
+    public void fetchUpdates()
     {
 
     }
 
     /**
      * Fetches updates for both outgoing and incoming friend requests on the server and notifies the result via Notification Center.
-     *
+     * <p/>
      * Notifications
      * -EHSystemNotification.SystemDidReceiveFriendRequestUpdates in case of success
      */
@@ -97,7 +111,10 @@ public class AppUser extends User
 
                         // TODO
                     }
-                    catch (ExecutionException | InterruptedException e) { e.printStackTrace(); }
+                    catch (ExecutionException | InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -113,9 +130,9 @@ public class AppUser extends User
         }
     }
 
-        /**
+    /**
      * Fetches full friends and schedule information from the server and notifies the result via Notification Center.
-     *
+     * <p/>
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
@@ -135,7 +152,7 @@ public class AppUser extends User
                 {
                     try
                     {
-                        Collection<User> newFriends = new ArrayList<User>();
+                        List<User> newFriends = new ArrayList<User>();
 
                         Date currentDate = new Date();
 
@@ -149,7 +166,7 @@ public class AppUser extends User
                         for (int i = 0; i < friendsJSON.length(); i++)
                         {
                             JSONObject friendJSON = friendsJSON.getJSONObject(i);
-                            
+
                             User newFriend = User.userFromJSONObject(friendJSON);
 
                             JSONObject scheduleJSON = friendJSON.getJSONObject("schedule");
@@ -201,14 +218,15 @@ public class AppUser extends User
 
 
     /**
-     *  Returns all friends that are currently in gap.
-     *  @return Friend in gap with their current gap
+     * Returns all friends that are currently in gap.
+     *
+     * @return Friend in gap with their current gap
      */
-    public List<Tuple<User, Event>> getFriendsCurrentlyInGap ()
+    public List<Tuple<User, Event>> getFriendsCurrentlyInGap()
     {
-        List<Tuple<User, Event>> friendsAndGaps =  new ArrayList<>();
+        List<Tuple<User, Event>> friendsAndGaps = new ArrayList<>();
 
-        for (User friend: friends)
+        for (User friend : friends)
         {
             Optional<Event> currentGap = friend.getCurrentGap();
 
@@ -218,13 +236,13 @@ public class AppUser extends User
             }
         }
 
-        return  friendsAndGaps;
+        return friendsAndGaps;
     }
 
     /**
-        Returns a schedule with the common gaps of the users provided.
+     * Returns a schedule with the common gaps of the users provided.
      */
-    public Schedule getCommonGapsScheduleForUsers (User[] users)
+    public Schedule getCommonGapsScheduleForUsers(User[] users)
     {
         Date currentDate = new Date();
         Schedule commonGapsSchedule = new Schedule();
@@ -235,7 +253,11 @@ public class AppUser extends User
         {
             Predicate<Event> eventsFilterPredicate = new Predicate<Event>()
             {
-                @Override public boolean apply(Event event) { return event.getType().equals(Event.EventType.GAP); }
+                @Override
+                public boolean apply(Event event)
+                {
+                    return event.getType().equals(Event.EventType.GAP);
+                }
             };
 
             Collection<Event> currentCommonGaps = Collections2.filter(users[0].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate);
@@ -244,20 +266,20 @@ public class AppUser extends User
             {
                 Collection<Event> newCommonGaps = new ArrayList<>();
 
-                for (Event gap1: currentCommonGaps)
+                for (Event gap1 : currentCommonGaps)
                 {
                     Date startHourInCurrentDate1 = gap1.getStartHourInDate(currentDate);
                     Date endHourInCurrentDate1 = gap1.getEndHourInDate(currentDate);
 
-                    for (Event gap2: Collections2.filter(users[j].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate))
+                    for (Event gap2 : Collections2.filter(users[j].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate))
                     {
                         Date startHourInCurrentDate2 = gap2.getStartHourInDate(currentDate);
                         Date endHourInCurrentDate2 = gap2.getEndHourInDate(currentDate);
 
                         if (!(endHourInCurrentDate1.before(startHourInCurrentDate2) || startHourInCurrentDate1.after(endHourInCurrentDate2)))
                         {
-                            Calendar startHour = ((startHourInCurrentDate1.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2))? gap1.getStartHour() : gap2.getStartHour());
-                            Calendar endHour = ((endHourInCurrentDate1.after(startHourInCurrentDate2) && endHourInCurrentDate1.before(endHourInCurrentDate2))? gap1.getEndHour() : gap2.getEndHour());
+                            Calendar startHour = ((startHourInCurrentDate1.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2)) ? gap1.getStartHour() : gap2.getStartHour());
+                            Calendar endHour = ((endHourInCurrentDate1.after(startHourInCurrentDate2) && endHourInCurrentDate1.before(endHourInCurrentDate2)) ? gap1.getEndHour() : gap2.getEndHour());
 
                             newCommonGaps.add(new Event(Event.EventType.GAP, startHour, endHour));
                         }
@@ -275,12 +297,12 @@ public class AppUser extends User
 
     /**
      * Sends a friend request to the username provided and notifies the result via Notification Center.
-     *
+     * <p/>
      * Notifications
      * - EHSystemNotification.SystemDidSendFriendRequest in case of success
      * - EHSystemNotification.SystemDidFailToSendFriendRequest in case of failure
      */
-    public void sendFriendRequestToUserRequestWithUsername (String username)
+    public void sendFriendRequestToUserRequestWithUsername(String username)
     {
         ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<JSONObject>absent());
 
@@ -372,5 +394,117 @@ public class AppUser extends User
         {
             //TODO: Calculate Gaps and add them
         }
+    }
+
+    public String getEncodedRepresentation()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        // Add username
+        sb.append(getUsername());
+        sb.append(splitCharacter);
+        // Add names
+        sb.append(getFirstNames());
+        sb.append(separationCharacter);
+        sb.append(getLastNames());
+        sb.append(splitCharacter);
+        // Add phone
+        sb.append(getPhoneNumber());
+        sb.append(splitCharacter);
+        // Add image
+        sb.append(getImageURL().get());
+        sb.append(splitCharacter);
+
+        boolean firstEvent = true;
+        // Add events
+        for (int i = 1; i < getSchedule().getWeekDays().length; i++)
+        {
+            DaySchedule currentDS = getSchedule().getWeekDays()[i];
+            for (int j = 0; j < currentDS.getEvents().size(); j++)
+            {
+                Event currentEvent = currentDS.getEvents().get(j);
+                Event.EventType eventType = currentEvent.getType();
+                DecimalFormat mFormat = new DecimalFormat("00");
+
+                if (firstEvent) firstEvent = false;
+                else if (!firstEvent) sb.append(multipleElementsCharacter);
+                // Add Class and weekday
+                sb.append(eventType.equals(Event.EventType.CLASS) ? 'C' : 'G');
+                sb.append(separationCharacter);
+                sb.append(i);
+                // Add hours
+                sb.append(separationCharacter);
+                sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY)));
+                sb.append(hourMinuteSeparationChacter);
+                sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.MINUTE)));
+                sb.append(separationCharacter);
+                sb.append(mFormat.format(currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY)));
+                sb.append(hourMinuteSeparationChacter);
+                sb.append(mFormat.format(currentEvent.getEndHour().get(Calendar.MINUTE)));
+            }
+        }
+        sb.append(splitCharacter);
+        return sb.toString();
+    }
+
+    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser) throws Exception
+    {
+        User newFriend = null;
+
+        String[] categories = encodedUser.split("\\\\");
+        // Get Username
+        String username = categories[0];
+        // Get Names
+        String[] completeName = categories[1].split(Character.toString(separationCharacter));
+        String firstNames = completeName[0].trim();
+        String lastNames = completeName[1].trim();
+        // Get Phone and Image
+        String phoneNumber = categories[2];
+
+        Optional<String> imageURL = categories.length >= 4 ? Optional.of(categories[3]) : Optional.<String>absent();
+
+        newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, new Date());
+
+        String[] gaps = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(multipleElementsCharacter));
+        for (String gap : gaps)
+        {
+            String[] gapValues = gap.split(Character.toString(separationCharacter));
+            Calendar startTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+
+            Event.EventType eventType = gapValues[0].equals("G") ? Event.EventType.GAP : Event.EventType.CLASS;
+            int weekday = Integer.parseInt(gapValues[1]);
+            // Get Start Date
+            String[] startTimeValues = gapValues[2].split(Character.toString(hourMinuteSeparationChacter));
+            startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
+            startTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
+            // Get End Date
+            String[] endTimeValues = gapValues[3].split(Character.toString(hourMinuteSeparationChacter));
+            endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
+            endTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
+
+            Event newEvent = new Event(eventType, startTime, endTime);
+            newFriend.getSchedule().getWeekDays()[weekday].addEvent(newEvent);
+        }
+
+        // TODO: Check if existing with a HashMap.
+        boolean existing = false;
+        for (int i = 0; i < System.instance.getAppUser().friends.size() && !existing; i++)
+        {
+            // If friend already exist
+            if (System.instance.getAppUser().friends.get(i).getUsername().equals(newFriend.getUsername()))
+            {
+                existing = true;
+                System.instance.getAppUser().friends.set(i, newFriend);
+            }
+        }
+        if (!existing) friends.add(newFriend);
+
+        return newFriend;
+    }
+
+    public List<User> getIncomingFriendRequests()
+    {
+        return incomingFriendRequests;
     }
 }

@@ -9,65 +9,85 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TimePicker;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.R;
+import com.google.common.base.Optional;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
+import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class AddEditEventActivity extends AppCompatActivity implements View.OnClickListener
 {
 
+    private static final String LOG = "AddEditEventActivity";
+    RadioGroup eventType;
+    RadioButton gapEventType;
+    EditText eventName, eventLocation;
     EditText startTimeText, endTimeText, weekDaysText;
     Calendar startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
+    Event editEvent;
 
+    public static final String EVENT_EXTRA = "Event";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_event);
 
-        selectedWeekDays = new boolean[7];
-        weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
-
+        // Get views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        startTimeText = (EditText) findViewById(R.id.startTimeEditText);
+        endTimeText = (EditText) findViewById(R.id.endTimeEditText);
+        gapEventType = (RadioButton) findViewById(R.id.radioButton);
+        weekDaysText = (EditText) findViewById(R.id.weekDaysEditText);
+        eventName = (EditText) findViewById(R.id.eventNameTextEdit);
+        eventLocation = (EditText) findViewById(R.id.eventLocationTextEdit);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Evento");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        editEvent = (Event) getIntent().getSerializableExtra(EVENT_EXTRA);
 
         startTime = Calendar.getInstance();
         endTime = Calendar.getInstance();
+        endTime.add(Calendar.MINUTE, 30);
+        selectedWeekDays = new boolean[7];
+        weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
 
-        startTimeText = (EditText) findViewById(R.id.startTimeEditText);
         startTimeText.setOnClickListener(this);
-        updateTextEdit(startTime, startTimeText);
+        updateTextEdit(startTimeText, startTime);
 
-
-        endTimeText = (EditText) findViewById(R.id.endTimeEditText);
         endTimeText.setOnClickListener(this);
-        updateTextEdit(endTime, endTimeText);
+        updateTextEdit(endTimeText, endTime);
 
-        weekDaysText = (EditText) findViewById(R.id.weekDaysEditText);
         weekDaysText.setOnClickListener(this);
 
     }
 
-    private void updateCalendarAndTextEdit(int hourOfDay, int minute, Calendar calendar, EditText et)
+    private void updateCalendar(Calendar calendar, int hourOfDay, int minute)
     {
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
-        updateTextEdit(calendar, et);
     }
 
-    private void updateTextEdit(Calendar calendar, EditText et)
+    private void updateTextEdit(EditText et, Calendar calendar)
     {
-        String ampm = (calendar.get(Calendar.AM_PM) == calendar.AM )? "AM" : "PM";
+        String ampm = (calendar.get(Calendar.AM_PM) == calendar.AM) ? "AM" : "PM";
 
-        DecimalFormat mFormat= new DecimalFormat("00");
+        DecimalFormat mFormat = new DecimalFormat("00");
         et.setText(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR)))
                 + " : " + mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE)))
                 + " " + ampm);
@@ -79,34 +99,35 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     {
         if (v == startTimeText)
         {
-
-
             TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
             {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                 {
-                    AddEditEventActivity.this.updateCalendarAndTextEdit(hourOfDay, minute,
-                            AddEditEventActivity.this.startTime, AddEditEventActivity.this.startTimeText);
+                    AddEditEventActivity.this.updateCalendar(AddEditEventActivity.this.startTime, hourOfDay, minute);
+                    AddEditEventActivity.this.updateTextEdit(AddEditEventActivity.this.startTimeText,
+                            AddEditEventActivity.this.startTime);
                 }
-            }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false);
+            }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false);
             startTimePicker.show();
         }
-        else if(v == endTimeText)
+
+        else if (v == endTimeText)
         {
             TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
             {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                 {
-                    AddEditEventActivity.this.updateCalendarAndTextEdit(hourOfDay, minute,
-                            AddEditEventActivity.this.endTime, AddEditEventActivity.this.endTimeText);
+                    AddEditEventActivity.this.updateCalendar(AddEditEventActivity.this.endTime, hourOfDay, minute);
+                    AddEditEventActivity.this.updateTextEdit(AddEditEventActivity.this.endTimeText,
+                            AddEditEventActivity.this.endTime);
                 }
-            }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false);
+            }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false);
             endTimePicker.show();
         }
 
-        else if(v == weekDaysText)
+        else if (v == weekDaysText)
         {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -139,17 +160,51 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     {
         StringBuffer s = new StringBuffer();
         boolean first = true, all = true;
-        for(int i = 0; i < selectedWeekDays.length ; i++)
+        for (int i = 0; i < selectedWeekDays.length; i++)
         {
             all &= selectedWeekDays[i];
-            if(selectedWeekDays[i] && first)
+            if (selectedWeekDays[i] && first)
             {
-                s.append(weekDaysArray[i].substring(0,3));
+                s.append(weekDaysArray[i].substring(0, 3));
                 first = false;
             }
-            else if(selectedWeekDays[i]) s.append(", ").append(weekDaysArray[i].substring(0,3));
+            else if (selectedWeekDays[i]) s.append(", ").append(weekDaysArray[i].substring(0, 3));
         }
-        if(all) AddEditEventActivity.this.weekDaysText.setText("Todos");
+        if (all) AddEditEventActivity.this.weekDaysText.setText("Todos");
         else AddEditEventActivity.this.weekDaysText.setText(s.toString());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_add_event, menu);
+        return true;
+    }
+
+    public void addEvent(MenuItem item)
+    {
+        if (this.editEvent == null)
+        {
+            DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
+            for (int i = 0; i < selectedWeekDays.length; i++)
+            {
+                if (!selectedWeekDays[i]) continue;
+                Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
+                Log.v(LOG, "Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
+                startTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Log.v(LOG, "Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
+                Log.v(LOG, "*Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
+                endTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Log.v(LOG, "*Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
+                weekDaysSchedule[i + 1].addEvent(new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime));
+                System.instance.persistData(getApplicationContext());
+            }
+        }
+        finish();
+    }
+
+    public void cancelEvent(MenuItem item)
+    {
+        finish();
     }
 }

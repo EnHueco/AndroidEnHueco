@@ -18,6 +18,8 @@
 	<string name="event_name">Nombre (opcional)</string>
 	<string name="event_location">Ubicación (opcional)</string>
 	<string name="week_days">Días</string>
+	<string name="testUserName">Diego Alejandro Gomez Mosquera</string>
+	<string name="requests">Solicitudes</string>
 
 	<string-array name="weekDay_array">
 		<item>Domingo</item>
