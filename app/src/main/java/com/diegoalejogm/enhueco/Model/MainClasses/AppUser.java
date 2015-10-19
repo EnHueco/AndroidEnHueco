@@ -59,8 +59,8 @@ public class AppUser extends User implements Serializable
 
     public static AppUser appUserFromJSONObject(JSONObject object) throws JSONException, ParseException
     {
-        User user = User.userFromJSONObject(object);
-        String token = object.getString("token");
+        User user = User.userFromJSONObject(object.getJSONObject("user"));
+        String token = object.getString("value");
         return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getLastUpdatedOn());
     }
 
@@ -359,8 +359,8 @@ public class AppUser extends User implements Serializable
                 sb.append(eventType.equals(Event.EventType.CLASS) ? 'C' : 'G');
                 sb.append(separationCharacter);
                 sb.append(i);
-                // Add hours
                 sb.append(separationCharacter);
+                // Add hours
                 sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY)));
                 sb.append(hourMinuteSeparationChacter);
                 sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.MINUTE)));
@@ -390,7 +390,9 @@ public class AppUser extends User implements Serializable
 
         Optional<String> imageURL = categories.length >= 4 ? Optional.of(categories[3]) : Optional.<String>absent();
 
-        newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, new Date());
+        // TODO: Set correct friend last actualization date
+        Date lastUpdated = new Date();
+        newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, lastUpdated);
 
         String[] gaps = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(multipleElementsCharacter));
         for (String gap : gaps)

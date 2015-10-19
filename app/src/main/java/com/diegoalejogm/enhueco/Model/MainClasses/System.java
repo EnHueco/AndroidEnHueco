@@ -33,6 +33,9 @@ public class System
         public static final String SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES";
         public static final String SYSTEM_DID_ADD_FRIEND = "SYSTEM_DID_ADD_FRIEND";
         public static final String SYSTEM_DID_SEND_FRIEND_REQUEST = "SYSTEM_DID_SEND_FRIEND_REQUEST", SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST = "SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST";
+
+        public static final String SYSTEM_DID_USER_SEARCH = "SYSTEM_DID_USER_SEARCH";
+
     }
 
     private AppUser appUser;
@@ -78,7 +81,6 @@ public class System
                     try
                     {
                         appUser = AppUser.appUserFromJSONObject(responseJSON);
-
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
                     }
                     catch (JSONException | ParseException e)
@@ -107,10 +109,46 @@ public class System
         deletePersistence(context);
     }
 
+
     private void deletePersistence(Context context)
     {
         context.deleteFile(AppUser.FILE_NAME);
     }
+
+
+    public void searchUsers(String id)
+    {
+        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<JSONObject>absent());
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(JSONObject responseJSON)
+            {
+                try
+                {
+                    appUser = AppUser.appUserFromJSONObject(responseJSON);
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_USER_SEARCH));
+                }
+                catch (JSONException | ParseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                Intent intent = new Intent(EHSystemNotification.SYSTEM_COULD_NOT_LOGIN_WITH_ERROR);
+                intent.putExtra("error", error.error);
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+            }
+        });
+    }
+
+
+
+//    ---- PERSISTENCE ----
 
     public boolean persistData(Context context)
     {

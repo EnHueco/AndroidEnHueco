@@ -1,11 +1,12 @@
 package com.diegoalejogm.enhueco.View;
 
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
@@ -20,7 +21,31 @@ public class LoginActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        IntentFilter filterLogin = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_LOGIN);
+        IntentFilter filterLoginError = new IntentFilter(System.EHSystemNotification.SYSTEM_COULD_NOT_LOGIN_WITH_ERROR);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterLogin
+                );
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterLoginError
+        );
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_LOGIN))
+            {
+                intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
+                startActivity(intent);
+                System.instance.persistData(getApplicationContext());
+                LoginActivity.this.finish();
+            }
+
+//            Log.d("receiver", "Got message: " + message);
+        }
+    };
 
 
     public void logIn(View view)
@@ -37,6 +62,11 @@ public class LoginActivity extends AppCompatActivity
             System.instance.createTestAppUser(getApplicationContext());
             finish();
         }
+        else
+        {
+            System.instance.login(loginString, passwordString);
+        }
+
     }
 
 
