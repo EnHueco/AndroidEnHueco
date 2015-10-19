@@ -35,5 +35,6 @@ dependencies {
     compile "com.wefika:flowlayout:0.4.1"
     compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56' // commit hash
     compile 'com.github.medyo:fancybuttons:1.5@aar'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
 }

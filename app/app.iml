@@ -100,6 +100,7 @@
     <orderEntry type="library" exported="" name="annotations-12.0" level="project" />
     <orderEntry type="library" exported="" name="android-week-view-1.2.3" level="project" />
     <orderEntry type="library" exported="" name="fancybuttons-1.5" level="project" />
+    <orderEntry type="library" exported="" name="picasso-2.5.2" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="flowlayout-0.4.1" level="project" />

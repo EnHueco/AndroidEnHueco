@@ -10,6 +10,9 @@ import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.View.dummy.DummyContent;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 
 import java.util.List;
 
@@ -32,12 +35,11 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-
         // TODO: Change Adapter to display your content
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
     }
     
-    public void filterContentForSearchText (String searchText)
+    public void filterContentForSearchText (final String searchText)
     {
         if (searchText.equals(""))
         {
@@ -45,7 +47,16 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
         }
         else
         {
-            //filteredFriends = System.instance.getAppUser().getFriends()
+            Predicate<User> filterPredicate = new Predicate<User>()
+            {
+                @Override
+                public boolean apply(User user)
+                {
+                    return user.getName().contains(searchText);
+                }
+            };
+
+            filteredFriends = Lists.newArrayList(Collections2.filter(System.instance.getAppUser().getFriends(), filterPredicate));
         }
     }
 

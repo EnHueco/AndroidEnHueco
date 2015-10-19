@@ -6,6 +6,7 @@ import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManager;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompletionHandler;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompoundError;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerRequest;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -96,7 +97,7 @@ public class SynchronizationManager
         ConnectionManagerCompletionHandler modifiedCompletionHandler = new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(JSONObject responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
             {
                 completionHandler.onSuccess(responseJSON);
             }
@@ -124,7 +125,7 @@ public class SynchronizationManager
 
         try
         {
-            JSONObject response = ConnectionManager.sendSyncRequest(item.request);
+            Either<JSONObject, JSONArray> response = ConnectionManager.sendSyncRequest(item.request);
             pendingRequestsQueue.remove();
 
             item.completionHandler.onSuccess(response);

@@ -83,9 +83,9 @@ public class FriendsFragment extends ListFragment
 
         if (null != mListener)
         {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-//            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
+            intent.putExtra("friendID", System.instance.getAppUser().getFriends().get(position).getID());
+            startActivity(intent);
         }
     }
 
@@ -112,8 +112,6 @@ public class FriendsFragment extends ListFragment
      */
     public interface OnFragmentInteractionListener
     {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
     }
 
     public class FriendsArrayAdapter extends ArrayAdapter<User>

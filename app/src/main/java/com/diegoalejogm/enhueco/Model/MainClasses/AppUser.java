@@ -10,11 +10,8 @@ import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import com.diegoalejogm.enhueco.Model.EHApplication;
+import com.diegoalejogm.enhueco.Model.Other.*;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
-import com.diegoalejogm.enhueco.Model.Other.EHParameters;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.Tuple;
-import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -98,16 +95,16 @@ public class AppUser extends User implements Serializable
             params.put(EHParameters.USER_ID, getUsername());
             params.put(EHParameters.TOKEN, getToken());
 
-            ConnectionManagerRequest outgoingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params));
+            ConnectionManagerRequest outgoingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
             ConnectionManager.sendAsyncRequest(outgoingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(JSONObject responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
                 {
                     try
                     {
-                        ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params));
-                        JSONObject response = ConnectionManager.sendSyncRequest(incomingRequestsRequest);
+                        ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
+                        Either<JSONObject, JSONArray> response = ConnectionManager.sendSyncRequest(incomingRequestsRequest);
 
                         // TODO
                     }
@@ -145,10 +142,10 @@ public class AppUser extends User implements Serializable
             params.put(EHParameters.USER_ID, getUsername());
             params.put(EHParameters.TOKEN, getToken());
 
-            ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params)), new ConnectionManagerCompletionHandler()
+            ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params), true), new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(JSONObject responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
                 {
                     try
                     {
@@ -161,7 +158,7 @@ public class AppUser extends User implements Serializable
 
                         Calendar localCalendar = Calendar.getInstance();
 
-                        JSONArray friendsJSON = responseJSON.getJSONArray("data");
+                        JSONArray friendsJSON = responseJSON.right;
 
                         for (int i = 0; i < friendsJSON.length(); i++)
                         {
@@ -304,12 +301,12 @@ public class AppUser extends User implements Serializable
      */
     public void sendFriendRequestToUserRequestWithUsername(String username)
     {
-        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<JSONObject>absent());
+        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<JSONObject>absent(), false);
 
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(JSONObject responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
             {
                 // TODO
 
@@ -321,6 +318,7 @@ public class AppUser extends User implements Serializable
             {
                 LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
             }
+
         });
     }
 

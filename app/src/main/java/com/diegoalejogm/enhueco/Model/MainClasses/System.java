@@ -6,8 +6,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.Model.Other.Either;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +39,11 @@ public class System
 
     private AppUser appUser;
 
+    public System ()
+    {
+        deletePersistence(EHApplication.getAppContext());
+    }
+
     public AppUser getAppUser()
     {
         return appUser;
@@ -45,8 +52,8 @@ public class System
     public void createTestAppUser (Context context)
     {
         appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "000000000", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
-        User friend1 = new User("da.gomez11","Diego Alejandro", "Gomez Mosquera", "0000001", Optional.<String>absent(), "7", new Date());
-        User friend2 = new User("cl.jimenez12","Claudia Lucía", "Jiménez Guarín", "0000002", Optional.<String>absent(), "4", new Date());
+        User friend1 = new User("da.gomez11","Diego Alejandro", "Gomez Mosquera", "0000001", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "da.gomez11", new Date());
+        User friend2 = new User("cl.jimenez12","Claudia Lucía", "Jiménez Guarín", "0000002", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "cl.jimenez12", new Date());
         appUser.getFriends().add(friend1);
 
         Calendar startHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -56,6 +63,9 @@ public class System
         Calendar localCalendar = Calendar.getInstance();
         friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.GAP, startHour, endHour));
         appUser.getFriends().add(friend2);
+
+        appUser.fetchUpdatesForFriendsAndFriendSchedules();
+
         persistData(context);
     }
 
@@ -68,16 +78,16 @@ public class System
             params.put("user_id", username);
             params.put("password", password);
 
-            ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.AUTH_SEGMENT, HTTPMethod.POST, Optional.of(params));
+            ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.AUTH_SEGMENT, HTTPMethod.POST, Optional.of(params), false);
 
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(JSONObject responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
                 {
                     try
                     {
-                        appUser = AppUser.appUserFromJSONObject(responseJSON);
+                        appUser = AppUser.appUserFromJSONObject(responseJSON.left);
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
                     }

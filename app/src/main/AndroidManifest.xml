@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.diegoalejogm.enhueco">
 
+	<uses-permission android:name="android.permission.INTERNET" />
+
 	<application
 			android:name=".Model.EHApplication"
 			android:allowBackup="true"
@@ -25,6 +27,11 @@
 				android:launchMode="singleTop"
 				>
 		</activity>
+
+        <activity android:name=".View.FriendDetailActivity"></activity>
+
+        <activity android:name=".View.CommonGapsActivity"></activity>
+
 		<activity
 				android:name=".View.ScheduleActivity"
 				android:parentActivityName=".View.MainTabbedActivity"

@@ -3,7 +3,9 @@ package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
 import com.diegoalejogm.enhueco.Model.EHApplication;
+import com.diegoalejogm.enhueco.Model.Other.Either;
 import com.google.common.base.Optional;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
@@ -25,26 +27,49 @@ public class ConnectionManager
             method = Request.Method.POST;
         }
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(method, request.URL, request.params.orNull(), new Response.Listener<JSONObject>()
+        JsonRequest jsonRequest;
+
+        if (request.responseIsArray)
         {
-            @Override
-            public void onResponse(JSONObject response)
+            jsonRequest = new JsonArrayRequest(method, request.URL, request.params.orNull(), new Response.Listener<JSONArray>()
             {
-                completionHandler.onSuccess(response);
-            }
-        }, new Response.ErrorListener()
+                @Override
+                public void onResponse(JSONArray response)
+                {
+                    completionHandler.onSuccess(new Either<JSONObject, JSONArray>(null, response));
+                }
+            }, new Response.ErrorListener()
+            {
+                @Override
+                public void onErrorResponse(VolleyError error)
+                {
+                    completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
+                }
+            });
+        }
+        else
         {
-            @Override
-            public void onErrorResponse(VolleyError error)
+            jsonRequest = new JsonObjectRequest(method, request.URL, request.params.orNull(), new Response.Listener<JSONObject>()
             {
-                completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
-            }
-        });
+                @Override
+                public void onResponse(JSONObject response)
+                {
+                    completionHandler.onSuccess(new Either<JSONObject, JSONArray>(response, null));
+                }
+            }, new Response.ErrorListener()
+            {
+                @Override
+                public void onErrorResponse(VolleyError error)
+                {
+                    completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
+                }
+            });
+        }
 
         requestQueue.add(jsonRequest);
     }
 
-    public static JSONObject sendSyncRequest (ConnectionManagerRequest request) throws ExecutionException, InterruptedException
+    public static Either<JSONObject, JSONArray> sendSyncRequest (ConnectionManagerRequest request) throws ExecutionException, InterruptedException
     {
         int method;
 
@@ -57,11 +82,22 @@ public class ConnectionManager
             method = Request.Method.POST;
         }
 
-        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(method, request.URL, request.params.orNull(), future, future);
+        RequestFuture future = RequestFuture.newFuture();
+        JsonRequest jsonRequest;
+
+        if (request.responseIsArray)
+        {
+            jsonRequest = new JsonArrayRequest(method, request.URL, future, future);
+        }
+        else
+        {
+            jsonRequest = new JsonObjectRequest(method, request.URL, request.params.orNull(), future, future);
+        }
 
         requestQueue.add(jsonRequest);
 
-        return future.get();
+        Object response = future.get();
+
+        return request.responseIsArray? new Either<JSONObject, JSONArray>(null, (JSONArray) response) : new Either<JSONObject, JSONArray>((JSONObject) response, null);
     }
 }

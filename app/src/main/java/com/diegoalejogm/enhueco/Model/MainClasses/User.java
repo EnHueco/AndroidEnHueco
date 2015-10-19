@@ -87,7 +87,7 @@ public class User extends EHSynchronizable implements Serializable
         return schedule;
     }
 
-    public String name()
+    public String getName()
     {
         return firstNames + " " + lastNames;
     }

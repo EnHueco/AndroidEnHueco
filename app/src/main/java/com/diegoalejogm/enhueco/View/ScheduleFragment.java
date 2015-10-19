@@ -1,44 +1,61 @@
 package com.diegoalejogm.enhueco.View;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.RectF;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.R;
-import android.support.v7.widget.Toolbar;
-
-import java.util.*;
-
+import com.diegoalejogm.enhueco.Model.MainClasses.Event;
+import com.diegoalejogm.enhueco.Model.MainClasses.Schedule;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.R;
 
-public class ScheduleActivity extends AppCompatActivity implements WeekView.EventLongPressListener, WeekView.EventClickListener, WeekView.MonthChangeListener, WeekView.EmptyViewClickListener
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
+
+public class ScheduleFragment extends Fragment implements WeekView.EventLongPressListener, WeekView.EventClickListener, WeekView.MonthChangeListener, WeekView.EmptyViewClickListener
 {
     public static final String SCHEDULE_EXTRA = "Schedule";
     private static final String LOG = "ScheduleActivity";
     WeekView mWeekView;
     Schedule schedule;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        return inflater.inflate(R.layout.activity_schedule, container, false);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        mWeekView = (WeekView) findViewById(R.id.weekView);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Mi Horario");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        mWeekView = (WeekView) view.findViewById(R.id.weekView);
+
+        //getActivity().setSupportActionBar(toolbar);
+        //getActivity().getSupportActionBar().setTitle("Mi Horario");
+        //getActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Set an action when any event is clicked.
         mWeekView.setOnEventClickListener(this);
@@ -51,7 +68,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         mWeekView.setEventLongPressListener(this);
     }
 
-
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect)
     {
@@ -61,25 +77,24 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     }
 
     @Override
-    protected void onResume()
+    public void onResume()
     {
         super.onResume();
-        mWeekView.notifyDatasetChanged();
 
+        mWeekView.notifyDatasetChanged();
     }
 
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect)
     {
         Log.v("Schedule Activity", "EVENT LONG PRESS");
-
     }
 
     @Override
     public List<WeekViewEvent> onMonthChange(int newYear, int newMonth)
     {
 
-        Log.v("MONTH CHANGED", ""+ newYear + "-" + newMonth);
+        Log.v("MONTH CHANGED", "" + newYear + "-" + newMonth);
         ArrayList<WeekViewEvent> events = new ArrayList<>();
 
         // Get first day of month
@@ -132,7 +147,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
             globalCalendar.add(Calendar.DATE, 1);
         }
 
-
         return events;
     }
 
@@ -141,11 +155,5 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     public void onEmptyViewClicked(Calendar time)
     {
 
-    }
-
-    public void addEvent(View view)
-    {
-        Intent intent = new Intent(this, AddEditEventActivity.class);
-        startActivity(intent);
     }
 }

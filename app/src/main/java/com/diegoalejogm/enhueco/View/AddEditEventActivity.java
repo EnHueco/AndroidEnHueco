@@ -91,7 +91,6 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         et.setText(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR)))
                 + " : " + mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE)))
                 + " " + ampm);
-        ;
     }
 
     @Override

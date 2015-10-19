@@ -6,46 +6,49 @@ import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.PersistableBundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.SearchView;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CommonGapsFragment.OnFragmentInteractionListener} interface
+ * {@link CommonGapsActivity.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class CommonGapsFragment extends Fragment
+public class CommonGapsActivity extends Activity
 {
     private OnFragmentInteractionListener mListener;
 
     private SearchView searchView;
 
     CommonGapsSearchFriendToAddFragment commonGapsSearchFriendToAddFragment = new CommonGapsSearchFriendToAddFragment();
+    ScheduleFragment scheduleFragment = new ScheduleFragment();
 
-    public CommonGapsFragment()
+    List<User> selectedFriends = new ArrayList<>();
+
+    public CommonGapsActivity()
     {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState)
     {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_common_gaps, container, false);
-    }
+        super.onCreate(savedInstanceState, persistentState);
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
+        setContentView(R.layout.activity_common_gaps);
 
-        searchView = (SearchView) getView().findViewById(R.id.searchView);
+        searchView = (SearchView) findViewById(R.id.searchView);
 
         searchView.setOnFocusChangeListener(new View.OnFocusChangeListener()
         {
@@ -73,6 +76,7 @@ public class CommonGapsFragment extends Fragment
         });
 
         switchToCalendar();
+        addFriendToSelectedFriendsAndReloadData(System.instance.getAppUser());
     }
 
     public void prepareInfoAndReloadScheduleData ()
@@ -80,9 +84,18 @@ public class CommonGapsFragment extends Fragment
 
     }
 
-    public void addFriendToSelectedFriendsAndReloadData ()
+    public void addFriendToSelectedFriendsAndReloadData (User friend)
     {
+        if (friend.getClass() == AppUser.class)
+        {
+            selectedFriends.set(0, friend);
+        }
+        else
+        {
+            selectedFriends.add(friend);
+        }
 
+        prepareInfoAndReloadScheduleData();
     }
 
     public void switchToCalendar ()
@@ -90,9 +103,7 @@ public class CommonGapsFragment extends Fragment
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        CommonGapsSearchFriendToAddFragment commonGapsSearchFriendToAddFragment = new CommonGapsSearchFriendToAddFragment();
-
-        fragmentTransaction.replace(R.id.fragment_container, commonGapsSearchFriendToAddFragment);
+        fragmentTransaction.replace(R.id.fragment_container, scheduleFragment);
         fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
