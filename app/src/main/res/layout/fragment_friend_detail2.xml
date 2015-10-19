@@ -1,0 +1,109 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.diegoalejogm.enhueco.View.FriendDetailFragment"
+             android:weightSum="1000"
+             android:orientation="vertical">
+
+    <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                 android:layout_weight="500">
+
+        <ImageView
+                android:layout_width="fill_parent"
+                android:id="@+id/imageButton"
+                android:layout_height="0dp"
+                android:layout_margin="0dp"
+                android:background="@color/background_material_dark"/>
+
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="start|bottom"
+                      android:orientation="vertical"
+                      android:layout_marginStart="30dp"
+                      android:layout_marginLeft="15dp"
+                      android:layout_marginEnd="150dp"
+                      android:layout_marginRight="150dp"
+                      android:layout_marginBottom="20dp">
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="Diego Alejandro Gómez Mosquera"
+                    android:maxLines="2"
+                    android:id="@+id/textView"/>
+
+            <TextView
+                    android:layout_width="142dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="da.gomez11"
+                    android:id="@+id/textView2"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="-30dp"
+                  android:layout_gravity="end">
+
+        <android.support.design.widget.FloatingActionButton
+                android:id="@+id/favoriteIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@android:color/white"
+                android:src="@android:drawable/ic_input_add"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+
+        <android.support.design.widget.FloatingActionButton
+                android:id="@+id/calendarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@android:color/white"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp"/>
+
+    </LinearLayout>
+
+    <RelativeLayout android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="500">
+
+        <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="WA"
+                android:textSize="8sp"
+                android:id="@+id/button4"
+                android:layout_below="@+id/button3" android:layout_alignLeft="@+id/button3"
+                android:layout_alignStart="@+id/button3"/>
+
+        <Button android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="Call"
+                android:textSize="8sp"
+                android:id="@+id/button5"
+                android:layout_below="@+id/button3"
+                android:layout_toEndOf="@+id/button4"
+                android:layout_toRightOf="@+id/button4"
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_alignBottom="@+id/button4"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Huecos en común"
+                android:id="@+id/button3"
+                android:layout_marginLeft="29dp"
+                android:layout_marginStart="29dp"
+                android:layout_centerVertical="true" android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

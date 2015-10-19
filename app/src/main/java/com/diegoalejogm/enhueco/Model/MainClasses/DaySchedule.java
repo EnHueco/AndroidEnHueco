@@ -106,7 +106,7 @@ public class DaySchedule implements Serializable
         for (Event event : events)
         {
             if (event.getStartHour().get(Calendar.DAY_OF_WEEK) == startHour.get(Calendar.DAY_OF_WEEK) &&
-                    event.getStartHour().get(Calendar.HOUR) == startHour.get(Calendar.HOUR) &&
+                    event.getStartHour().get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY) &&
                     event.getStartHour().get(Calendar.MINUTE) == startHour.get(Calendar.MINUTE))
             {
                 return Optional.of(event);

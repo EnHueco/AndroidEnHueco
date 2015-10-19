@@ -32,8 +32,11 @@ dependencies {
     compile ("net.glxn.qrgen:android:2.1-SNAPSHOT")
     compile 'com.google.guava:guava:18.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
+<<<<<<< HEAD
     compile "com.wefika:flowlayout:0.4.1"
+=======
     compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56' // commit hash
     compile 'com.github.medyo:fancybuttons:1.5@aar'
 
+>>>>>>> 2d465da9b2d0ed2ab778ffce956c51757c429aac
 }

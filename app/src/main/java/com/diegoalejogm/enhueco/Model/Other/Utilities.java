@@ -24,7 +24,7 @@ public class Utilities
         calendar.set(Calendar.MILLISECOND, 0);
 
         calendar.set(Calendar.DAY_OF_WEEK, weekday);
-        calendar.set(Calendar.HOUR, hour);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, 0);
 
         return calendar;
