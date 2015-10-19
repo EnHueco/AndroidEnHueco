@@ -1,10 +1,13 @@
 package com.diegoalejogm.enhueco.View;
 
 
-
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -28,6 +31,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
 {
 
     private static final String LOG = "SearchNewFriendsActivity";
+    public static final String EXTRA_USERS = "EXTRA_USERS";
     private Timer mTimer;
     private SearchFriendArrayAdapter adapter;
     ArrayList<User> users;
@@ -47,10 +51,38 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Agregar amigos");
+
+        IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
+    {
+
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            // Get extra data included in the Intent
+            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE))
+            {
+                ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(SearchNewFriendsActivity.EXTRA_USERS);
+                SearchNewFriendsActivity.this.updateResults(users);
+            }
+
+//            Log.d("receiver", "Got message: " + message);
+        }
+    };
+
+    private void updateResults(ArrayList<User> users)
+    {
+        this.users.clear();
+        this.users.addAll(users);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search_new_friends, menu);
         SearchManager searchManager =
@@ -95,7 +127,8 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
     @Override
     public boolean onQueryTextChange(final String newText)
     {
-        if (mTimer != null) {
+        if (mTimer != null)
+        {
             mTimer.cancel();
         }
         mTimer = new Timer();
@@ -110,8 +143,9 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     public void run()
                     {
                         Log.v(LOG, newText);
-                        users.addAll(System.instance.getAppUser().getFriends());
-                        adapter.notifyDataSetChanged();
+                        if(!newText.isEmpty()) System.instance.searchUsers(newText);
+                        else SearchNewFriendsActivity.this.updateResults(new ArrayList<User>());
+//                        adapter.notifyDataSetChanged();
                     }
                 });
             }

@@ -28,21 +28,23 @@
 				>
 		</activity>
 
-        <activity android:name=".View.FriendDetailActivity"></activity>
+        <activity android:name=".View.FriendDetailActivity">
 
-        <activity android:name=".View.CommonGapsActivity"></activity>
+        </activity>
+
+		<activity android:name=".View.CommonGapsActivity">
+
+		</activity>
 
 		<activity
 				android:name=".View.ScheduleActivity"
 				android:parentActivityName=".View.MainTabbedActivity"
-				android:theme="@style/AppTheme.NoActionBar"
 				android:launchMode="singleTop"
 				>
 		</activity>
 		<activity
 				android:name=".View.AddEditEventActivity"
 				android:parentActivityName=".View.ScheduleActivity"
-				android:theme="@style/AppTheme.NoActionBar"
 				android:windowSoftInputMode="stateHidden">
 		</activity>
 		<activity

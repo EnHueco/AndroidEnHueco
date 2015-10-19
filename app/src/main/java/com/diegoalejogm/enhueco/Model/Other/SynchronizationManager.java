@@ -7,8 +7,10 @@ import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerC
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompoundError;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerRequest;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;

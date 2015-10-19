@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.PersistableBundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import java.util.List;
  * {@link CommonGapsActivity.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class CommonGapsActivity extends Activity
+public class CommonGapsActivity extends AppCompatActivity
 {
     private OnFragmentInteractionListener mListener;
 
@@ -36,15 +37,10 @@ public class CommonGapsActivity extends Activity
 
     List<User> selectedFriends = new ArrayList<>();
 
-    public CommonGapsActivity()
-    {
-        // Required empty public constructor
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState)
+    protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState, persistentState);
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_common_gaps);
 
@@ -79,6 +75,7 @@ public class CommonGapsActivity extends Activity
         addFriendToSelectedFriendsAndReloadData(System.instance.getAppUser());
     }
 
+
     public void prepareInfoAndReloadScheduleData ()
     {
 
@@ -88,7 +85,8 @@ public class CommonGapsActivity extends Activity
     {
         if (friend.getClass() == AppUser.class)
         {
-            selectedFriends.set(0, friend);
+//            selectedFriends.set(0, friend);
+            selectedFriends.add(friend);
         }
         else
         {

@@ -3,23 +3,23 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.Model.Other.Either;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
+import com.diegoalejogm.enhueco.View.SearchNewFriendsActivity;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Created by Diego on 10/11/15.
@@ -38,6 +38,7 @@ public class System
 
         public static final String SYSTEM_DID_USER_SEARCH = "SYSTEM_DID_USER_SEARCH";
 
+        public static final String SYSTEM_RECEIVED_USER_SEARCH_RESPONSE = "SYSTEM_RECEIVED_USER_SEARCH_RESPONSE" ;
     }
 
     private AppUser appUser;
@@ -128,19 +129,29 @@ public class System
 
     public void searchUsers(String id)
     {
-        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<JSONObject>absent());
+        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
 
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
+
             @Override
-            public void onSuccess(JSONObject responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
             {
                 try
                 {
-                    appUser = AppUser.appUserFromJSONObject(responseJSON);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_USER_SEARCH));
+                    JSONArray array = responseJSON.right;
+                    ArrayList<User> users = new ArrayList<User>();
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        JSONObject jsonUser = array.getJSONObject(i);
+                        users.add(User.userFromJSONObject(jsonUser));
+                    }
+                    Intent intent = new Intent(EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE);
+                    intent.putExtra(SearchNewFriendsActivity.EXTRA_USERS, users);
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+
                 }
-                catch (JSONException | ParseException e)
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }
