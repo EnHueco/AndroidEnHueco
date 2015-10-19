@@ -46,7 +46,10 @@ public class User extends EHSynchronizable implements Serializable
         String firstNames = object.getString("firstNames");
         String lastNames = object.getString("lastNames");
         String imageURL = object.getString("imageURL");
-        Date lastUpdatedOn = Utilities.dateFromServerFormattedString(object.getString("lastUpdatedOn"));
+
+        // TODO: Correct lastUpdateOn value
+        //Date lastUpdatedOn = Utilities.dateFromServerFormattedString(object.getString("lastUpdated_on"));
+        Date lastUpdatedOn = new Date();
 
         return new User(username, firstNames, lastNames, null, Optional.of(imageURL), username, lastUpdatedOn);
     }
