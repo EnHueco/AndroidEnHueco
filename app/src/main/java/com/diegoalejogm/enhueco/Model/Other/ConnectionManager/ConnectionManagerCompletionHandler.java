@@ -9,6 +9,6 @@ import java.text.ParseException;
 
 public interface ConnectionManagerCompletionHandler
 {
-    void onSuccess(Either<JSONObject, JSONArray> responseJSON);
+    void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray);
     void onFailure(ConnectionManagerCompoundError error);
 }

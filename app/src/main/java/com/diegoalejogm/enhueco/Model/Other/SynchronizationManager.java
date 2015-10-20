@@ -99,9 +99,9 @@ public class SynchronizationManager
         ConnectionManagerCompletionHandler modifiedCompletionHandler = new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
             {
-                completionHandler.onSuccess(responseJSON);
+                completionHandler.onSuccess(eitherJSONObjectOrJSONArray);
             }
 
             @Override

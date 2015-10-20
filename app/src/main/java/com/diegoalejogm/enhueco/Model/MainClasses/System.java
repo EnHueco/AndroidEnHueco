@@ -88,11 +88,11 @@ public class System
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
                 {
                     try
                     {
-                        appUser = AppUser.appUserFromJSONObject(responseJSON.left);
+                        appUser = AppUser.appUserFromJSONObject(eitherJSONObjectOrJSONArray.left);
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
                     }
@@ -136,11 +136,11 @@ public class System
         {
 
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
             {
                 try
                 {
-                    JSONArray array = responseJSON.right;
+                    JSONArray array = eitherJSONObjectOrJSONArray.right;
                     ArrayList<User> users = new ArrayList<User>();
                     for (int i = 0; i < array.length(); i++)
                     {
