@@ -6,8 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
@@ -23,8 +21,9 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 {
     public static final String SCHEDULE_EXTRA = "Schedule";
     private static final String LOG = "ScheduleActivity";
-    WeekView mWeekView;
-    Schedule schedule;
+    private FloatingActionButton fab;
+    private WeekView mWeekView;
+    private Schedule schedule = System.instance.getAppUser().getSchedule();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,7 +32,10 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         setContentView(R.layout.activity_schedule);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab = (FloatingActionButton) findViewById(R.id.addEventButton);
+        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+
         mWeekView = (WeekView) findViewById(R.id.weekView);
 
         setSupportActionBar(toolbar);
@@ -78,7 +80,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     @Override
     public List<WeekViewEvent> onMonthChange(int newYear, int newMonth)
     {
-
         Log.v("MONTH CHANGED", ""+ newYear + "-" + newMonth);
         ArrayList<WeekViewEvent> events = new ArrayList<>();
 
@@ -98,7 +99,9 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         {
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
-            List<Event> currentWeekDayEvents = System.instance.getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
+
+            List<Event> currentWeekDayEvents = schedule.getWeekDays()[newEventWeekday].getEvents();
+
             for (int j = 0; j < currentWeekDayEvents.size(); j++)
             {
                 Event currentEvent = currentWeekDayEvents.get(j);
@@ -136,7 +139,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         return events;
     }
 
-
     @Override
     public void onEmptyViewClicked(Calendar time)
     {
@@ -147,5 +149,12 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     {
         Intent intent = new Intent(this, AddEditEventActivity.class);
         startActivity(intent);
+    }
+
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
+
+        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
     }
 }

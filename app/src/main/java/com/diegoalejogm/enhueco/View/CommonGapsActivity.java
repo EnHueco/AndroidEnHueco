@@ -1,52 +1,59 @@
 package com.diegoalejogm.enhueco.View;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.SearchView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
+import com.wefika.flowlayout.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CommonGapsActivity.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
-public class CommonGapsActivity extends AppCompatActivity
+public class CommonGapsActivity extends AppCompatActivity implements CommonGapsSearchFriendToAddFragment.CommonGapsSearchFriendToAddFragmentListener
 {
-    private OnFragmentInteractionListener mListener;
-
     private SearchView searchView;
 
     CommonGapsSearchFriendToAddFragment commonGapsSearchFriendToAddFragment = new CommonGapsSearchFriendToAddFragment();
     ScheduleFragment scheduleFragment = new ScheduleFragment();
 
+    FlowLayout selectedFriendsFlowLayout;
     List<User> selectedFriends = new ArrayList<>();
+
+    Fragment currentFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+        commonGapsSearchFriendToAddFragment.setListener(this);
+
         setContentView(R.layout.activity_common_gaps);
 
         searchView = (SearchView) findViewById(R.id.searchView);
+        selectedFriendsFlowLayout = (FlowLayout) findViewById(R.id.selectedFriendsFlowLayout);
 
-        searchView.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        addFriendToSelectedFriendsAndReloadData(System.instance.getAppUser());
+
+        for (User user: System.instance.getAppUser().getFriends())
+        {
+            if (user.getID().equals(getIntent().getStringExtra("initialFriendID")))
+            {
+                addFriendToSelectedFriendsAndReloadData(user);
+                break;
+            }
+        }
+
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
         {
             @Override
             public void onFocusChange(View v, boolean hasFocus)
@@ -72,75 +79,72 @@ public class CommonGapsActivity extends AppCompatActivity
         });
 
         switchToCalendar();
-        addFriendToSelectedFriendsAndReloadData(System.instance.getAppUser());
     }
 
 
     public void prepareInfoAndReloadScheduleData ()
     {
-
+        Schedule commonGapsSchedule = System.instance.getAppUser().getCommonGapsScheduleForUsers(selectedFriends.toArray(new User[0]));
+        scheduleFragment.setSchedule(commonGapsSchedule);
+        scheduleFragment.reloadData();
     }
 
     public void addFriendToSelectedFriendsAndReloadData (User friend)
     {
-        if (friend.getClass() == AppUser.class)
-        {
-//            selectedFriends.set(0, friend);
-            selectedFriends.add(friend);
-        }
-        else
-        {
-            selectedFriends.add(friend);
-        }
-
+        selectedFriends.add(friend);
+        reloadSelectedFriendsView();
         prepareInfoAndReloadScheduleData();
     }
 
     public void switchToCalendar ()
     {
+        if (currentFragment == scheduleFragment) return;
+
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.fragment_container, scheduleFragment);
         fragmentTransaction.addToBackStack(null);
 
+        currentFragment = scheduleFragment;
+
+        findViewById(R.id.selectedFriendsScrollView).setVisibility(View.VISIBLE);
+
         fragmentTransaction.commit();
     }
 
     public void switchToSearch ()
     {
+        if (currentFragment == commonGapsSearchFriendToAddFragment) return;
+
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.fragment_container, commonGapsSearchFriendToAddFragment);
         fragmentTransaction.addToBackStack(null);
 
+        currentFragment = commonGapsSearchFriendToAddFragment;
+
+        findViewById(R.id.selectedFriendsScrollView).setVisibility(View.GONE);
+
         fragmentTransaction.commit();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri)
+    public void reloadSelectedFriendsView ()
     {
-        if (mListener != null)
+        selectedFriendsFlowLayout.removeAllViews();
+
+        for (User user: selectedFriends)
         {
-            mListener.onFragmentInteraction(uri);
+            View cell = LayoutInflater.from(this).inflate(R.layout.item_common_gaps_selected_friend, null);
+            ((Button) cell.findViewById(R.id.commonGapsSelectedFriendButton)).setText(user.getName());
+            selectedFriendsFlowLayout.addView(cell);
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener
+    @Override
+    public void onCommonGapsSearchFriendToAddFragmentNewFriendSelected(User friend)
     {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        addFriendToSelectedFriendsAndReloadData(friend);
     }
-
 }

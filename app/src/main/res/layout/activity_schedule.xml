@@ -48,7 +48,7 @@
 			app:headerColumnBackground="#ffffffff"/>
 
 	<android.support.design.widget.FloatingActionButton
-			android:id="@+id/fab"
+			android:id="@+id/addEventButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"

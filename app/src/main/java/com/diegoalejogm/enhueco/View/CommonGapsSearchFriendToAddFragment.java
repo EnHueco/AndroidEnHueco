@@ -1,15 +1,19 @@
 package com.diegoalejogm.enhueco.View;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
-import com.diegoalejogm.enhueco.View.dummy.DummyContent;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -18,16 +22,23 @@ import java.util.List;
 
 public class CommonGapsSearchFriendToAddFragment extends ListFragment
 {
+    public interface CommonGapsSearchFriendToAddFragmentListener
+    {
+        void onCommonGapsSearchFriendToAddFragmentNewFriendSelected(User user);
+    }
+
     private List<User> filteredFriends = System.instance.getAppUser().getFriends();
 
-    private OnFragmentInteractionListener mListener;
+    private CommonGapsSearchFriendToAddFragmentListener listener;
+    private CommonGapsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public CommonGapsSearchFriendToAddFragment()
     {
+    }
+
+    public void setListener(CommonGapsSearchFriendToAddFragmentListener listener)
+    {
+        this.listener = listener;
     }
 
     @Override
@@ -35,8 +46,8 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+        selectedFriendsArrayAdapter = new CommonGapsFriendsSearchResultsArrayAdapter(getActivity(), 0, filteredFriends);
+        setListAdapter(selectedFriendsArrayAdapter);
     }
     
     public void filterContentForSearchText (final String searchText)
@@ -58,6 +69,8 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
 
             filteredFriends = Lists.newArrayList(Collections2.filter(System.instance.getAppUser().getFriends(), filterPredicate));
         }
+
+        selectedFriendsArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -65,28 +78,34 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
     {
         super.onListItemClick(l, v, position, id);
 
-        if (null != mListener)
+        if (listener != null)
         {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            listener.onCommonGapsSearchFriendToAddFragmentNewFriendSelected(filteredFriends.get(position));
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener
+    public class CommonGapsFriendsSearchResultsArrayAdapter extends ArrayAdapter<User>
     {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
-    }
+        Context context;
+        List<User> objects;
 
+        public CommonGapsFriendsSearchResultsArrayAdapter(Context context, int resource, List<User> objects)
+        {
+            super(context, resource, objects);
+            this.context = context;
+            this.objects = objects;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.item_common_gaps_search_friend_to_add_results, null);
+
+            TextView button = (TextView) view.findViewById(R.id.nameTextView);
+            button.setText(objects.get(position).getName());
+
+            return view;
+        }
+    }
 }

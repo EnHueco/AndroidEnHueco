@@ -33,6 +33,7 @@ public class FriendDetailActivity extends Activity
             if (user.getID().equals(getIntent().getStringExtra("friendID")))
             {
                 friend = user;
+                break;
             }
         }
 
