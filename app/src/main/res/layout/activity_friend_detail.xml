@@ -4,7 +4,8 @@
              android:layout_height="match_parent"
              tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
              android:weightSum="1000"
-             android:orientation="vertical">
+             android:orientation="vertical"
+              android:background="#dfdbd7">
 
     <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
                  android:layout_weight="500">
@@ -12,9 +13,11 @@
         <ImageView
                 android:layout_width="fill_parent"
                 android:id="@+id/friendImageImageView"
-                android:layout_height="0dp"
+                android:layout_height="fill_parent"
                 android:layout_margin="0dp"
-                android:background="@color/background_material_dark"/>
+                android:scaleType="centerCrop"
+                android:adjustViewBounds= "true"
+                />
 
         <LinearLayout android:layout_width="fill_parent"
                       android:layout_height="wrap_content"
@@ -30,6 +33,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
+                    android:textColor="#FFFFFF"
                     android:text="Diego Alejandro Gómez Mosquera"
                     android:maxLines="2"
                     android:id="@+id/friendNameTextView"/>
@@ -39,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="da.gomez11"
+                    android:textColor="#FFFFFF"
                     android:id="@+id/friendUsernameTextView"/>
         </LinearLayout>
     </FrameLayout>
@@ -68,11 +73,12 @@
 
     </LinearLayout>
 
-    <RelativeLayout android:layout_width="fill_parent"
+    <LinearLayout android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="500">
+                    android:layout_weight="500"
+                    >
 
-        <Button
+        <!--<Button
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:text="WA"
@@ -91,7 +97,7 @@
                 android:layout_toRightOf="@+id/button4"
                 android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"
-                android:layout_alignBottom="@+id/button4"/>
+                android:layout_alignBottom="@+id/button4"/> -->
 
         <Button
                 android:layout_width="wrap_content"
@@ -101,9 +107,8 @@
                 android:layout_marginLeft="29dp"
                 android:layout_marginStart="29dp"
                 android:layout_centerVertical="true" android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
+                android:layout_alignParentStart="true" android:layout_gravity="center"/>
 
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

@@ -36,7 +36,7 @@ public class FriendsFragment extends ListFragment
 {
 
     private OnFragmentInteractionListener mListener;
-    FriendsArrayAdapter friendArrayAdapter;
+    private FriendsArrayAdapter friendArrayAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -139,5 +139,4 @@ public class FriendsFragment extends ListFragment
             return view;
         }
     }
-
 }

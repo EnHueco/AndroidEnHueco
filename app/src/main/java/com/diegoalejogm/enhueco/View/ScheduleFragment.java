@@ -1,12 +1,10 @@
 package com.diegoalejogm.enhueco.View;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +26,9 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
 {
     public static final String SCHEDULE_EXTRA = "Schedule";
     private static final String LOG = "ScheduleActivity";
-    WeekView mWeekView;
-    Schedule schedule;
+    private WeekView mWeekView;
+    private Schedule schedule = System.instance.getAppUser().getSchedule();
+    private FloatingActionButton fab;
 
     @Nullable
     @Override
@@ -50,7 +49,10 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         super.onViewCreated(view, savedInstanceState);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        fab = (FloatingActionButton) view.findViewById(R.id.addEventButton);
+        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+
         mWeekView = (WeekView) view.findViewById(R.id.weekView);
 
         //getActivity().setSupportActionBar(toolbar);
@@ -154,6 +156,17 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
     @Override
     public void onEmptyViewClicked(Calendar time)
     {
+    }
 
+    public void reloadData()
+    {
+        if (mWeekView != null) mWeekView.notifyDatasetChanged();
+    }
+
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
+
+        if (schedule != System.instance.getAppUser().getSchedule() && fab != null) fab.setVisibility(View.GONE);
     }
 }

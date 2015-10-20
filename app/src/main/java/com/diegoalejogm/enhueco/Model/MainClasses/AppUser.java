@@ -99,7 +99,7 @@ public class AppUser extends User implements Serializable
             ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
                 {
                     try
                     {
@@ -152,7 +152,7 @@ public class AppUser extends User implements Serializable
             ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params), true), new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
                 {
                     try
                     {
@@ -165,7 +165,7 @@ public class AppUser extends User implements Serializable
 
                         Calendar localCalendar = Calendar.getInstance();
 
-                        JSONArray friendsJSON = responseJSON.right;
+                        JSONArray friendsJSON = eitherJSONObjectOrJSONArray.right;
 
                         for (int i = 0; i < friendsJSON.length(); i++)
                         {
@@ -313,7 +313,7 @@ public class AppUser extends User implements Serializable
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
             {
                 // TODO
 
