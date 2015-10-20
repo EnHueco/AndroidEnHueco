@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,12 +171,23 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         public View getView(int position, View convertView, ViewGroup parent)
         {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.item_friend_request, null);
+            View view = inflater.inflate(R.layout.item_friend_search, null);
 
             TextView tv1 = (TextView) view.findViewById(R.id.fullNameTextView);
-            TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
+            final TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
             tv1.setText(objects.get(position).toString());
             tv2.setText(objects.get(position).getUsername());
+
+            final FancyButton addFriendButton = (FancyButton) view.findViewById(R.id.btn_addFriend);
+            addFriendButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    System.instance.getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString());
+                    addFriendButton.setVisibility(View.INVISIBLE);
+                }
+            });
 
             return view;
         }

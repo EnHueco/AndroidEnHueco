@@ -85,6 +85,17 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
 
 
     @Override
+    protected void onResumeFragments()
+    {
+        super.onResumeFragments();
+        if(tabLayout.getSelectedTabPosition()==1)
+        {
+            FriendsFragment fragment = (FriendsFragment) mainPagerAdapter.fragment[1];
+            fragment.refresh();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.

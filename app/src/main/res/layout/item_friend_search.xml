@@ -22,7 +22,7 @@
 			/>
 
 	<mehdi.sakout.fancybuttons.FancyButton
-			android:id="@+id/btn_add"
+			android:id="@+id/btn_addFriend"
 			android:layout_width="30dp"
 			android:layout_height="30dp"
 			fancy:fb_radius="50dp"
@@ -39,7 +39,7 @@
 	<RelativeLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@id/btn_spotify"
+			android:layout_toLeftOf="@id/btn_acceptFriendship"
 			android:layout_toRightOf="@id/dialogImageView"
 			android:layout_marginLeft="16dp"
 			android:layout_marginRight="16dp">

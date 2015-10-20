@@ -2,6 +2,7 @@ package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
@@ -28,6 +29,8 @@ public class System
 {
     public static final System instance = new System();
 
+
+
     public class EHSystemNotification
     {
         public static final String SYSTEM_DID_LOGIN = "SYSTEM_DID_LOGIN", SYSTEM_COULD_NOT_LOGIN_WITH_ERROR = "SYSTEM_COULD_NOT_LOGIN_WITH_ERROR";
@@ -39,6 +42,7 @@ public class System
         public static final String SYSTEM_DID_USER_SEARCH = "SYSTEM_DID_USER_SEARCH";
 
         public static final String SYSTEM_RECEIVED_USER_SEARCH_RESPONSE = "SYSTEM_RECEIVED_USER_SEARCH_RESPONSE" ;
+        public static final String SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT = "SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT";
     }
 
     private AppUser appUser;

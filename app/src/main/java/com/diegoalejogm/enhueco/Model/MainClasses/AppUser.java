@@ -9,9 +9,11 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
+import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.*;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
+import com.diegoalejogm.enhueco.View.RequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -33,11 +35,10 @@ import java.util.concurrent.ExecutionException;
 public class AppUser extends User implements Serializable
 {
 
+    private static final String LOG = "AppUser" ;
     private String token;
 
     private List<User> friends = new ArrayList<>();
-    private List<User> outgoingFriendRequests = new ArrayList<>();
-    private List<User> incomingFriendRequests = new ArrayList<>();
 
     // Values for persistence
     public static final String FILE_NAME = "appUser";
@@ -86,29 +87,34 @@ public class AppUser extends User implements Serializable
      * Notifications
      * -EHSystemNotification.SystemDidReceiveFriendRequestUpdates in case of success
      */
-    public void fetchUpdatesForFriendRequests()
+    public void fetchFriendRequests()
     {
         final JSONObject params = new JSONObject();
 
         try
         {
-            params.put(EHParameters.USER_ID, getUsername());
-            params.put(EHParameters.TOKEN, getToken());
-
-            ConnectionManagerRequest outgoingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
-            ConnectionManager.sendAsyncRequest(outgoingRequestsRequest, new ConnectionManagerCompletionHandler()
+//            params.put(EHParameters.USER_ID, getUsername());
+//            params.put(EHParameters.TOKEN, getToken());
+            ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
+            ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
                 public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
                 {
                     try
                     {
-                        ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.OUTGOING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
-                        Either<JSONObject, JSONArray> response = ConnectionManager.sendSyncRequest(incomingRequestsRequest);
-
-                        // TODO
+                        ArrayList<User> requests = new ArrayList<>();
+                        JSONArray array = responseJSON.right;
+                        for (int i = 0; i < array.length(); i++)
+                        {
+                            JSONObject user = array.getJSONObject(i);
+                            requests.add(User.userFromJSONObject(user));
+                        }
+                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+                        intent.putExtra(RequestsActivity.EXTRA_REQUESTS, requests);
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
                     }
-                    catch (ExecutionException | InterruptedException e)
+                    catch (Exception e)
                     {
                         e.printStackTrace();
                     }
@@ -117,11 +123,12 @@ public class AppUser extends User implements Serializable
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-
+                    Log.v(LOG, error.toString());
                 }
             });
+
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -322,7 +329,7 @@ public class AppUser extends User implements Serializable
         });
     }
 
-    public void importFromCalendarWithID (String calendarID, boolean generateGapsBetweenClasses)
+    public void importFromCalendarWithID(String calendarID, boolean generateGapsBetweenClasses)
     {
         Collection<Event> importedEvents = new ArrayList<>();
 
@@ -503,8 +510,42 @@ public class AppUser extends User implements Serializable
         return newFriend;
     }
 
-    public List<User> getIncomingFriendRequests()
+    public void acceptFriendRequestToUserRequestWithUsername(String username)
     {
-        return incomingFriendRequests;
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT  + username + "/";
+        Log.v(LOG, url);
+        Log.v(LOG, System.instance.getAppUser().getToken());
+
+        ConnectionManagerRequest request = new ConnectionManagerRequest(url , HTTPMethod.POST, Optional.<JSONObject>absent(), false);
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            {
+                JSONObject friendship = responseJSON.left;
+                try
+                {
+                    System.instance.getAppUser().friends.add(AppUser.userFromJSONObject(friendship.getJSONObject("secondUser")));
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (ParseException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+            }
+
+        });
     }
 }

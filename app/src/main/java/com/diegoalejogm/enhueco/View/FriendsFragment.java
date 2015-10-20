@@ -69,6 +69,7 @@ public class FriendsFragment extends ListFragment
         }
     }
 
+
     @Override
     public void onDetach()
     {
