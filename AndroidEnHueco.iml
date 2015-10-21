@@ -3,15 +3,15 @@
   <component name="FacetManager">
     <facet type="java-gradle" name="Java-Gradle">
       <configuration>
-        <option name="BUILD_FOLDER_PATH" value="$MODULE_DIR$/build" />
+        <option name="BUILD_FOLDER_PATH" value="$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/build" />
         <option name="BUILDABLE" value="false" />
       </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.gradle" />
+    <content url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco">
+      <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/.gradle" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -1,23 +1,18 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
-import android.app.VoiceInteractor;
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.DateUtils;
 import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.*;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
-import com.diegoalejogm.enhueco.View.RequestsActivity;
+import com.diegoalejogm.enhueco.View.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,9 +20,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Diego on 10/11/15.
@@ -35,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 public class AppUser extends User implements Serializable
 {
 
-    private static final String LOG = "AppUser" ;
+    private static final String LOG = "AppUser";
     private String token;
 
     private List<User> friends = new ArrayList<>();
@@ -76,8 +69,42 @@ public class AppUser extends User implements Serializable
     /**
      * Checks for and downloads any updates from the server including Session Status, Friend list, Friends Schedule, User's Info
      */
-    public void fetchUpdates()
+    // TODO
+    public void fetchUpdatesForAppUserAndSchedule()
     {
+        try
+        {
+            ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.GET, Optional.<JSONObject>absent(), false);
+            ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
+            {
+                @Override
+                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                {
+                    try
+                    {
+                        JSONObject user = responseJSON.left;
+                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+                    Log.v(LOG, error.toString());
+                }
+            });
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -93,13 +120,11 @@ public class AppUser extends User implements Serializable
 
         try
         {
-//            params.put(EHParameters.USER_ID, getUsername());
-//            params.put(EHParameters.TOKEN, getToken());
             ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
             ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
                 {
                     try
                     {
@@ -111,7 +136,7 @@ public class AppUser extends User implements Serializable
                             requests.add(User.userFromJSONObject(user));
                         }
                         Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
-                        intent.putExtra(RequestsActivity.EXTRA_REQUESTS, requests);
+                        intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
                     }
                     catch (Exception e)
@@ -146,9 +171,6 @@ public class AppUser extends User implements Serializable
 
         try
         {
-            params.put(EHParameters.USER_ID, getUsername());
-            params.put(EHParameters.TOKEN, getToken());
-
             ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params), true), new ConnectionManagerCompletionHandler()
             {
                 @Override
@@ -173,8 +195,8 @@ public class AppUser extends User implements Serializable
 
                             User newFriend = User.userFromJSONObject(friendJSON);
 
-                            JSONObject scheduleJSON = friendJSON.getJSONObject("schedule");
-                            JSONArray eventsJSON = scheduleJSON.getJSONArray("events");
+//                            JSONObject scheduleJSON = friendJSON.getJSONObject("schedule");
+                            JSONArray eventsJSON = friendJSON.getJSONArray("gap_set");
 
                             for (int j = 0; j < eventsJSON.length(); j++)
                             {
@@ -198,7 +220,8 @@ public class AppUser extends User implements Serializable
                             newFriends.add(newFriend);
                         }
 
-                        friends = newFriends;
+                        friends.clear();
+                        friends.addAll(newFriends);
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
                     }
@@ -211,10 +234,11 @@ public class AppUser extends User implements Serializable
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
+                    Log.e(LOG, error.toString());
                 }
             });
         }
-        catch (JSONException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -512,11 +536,11 @@ public class AppUser extends User implements Serializable
 
     public void acceptFriendRequestToUserRequestWithUsername(String username)
     {
-        String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT  + username + "/";
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
         Log.v(LOG, url);
         Log.v(LOG, System.instance.getAppUser().getToken());
 
-        ConnectionManagerRequest request = new ConnectionManagerRequest(url , HTTPMethod.POST, Optional.<JSONObject>absent(), false);
+        ConnectionManagerRequest request = new ConnectionManagerRequest(url, HTTPMethod.POST, Optional.<JSONObject>absent(), false);
 
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
@@ -547,5 +571,47 @@ public class AppUser extends User implements Serializable
             }
 
         });
+    }
+
+    public void uploadEvent(Event event)
+    {
+        String url = EHURLS.BASE + EHURLS.GAPS_SEGMENT;
+        Log.v(LOG, url);
+//        Log.v(LOG, System.instance.getAppUser().getToken());
+
+        JSONObject eventJSON = Event.JSONObjectfromEvent(event);
+        try
+        {
+            eventJSON.put("user", getUsername());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        // TODO: Use synchronization manager
+        ConnectionManagerRequest request = new ConnectionManagerRequest(url, HTTPMethod.POST, Optional.of(eventJSON), false);
+
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            {
+//                JSONObject friendship = responseJSON.left;
+//                System.instance.getAppUser().friends.add(AppUser.userFromJSONObject(friendship.getJSONObject("secondUser")));
+//                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
+                Log.v(LOG, "Event uploaded correctly");
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+            }
+
+        });
+
+
     }
 }

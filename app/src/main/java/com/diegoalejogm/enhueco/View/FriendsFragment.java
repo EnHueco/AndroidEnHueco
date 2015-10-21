@@ -1,10 +1,13 @@
 package com.diegoalejogm.enhueco.View;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +55,28 @@ public class FriendsFragment extends ListFragment
         super.onCreate(savedInstanceState);
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
+
+        IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, filterSearch);
+
+//        System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
+    {
+
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            // Get extra data included in the Intent
+            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES))
+            {
+                FriendsFragment.this.refresh();
+            }
+//            Log.d("receiver", "Got message: " + message);
+        }
+    };
+
 
     @Override
     public void onAttach(Activity activity)
@@ -96,10 +120,16 @@ public class FriendsFragment extends ListFragment
     }
 
     @Override
-    public void onResume()
-    {
-        super.onResume();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            refresh();
+            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+        }
+//        else {  }
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

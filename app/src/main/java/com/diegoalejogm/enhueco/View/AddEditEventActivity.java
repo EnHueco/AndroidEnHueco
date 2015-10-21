@@ -61,8 +61,8 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
         editEvent = (Event) getIntent().getSerializableExtra(EVENT_EXTRA);
 
-        startTime = Calendar.getInstance();
-        endTime = Calendar.getInstance();
+        startTime = Calendar.getInstance(TimeZone.getDefault());
+        endTime = Calendar.getInstance(TimeZone.getDefault());
         endTime.add(Calendar.MINUTE, 30);
         selectedWeekDays = new boolean[7];
         weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
@@ -188,15 +188,34 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
             for (int i = 0; i < selectedWeekDays.length; i++)
             {
                 if (!selectedWeekDays[i]) continue;
+
+                Calendar startTimeCopy = (Calendar) startTime.clone(); Calendar endTimeCopy;
+
+                while(startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
+                endTimeCopy = (Calendar) startTimeCopy.clone();
+
                 Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
-                Log.v(LOG, "Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
-                startTime.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Log.v(LOG, "Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
-                Log.v(LOG, "*Event start: "+startTime.get(Calendar.HOUR_OF_DAY) + ":" +startTime.get(Calendar.MINUTE));
-                endTime.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Log.v(LOG, "*Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
-                weekDaysSchedule[i + 1].addEvent(new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime));
-                System.instance.persistData(getApplicationContext());
+//                Log.v(LOG, "Event start: " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE));
+//                Log.v(LOG, "Timezone: " + startTime.getTimeZone());
+//                startTime.set(Calendar.DAY_OF_WEEK, i + 1);
+                startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+//                Log.v(LOG, "Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
+//                Log.v(LOG, "Timezone: " + endTime.getTimeZone());
+//                Log.v(LOG, "*Event start: " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE));
+//                Log.v(LOG, "*Timezone: " + startTime.getTimeZone());
+//                endTime.set(Calendar.DAY_OF_WEEK, i + 1);
+                endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+//                Log.v(LOG, "*Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
+//                Log.v(LOG, "*Timezone: " + endTime.getTimeZone());
+
+                Event event = new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime);
+                boolean added = weekDaysSchedule[i + 1].addEvent(event);
+                if(added)
+                {
+                    System.instance.getAppUser().uploadEvent(event);
+                    System.instance.persistData(getApplicationContext());
+                }
+
             }
         }
         finish();

@@ -11,4 +11,6 @@ public class EHURLS
     public static final String USERS_SEARCH = "/users/";
     public static final String OUTGOING_FRIEND_REQUESTS_SEGMENT = "/requests/sent/", INCOMING_FRIEND_REQUESTS_SEGMENT = "/requests/received/";
 
+    public static final String ME_SEGMENT = "/me/";
+    public static final String GAPS_SEGMENT = "/gaps/";
 }

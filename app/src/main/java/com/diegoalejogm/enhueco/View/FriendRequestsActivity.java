@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
@@ -24,7 +23,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestsActivity extends AppCompatActivity
+public class FriendRequestsActivity extends AppCompatActivity
 {
     public static final String EXTRA_REQUESTS = "EXTRA_REQUESTS" ;
     ListView friendRequestsLV;
@@ -64,8 +63,8 @@ public class RequestsActivity extends AppCompatActivity
             // Get extra data included in the Intent
             if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES))
             {
-                ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(RequestsActivity.EXTRA_REQUESTS);
-                RequestsActivity.this.updateRequests(users);
+                ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
+                FriendRequestsActivity.this.updateRequests(users);
             }
             else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT))
             {

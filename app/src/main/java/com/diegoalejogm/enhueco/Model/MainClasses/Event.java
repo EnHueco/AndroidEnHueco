@@ -19,6 +19,9 @@ import java.util.TimeZone;
 
 public class Event implements Serializable
 {
+
+
+
     public enum EventType
     {
         GAP, CLASS
@@ -72,26 +75,51 @@ public class Event implements Serializable
 
     public static Event eventFromJSONObject (JSONObject object) throws JSONException
     {
+        // Type, name and location
         String typeString = object.getString("type");
+        String name = object.getString("name");
+        String location = object.getString("location");
         EventType type = typeString.equals("GAP")? EventType.GAP : EventType.CLASS;
 
-        String name = object.getString("day");
-        String location = object.getString("location");
 
+        // Weekdays
+        int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));
+        int endHourWeekday = Integer.parseInt(object.getString("end_hour_weekday"));
+
+        // Start hour
         String[] startHourStringComponents = object.getString("start_hour").split(":");
-        int globalStartHourWeekDay = Integer.parseInt(startHourStringComponents[0]);
-        int startHour = Integer.parseInt(startHourStringComponents[1]);
-        int startMinute = Integer.parseInt(startHourStringComponents[3]);
+        int startHour = Integer.parseInt(startHourStringComponents[0]);
+        int startMinute = Integer.parseInt(startHourStringComponents[1]);
 
-        String[] endHourStringComponents = object.getString("start_hour").split(":");
-        int globalEndHourWeekDay = Integer.parseInt(endHourStringComponents[0]);
-        int endHour = Integer.parseInt(endHourStringComponents[1]);
-        int endMinute = Integer.parseInt(endHourStringComponents[3]);
+        String[] endHourStringComponents = object.getString("end_hour").split(":");
+        int endHour = Integer.parseInt(endHourStringComponents[0]);
+        int endMinute = Integer.parseInt(endHourStringComponents[1]);
 
-        Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalStartHourWeekDay, startHour, startMinute);
-        Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(globalEndHourWeekDay, endHour, endMinute);
+        Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
+        Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
 
         return new Event(type, Optional.of(name), Optional.of(location), startHourCalendar, endHourCalendar);
+    }
+
+
+    public static JSONObject JSONObjectfromEvent(Event event)
+    {
+        JSONObject object = new JSONObject();
+        try
+        {
+            object.put("type", event.type);
+            object.put("name", event.name);
+            object.put("location", event.location);
+            object.put("start_hour_weekday", event.startHour.get(Calendar.DAY_OF_WEEK));
+            object.put("end_hour_weekday", event.endHour.get(Calendar.DAY_OF_WEEK));
+            object.put("start_hour", event.startHour.get(Calendar.HOUR_OF_DAY)+":"+event.startHour.get(Calendar.MINUTE));
+            object.put("end_hour", event.endHour.get(Calendar.HOUR_OF_DAY)+":"+event.endHour.get(Calendar.MINUTE));
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return object;
     }
 
     public DaySchedule getDaySchedule()

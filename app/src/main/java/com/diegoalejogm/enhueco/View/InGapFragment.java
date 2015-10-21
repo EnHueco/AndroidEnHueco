@@ -69,6 +69,24 @@ public class InGapFragment extends ListFragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            refresh();
+            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+        }
+//        else {  }
+    }
+
+    private void refresh()
+    {
+        List<Tuple<User, Event>> data = System.instance.getAppUser().getFriendsCurrentlyInGap();
+        setListAdapter(new InGapArrayAdapter(getActivity(),
+                0, data));
+    }
+
+    @Override
     public void onDetach()
     {
         super.onDetach();

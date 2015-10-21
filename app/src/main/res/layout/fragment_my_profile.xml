@@ -1,48 +1,45 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.diegoalejogm.enhueco.View.MyProfileFragment">
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
+              android:orientation="vertical"
+		>
 
 	<ImageView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/fragmentMyProfile_imageView"
-			android:minHeight="200dp"
-			android:background="@color/colorPrimary"
-			android:minWidth="200dp"
-			android:layout_marginTop="86dp"
-			android:layout_alignParentTop="true"
-			android:layout_centerHorizontal="true"/>
-
-	<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Name"
-			android:id="@+id/fragmentMyProfile_firstNameTextView"
-			android:layout_marginTop="30dp"
-			android:textSize="20dp"
-			android:layout_below="@+id/fragmentMyProfile_imageView"
-			android:layout_centerHorizontal="true"/>
-
-	<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Last Name"
-			android:id="@+id/fragmentMyProfile_lastNameTextView"
-			android:textSize="20dp"
-			android:layout_centerHorizontal="true"
-			android:layout_below="@id/fragmentMyProfile_firstNameTextView"
+			android:layout_width="fill_parent"
+			android:layout_height="0dp"
+			android:id="@+id/profileImageImageView"
+			android:scaleType="centerCrop"
+			android:layout_margin="0dp"
+	        android:layout_weight="1"
 			/>
 
-	<TextView
-			android:layout_width="wrap_content"
+	<LinearLayout
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="Username"
-			android:id="@+id/fragmentMyProfile_userNameTextView"
-			android:textSize="15dp"
-			android:layout_marginTop="10dp"
-			android:layout_below="@id/fragmentMyProfile_lastNameTextView"
-			android:layout_centerHorizontal="true"/>
-</RelativeLayout>
+			android:layout_weight="0.15"
+			android:id="@+id/infoLayout"
+			android:orientation="vertical"
+			android:paddingTop="10dp"
+			android:paddingLeft="@dimen/activity_horizontal_margin"
+			android:paddingRight="@dimen/activity_horizontal_margin"
+			android:paddingBottom="20dp">
+
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="18sp"
+				android:text="Diego Alejandro Gómez Mosquera"
+				android:maxLines="2"
+				android:id="@+id/fullNameTextView"/>
+
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="14sp"
+				android:text="da.gomez11"
+				android:id="@+id/usernameTextView"/>
+	</LinearLayout>
+
+</LinearLayout>

@@ -2,6 +2,8 @@ package com.diegoalejogm.enhueco.View;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
@@ -57,9 +59,16 @@ public class FriendDetailActivity extends Activity
 
         ImageView friendImageImageView = (ImageView) findViewById(R.id.friendImageImageView);
 
-        if (friend.getImageURL().isPresent())
+        if (friend.getImageURL().isPresent() && !friend.getImageURL().get().isEmpty())
         {
+            friendNameTextView.setTextColor(Color.parseColor("#FFFFFF"));
+            friendUsernameTextView.setTextColor(Color.parseColor("#FFFFFF"));
             Picasso.with(this).load(friend.getImageURL().get()).into(friendImageImageView);
+        }
+        else
+        {
+            friendNameTextView.setTextColor(Color.parseColor("#000000"));
+            friendUsernameTextView.setTextColor(Color.parseColor("#000000"));
         }
     }
 

@@ -64,7 +64,7 @@
 				android:theme="@style/AppTheme.NoActionBar.BlackStatusBar">
 		</activity>
 		<activity
-				android:name=".View.RequestsActivity"
+				android:name=".View.FriendRequestsActivity"
 				android:parentActivityName=".View.MainTabbedActivity">
 		</activity>
 		<activity android:name=".View.SearchNewFriendsActivity">

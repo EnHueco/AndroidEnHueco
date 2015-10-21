@@ -78,7 +78,7 @@ public class System
         persistData(context);
     }
 
-    public void login (String username, String password)
+    public void login(String username, String password, final Context applicationContext)
     {
         JSONObject params = new JSONObject();
 
@@ -97,7 +97,8 @@ public class System
                     try
                     {
                         appUser = AppUser.appUserFromJSONObject(eitherJSONObjectOrJSONArray.left);
-
+                        // TODO: Persist User
+                        persistData(applicationContext);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
                     }
                     catch (JSONException | ParseException e)
@@ -151,6 +152,7 @@ public class System
                         JSONObject jsonUser = array.getJSONObject(i);
                         users.add(User.userFromJSONObject(jsonUser));
                     }
+
                     Intent intent = new Intent(EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE);
                     intent.putExtra(SearchNewFriendsActivity.EXTRA_USERS, users);
                     LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
