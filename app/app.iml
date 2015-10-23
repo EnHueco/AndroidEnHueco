@@ -79,6 +79,7 @@
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/exploded-aar/com.github.medyo/fancybuttons/1.5/jars" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/exploded-aar/com.journeyapps/zxing-android-embedded/3.0.2/jars" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/exploded-aar/com.wefika/flowlayout/0.4.1/jars" />
+      <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/exploded-aar/in.srain.cube/ultra-ptr/1.0.11/jars" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/incremental" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/jacoco" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Proyectos/EH/AndroidEnHueco/app/build/intermediates/javaResources" />
@@ -99,6 +100,7 @@
     <orderEntry type="library" exported="" name="zxing-android-embedded-3.0.2" level="project" />
     <orderEntry type="library" exported="" name="annotations-12.0" level="project" />
     <orderEntry type="library" exported="" name="android-week-view-1.2.3" level="project" />
+    <orderEntry type="library" exported="" name="ultra-ptr-1.0.11" level="project" />
     <orderEntry type="library" exported="" name="fancybuttons-1.5" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.5.2" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />

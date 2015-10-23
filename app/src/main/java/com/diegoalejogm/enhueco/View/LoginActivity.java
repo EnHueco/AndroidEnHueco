@@ -47,7 +47,9 @@ public class LoginActivity extends AppCompatActivity
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        loginProgressDialog.dismiss();
+                        if ((loginProgressDialog != null) && loginProgressDialog.isShowing()) {
+                            loginProgressDialog.dismiss();
+                        }
                         if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_LOGIN))
                         {
                             Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
@@ -91,9 +93,21 @@ public class LoginActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (loginProgressDialog.isShowing()) {
+            loginProgressDialog.cancel();
+        }
+    }
 
-
-
-
-
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if (loginProgressDialog.isShowing()) {
+            loginProgressDialog.cancel();
+        }
+    }
 }

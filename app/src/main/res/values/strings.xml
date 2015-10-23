@@ -20,6 +20,8 @@
 	<string name="week_days">Días</string>
 	<string name="testUserName">Diego Alejandro Gomez Mosquera</string>
 	<string name="requests">Solicitudes</string>
+	<string name="empty_friends_label">No tienes amigos. \n Selecciona + para agregar uno</string>
+	<string name="empty_requests_label">No hay solicitudes nuevas</string>
 
 	<string-array name="weekDay_array">
 		<item>Domingo</item>

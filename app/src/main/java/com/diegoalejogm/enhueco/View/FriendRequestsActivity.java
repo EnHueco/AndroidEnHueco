@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,35 +24,60 @@ import mehdi.sakout.fancybuttons.FancyButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRequestsActivity extends AppCompatActivity
+public class FriendRequestsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     public static final String EXTRA_REQUESTS = "EXTRA_REQUESTS" ;
     ListView friendRequestsLV;
     List<User> requests;
     FriendRequestArrayAdapter adapter;
+    SwipeRefreshLayout friendRefreshLayout, emptyRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
-        friendRequestsLV = (ListView) findViewById(R.id.requestsListView);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        friendRequestsLV = (ListView) findViewById(R.id.requestsListView);
+        friendRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshRequestList);
+        emptyRefreshLayout= (SwipeRefreshLayout) findViewById(R.id.swipeRefreshEmpty);
+
+        // Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Solicitudes");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Refresh layouts
+        emptyRefreshLayout.setOnRefreshListener(this);
+        friendRefreshLayout.setOnRefreshListener(this);
+        emptyRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                emptyRefreshLayout.setRefreshing(true);
+            }
+        });
+
+
+        // Broadcast managers
         IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
         IntentFilter filterAccepted = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterAccepted);
 
+        // Adapter
         requests = new ArrayList<>();
-        System.instance.getAppUser().fetchFriendRequests();
         adapter = new FriendRequestArrayAdapter(this, 0, requests);
         friendRequestsLV.setAdapter(adapter);
+        friendRequestsLV.setEmptyView(emptyRefreshLayout);
 
+        fetchFriendRequests();
+
+    }
+
+    private void fetchFriendRequests()
+    {
+        System.instance.getAppUser().fetchFriendRequests();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
@@ -77,9 +103,19 @@ public class FriendRequestsActivity extends AppCompatActivity
 
     private void updateRequests(ArrayList<User> users)
     {
+        friendRefreshLayout.setRefreshing(false);
+        emptyRefreshLayout.setRefreshing(false);
+
         requests.clear();
         requests.addAll(users);
+
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRefresh()
+    {
+        fetchFriendRequests();
     }
 
     public class FriendRequestArrayAdapter extends ArrayAdapter<User>

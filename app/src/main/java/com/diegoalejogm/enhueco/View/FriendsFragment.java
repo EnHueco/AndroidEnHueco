@@ -56,6 +56,8 @@ public class FriendsFragment extends ListFragment
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
 
+
+
         IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, filterSearch);
 
@@ -117,6 +119,13 @@ public class FriendsFragment extends ListFragment
     public void refresh()
     {
         friendArrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        setEmptyText("No tienes amigos. \n Selecciona AGREGAR para agregar uno");
     }
 
     @Override

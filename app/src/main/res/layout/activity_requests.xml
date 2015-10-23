@@ -37,12 +37,44 @@
 
 	</android.support.design.widget.CoordinatorLayout>
 
-	<ListView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/requestsListView"
+	<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/swipeRefreshRequestList"
+			android:layout_width="match_parent"
 			android:layout_below="@id/container"
-			android:layout_centerHorizontal="true"
-			/>
+			android:layout_height="match_parent">
+
+		<ListView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/requestsListView"
+				android:layout_centerHorizontal="true"
+				/>
+
+	</android.support.v4.widget.SwipeRefreshLayout>
+
+	<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/swipeRefreshEmpty"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/container"
+			>
+
+
+		<ScrollView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+			<TextView
+					android:id="@+id/emptyRequestList"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:maxLines="2"
+					android:layout_gravity="center"
+					android:gravity="center"
+					android:text="@string/empty_requests_label"
+					android:layout_centerVertical="true"
+					android:layout_centerHorizontal="true"/>
+		</ScrollView>
+	</android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

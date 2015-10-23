@@ -105,6 +105,12 @@ public class InGapFragment extends ListFragment
 //            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
         }
     }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        setEmptyText("No tienes amigos en hueco");
+    }
 
     /**
      * This interface must be implemented by activities that contain this
