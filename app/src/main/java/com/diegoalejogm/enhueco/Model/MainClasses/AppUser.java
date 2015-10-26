@@ -69,7 +69,6 @@ public class AppUser extends User implements Serializable
     /**
      * Checks for and downloads any updates from the server including Session Status, Friend list, Friends Schedule, User's Info
      */
-    // TODO
     public void fetchUpdatesForAppUserAndSchedule()
     {
         try
@@ -78,13 +77,45 @@ public class AppUser extends User implements Serializable
             ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                public void onSuccess(JSONResponse responseJSON)
                 {
                     try
                     {
-                        JSONObject user = responseJSON.left;
-                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+                        User user = User.userFromJSONObject(responseJSON.jsonObject);
+                        setImageURL(user.getImageURL());
+                        setPhoneNumber(user.getPhoneNumber());
 
+                        Date currentDate = new Date();
+
+                        Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                        globalCalendar.setTime(currentDate);
+
+                        Calendar localCalendar = Calendar.getInstance();
+
+                        setSchedule(new Schedule());
+
+                        JSONArray eventsJSON = responseJSON.jsonObject.getJSONArray("gap_set");
+
+                        for (int j = 0; j < eventsJSON.length(); j++)
+                        {
+                            JSONObject eventJSON = eventsJSON.getJSONObject(j);
+                            Event newEvent = Event.eventFromJSONObject(eventJSON);
+
+                            //Locate event in local array of weekdays based on its UTC startHour
+
+                            globalCalendar.set(Calendar.DAY_OF_WEEK, newEvent.getStartHour().get(Calendar.DAY_OF_WEEK));
+                            globalCalendar.set(Calendar.HOUR_OF_DAY, newEvent.getStartHour().get(Calendar.HOUR_OF_DAY));
+                            globalCalendar.set(Calendar.MINUTE, newEvent.getStartHour().get(Calendar.MINUTE));
+
+                            localCalendar.setTime(globalCalendar.getTime());
+
+                            int localStartHourWeekDay = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+                            DaySchedule daySchedule = getSchedule().getWeekDays()[localStartHourWeekDay];
+                            daySchedule.addEvent(newEvent);
+                        }
+
+                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
                     }
                     catch (Exception e)
@@ -99,7 +130,6 @@ public class AppUser extends User implements Serializable
                     Log.v(LOG, error.toString());
                 }
             });
-
         }
         catch (Exception e)
         {
@@ -124,17 +154,18 @@ public class AppUser extends User implements Serializable
             ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                public void onSuccess(JSONResponse responseJSON)
                 {
                     try
                     {
                         ArrayList<User> requests = new ArrayList<>();
-                        JSONArray array = responseJSON.right;
+                        JSONArray array = responseJSON.jsonArray;
                         for (int i = 0; i < array.length(); i++)
                         {
                             JSONObject user = array.getJSONObject(i);
                             requests.add(User.userFromJSONObject(user));
                         }
+
                         Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
                         intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
@@ -174,7 +205,7 @@ public class AppUser extends User implements Serializable
             ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params), true), new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+                public void onSuccess(JSONResponse jsonResponse)
                 {
                     try
                     {
@@ -187,7 +218,7 @@ public class AppUser extends User implements Serializable
 
                         Calendar localCalendar = Calendar.getInstance();
 
-                        JSONArray friendsJSON = eitherJSONObjectOrJSONArray.right;
+                        JSONArray friendsJSON = jsonResponse.jsonArray;
 
                         for (int i = 0; i < friendsJSON.length(); i++)
                         {
@@ -337,7 +368,7 @@ public class AppUser extends User implements Serializable
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+            public void onSuccess(JSONResponse eitherJSONObjectOrJSONArray)
             {
                 // TODO
 
@@ -545,9 +576,9 @@ public class AppUser extends User implements Serializable
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+            public void onSuccess(JSONResponse responseJSON)
             {
-                JSONObject friendship = responseJSON.left;
+                JSONObject friendship = responseJSON.jsonObject;
                 try
                 {
                     System.instance.getAppUser().friends.add(AppUser.userFromJSONObject(friendship.getJSONObject("secondUser")));
@@ -571,47 +602,5 @@ public class AppUser extends User implements Serializable
             }
 
         });
-    }
-
-    public void uploadEvent(Event event)
-    {
-        String url = EHURLS.BASE + EHURLS.GAPS_SEGMENT;
-        Log.v(LOG, url);
-//        Log.v(LOG, System.instance.getAppUser().getToken());
-
-        JSONObject eventJSON = Event.JSONObjectfromEvent(event);
-        try
-        {
-            eventJSON.put("user", getUsername());
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        // TODO: Use synchronization manager
-        ConnectionManagerRequest request = new ConnectionManagerRequest(url, HTTPMethod.POST, Optional.of(eventJSON), false);
-
-
-        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
-        {
-            @Override
-            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
-            {
-//                JSONObject friendship = responseJSON.left;
-//                System.instance.getAppUser().friends.add(AppUser.userFromJSONObject(friendship.getJSONObject("secondUser")));
-//                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
-                Log.v(LOG, "Event uploaded correctly");
-            }
-
-            @Override
-            public void onFailure(ConnectionManagerCompoundError error)
-            {
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
-            }
-
-        });
-
-
     }
 }

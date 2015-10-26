@@ -1,5 +1,6 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import com.diegoalejogm.enhueco.Model.Other.SynchronizationManager;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
@@ -63,7 +64,7 @@ public class DaySchedule implements Serializable
     }
 
     /**
-     * Adds event if it doesn't overlap with any other event
+     * Adds event if it doesn't overlap with any other event.
      */
     public boolean addEvent(Event newEvent)
     {
@@ -71,6 +72,7 @@ public class DaySchedule implements Serializable
         {
             newEvent.setDaySchedule(this);
             events.add(newEvent);
+
             return true;
         }
 
@@ -101,7 +103,7 @@ public class DaySchedule implements Serializable
         return events.remove(event);
     }
 
-    public Optional<Event> eventWithStartHour(Calendar startHour)
+    public Optional<Event> getEventWithStartHour(Calendar startHour)
     {
         for (Event event : events)
         {

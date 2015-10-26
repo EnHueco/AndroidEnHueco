@@ -8,7 +8,7 @@ import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.Either;
+import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.diegoalejogm.enhueco.View.SearchNewFriendsActivity;
 import com.google.common.base.Optional;
@@ -92,11 +92,11 @@ public class System
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
             {
                 @Override
-                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+                public void onSuccess(JSONResponse eitherJSONObjectOrJSONArray)
                 {
                     try
                     {
-                        appUser = AppUser.appUserFromJSONObject(eitherJSONObjectOrJSONArray.left);
+                        appUser = AppUser.appUserFromJSONObject(eitherJSONObjectOrJSONArray.jsonObject);
                         // TODO: Persist User
                         persistData(applicationContext);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
@@ -142,11 +142,11 @@ public class System
         {
 
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+            public void onSuccess(JSONResponse eitherJSONObjectOrJSONArray)
             {
                 try
                 {
-                    JSONArray array = eitherJSONObjectOrJSONArray.right;
+                    JSONArray array = eitherJSONObjectOrJSONArray.jsonArray;
                     ArrayList<User> users = new ArrayList<User>();
                     for (int i = 0; i < array.length(); i++)
                     {
@@ -188,10 +188,6 @@ public class System
             fos.close();
             return true;
         }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
         catch (IOException e)
         {
             e.printStackTrace();
@@ -210,15 +206,7 @@ public class System
             fis.close();
             return true;
         }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e)
+        catch (ClassNotFoundException | IOException e)
         {
             e.printStackTrace();
         }

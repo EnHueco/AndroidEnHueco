@@ -56,29 +56,17 @@ public class FriendsFragment extends ListFragment
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
 
-
-
-        IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, filterSearch);
-
-//        System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
-    }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
-    {
-
-        @Override
-        public void onReceive(Context context, Intent intent)
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
         {
-            // Get extra data included in the Intent
-            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES))
+            @Override
+            public void onReceive(Context context, Intent intent)
             {
-                FriendsFragment.this.refresh();
+                refresh();
             }
-//            Log.d("receiver", "Got message: " + message);
-        }
-    };
+        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
 
+        System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+    }
 
     @Override
     public void onAttach(Activity activity)

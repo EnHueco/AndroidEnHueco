@@ -5,7 +5,7 @@ import com.android.volley.toolbox.*;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Other.Either;
+import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,7 +40,7 @@ public class ConnectionManager
                 @Override
                 public void onResponse(JSONArray response)
                 {
-                    completionHandler.onSuccess(new Either<JSONObject, JSONArray>(null, response));
+                    completionHandler.onSuccess(new JSONResponse(null, response));
                 }
             }, new Response.ErrorListener()
             {
@@ -70,7 +70,7 @@ public class ConnectionManager
                 @Override
                 public void onResponse(JSONObject response)
                 {
-                    completionHandler.onSuccess(new Either<JSONObject, JSONArray>(response, null));
+                    completionHandler.onSuccess(new JSONResponse(response, null));
                 }
             }, new Response.ErrorListener()
             {
@@ -98,7 +98,7 @@ public class ConnectionManager
         requestQueue.add(jsonRequest);
     }
 
-    public static Either<JSONObject, JSONArray> sendSyncRequest (ConnectionManagerRequest request) throws ExecutionException, InterruptedException
+    public static JSONResponse sendSyncRequest (ConnectionManagerRequest request) throws ExecutionException, InterruptedException
     {
         int method;
 
@@ -127,6 +127,6 @@ public class ConnectionManager
 
         Object response = future.get();
 
-        return request.responseIsArray? new Either<JSONObject, JSONArray>(null, (JSONArray) response) : new Either<JSONObject, JSONArray>((JSONObject) response, null);
+        return request.responseIsArray? new JSONResponse(null, (JSONArray) response) : new JSONResponse((JSONObject) response, null);
     }
 }

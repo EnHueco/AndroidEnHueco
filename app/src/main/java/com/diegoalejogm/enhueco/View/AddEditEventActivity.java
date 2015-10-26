@@ -6,8 +6,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +15,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.Other.SynchronizationManager;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -37,9 +35,11 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     Calendar startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
-    Event editEvent;
+    
+    Optional<Event> eventToEdit;
 
     public static final String EVENT_EXTRA = "Event";
+   
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -59,7 +59,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         getSupportActionBar().setTitle("Evento");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        editEvent = (Event) getIntent().getSerializableExtra(EVENT_EXTRA);
+        eventToEdit = Optional.of((Event) getIntent().getSerializableExtra(EVENT_EXTRA));
 
         startTime = Calendar.getInstance(TimeZone.getDefault());
         endTime = Calendar.getInstance(TimeZone.getDefault());
@@ -75,6 +75,10 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
         weekDaysText.setOnClickListener(this);
 
+        if (eventToEdit.isPresent())
+        {
+
+        }
     }
 
     private void updateCalendar(Calendar calendar, int hourOfDay, int minute)
@@ -182,7 +186,9 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
     public void addEvent(MenuItem item)
     {
-        if (this.editEvent == null)
+        //TODO: Watch for event overlapping
+
+        if (this.eventToEdit == null)
         {
             DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
             for (int i = 0; i < selectedWeekDays.length; i++)
@@ -195,27 +201,18 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 endTimeCopy = (Calendar) startTimeCopy.clone();
 
                 Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
-//                Log.v(LOG, "Event start: " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE));
-//                Log.v(LOG, "Timezone: " + startTime.getTimeZone());
-//                startTime.set(Calendar.DAY_OF_WEEK, i + 1);
+
                 startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-//                Log.v(LOG, "Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
-//                Log.v(LOG, "Timezone: " + endTime.getTimeZone());
-//                Log.v(LOG, "*Event start: " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE));
-//                Log.v(LOG, "*Timezone: " + startTime.getTimeZone());
-//                endTime.set(Calendar.DAY_OF_WEEK, i + 1);
                 endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-//                Log.v(LOG, "*Event end: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
-//                Log.v(LOG, "*Timezone: " + endTime.getTimeZone());
 
                 Event event = new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime);
                 boolean added = weekDaysSchedule[i + 1].addEvent(event);
+
                 if(added)
                 {
-                    System.instance.getAppUser().uploadEvent(event);
+                    SynchronizationManager.getSharedManager().reportNewEvent(event);
                     System.instance.persistData(getApplicationContext());
                 }
-
             }
         }
         finish();

@@ -102,18 +102,18 @@ public class Event implements Serializable
     }
 
 
-    public static JSONObject JSONObjectfromEvent(Event event)
+    public JSONObject toJSONObject()
     {
         JSONObject object = new JSONObject();
         try
         {
-            object.put("type", event.type);
-            object.put("name", event.name);
-            object.put("location", event.location);
-            object.put("start_hour_weekday", event.startHour.get(Calendar.DAY_OF_WEEK));
-            object.put("end_hour_weekday", event.endHour.get(Calendar.DAY_OF_WEEK));
-            object.put("start_hour", event.startHour.get(Calendar.HOUR_OF_DAY)+":"+event.startHour.get(Calendar.MINUTE));
-            object.put("end_hour", event.endHour.get(Calendar.HOUR_OF_DAY)+":"+event.endHour.get(Calendar.MINUTE));
+            object.put("type", type);
+            object.put("name", name);
+            object.put("location", location);
+            object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
+            object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
+            object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));
+            object.put("end_hour", endHour.get(Calendar.HOUR_OF_DAY)+":"+ endHour.get(Calendar.MINUTE));
         }
         catch (JSONException e)
         {

@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.View;
 
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,13 +20,18 @@ import com.squareup.picasso.Picasso;
  */
 public class MyProfileFragment extends Fragment
 {
-
-
     public MyProfileFragment()
     {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        System.instance.getAppUser().fetchUpdatesForAppUserAndSchedule();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +56,4 @@ public class MyProfileFragment extends Fragment
 
         return view;
     }
-
-
 }

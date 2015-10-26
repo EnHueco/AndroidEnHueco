@@ -24,7 +24,7 @@ public class User extends EHSynchronizable implements Serializable
     private Optional<String> imageURL;
     private String phoneNumber;
 
-    private final Schedule schedule = new Schedule();
+    private Schedule schedule = new Schedule();
 
     public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -37,8 +37,6 @@ public class User extends EHSynchronizable implements Serializable
         this.phoneNumber = phoneNumber;
         this.imageURL = imageURL;
     }
-
-
 
     public static User userFromJSONObject (JSONObject object) throws JSONException, ParseException
     {
@@ -93,6 +91,21 @@ public class User extends EHSynchronizable implements Serializable
     public String getName()
     {
         return firstNames + " " + lastNames;
+    }
+
+    public void setImageURL(Optional<String> imageURL)
+    {
+        this.imageURL = imageURL;
+    }
+
+    public void setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
     }
 
     /** Returns user current gap, or nil if user is not in a gap. */

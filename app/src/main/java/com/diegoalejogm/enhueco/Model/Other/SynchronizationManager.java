@@ -1,11 +1,13 @@
 package com.diegoalejogm.enhueco.Model.Other;
 
+import android.content.Intent;
 import android.os.AsyncTask;
-import com.diegoalejogm.enhueco.Model.MainClasses.EHSynchronizable;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManager;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompletionHandler;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerCompoundError;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.ConnectionManagerRequest;
+import android.support.v4.content.LocalBroadcastManager;
+import com.diegoalejogm.enhueco.Model.EHApplication;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
+import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +23,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class SynchronizationManager
 {
-    private SynchronizationManager sharedManager = new SynchronizationManager();
+    private static final SynchronizationManager sharedManager = new SynchronizationManager();
 
     private class SynchronizationManagerQueueItem
     {
@@ -50,7 +52,7 @@ public class SynchronizationManager
 
     private SynchronizationManager () {}
 
-    public SynchronizationManager getSharedManager()
+    public static SynchronizationManager getSharedManager()
     {
         return sharedManager;
     }
@@ -99,9 +101,9 @@ public class SynchronizationManager
         ConnectionManagerCompletionHandler modifiedCompletionHandler = new ConnectionManagerCompletionHandler()
         {
             @Override
-            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+            public void onSuccess(JSONResponse jsonResponse)
             {
-                completionHandler.onSuccess(eitherJSONObjectOrJSONArray);
+                completionHandler.onSuccess(jsonResponse);
             }
 
             @Override
@@ -127,7 +129,7 @@ public class SynchronizationManager
 
         try
         {
-            Either<JSONObject, JSONArray> response = ConnectionManager.sendSyncRequest(item.request);
+            JSONResponse response = ConnectionManager.sendSyncRequest(item.request);
             pendingRequestsQueue.remove();
 
             item.completionHandler.onSuccess(response);
@@ -142,6 +144,42 @@ public class SynchronizationManager
 
             return false;
         }
+    }
 
+    //Reporting
+
+    /**
+     * Reports the new event to the server.
+     */
+    public void reportNewEvent (Event event)
+    {
+        String url = EHURLS.BASE + EHURLS.GAPS_SEGMENT;
+
+        JSONObject eventJSON = event.toJSONObject();
+        try
+        {
+            eventJSON.put("user", System.instance.getAppUser().getUsername());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        ConnectionManagerRequest request = new ConnectionManagerRequest(url, HTTPMethod.POST, Optional.of(eventJSON), false);
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(JSONResponse responseJSON)
+            {
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(com.diegoalejogm.enhueco.Model.MainClasses.System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+            }
+
+        });
     }
 }
