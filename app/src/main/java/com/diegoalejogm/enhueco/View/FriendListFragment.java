@@ -15,18 +15,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.R;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 /**
  * A fragment representing a list of Items.
@@ -35,9 +29,10 @@ import com.google.zxing.integration.android.IntentResult;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class FriendsFragment extends ListFragment
+public class FriendListFragment extends ListFragment
 {
 
+    private static final String LOG = "FriendListFragment";
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
 
@@ -45,7 +40,7 @@ public class FriendsFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FriendsFragment()
+    public FriendListFragment()
     {
     }
 
@@ -61,11 +56,20 @@ public class FriendsFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
                 refresh();
             }
         }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
 
-        System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION);
+                refresh();
+            }
+        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
     }
 
     @Override
@@ -117,14 +121,15 @@ public class FriendsFragment extends ListFragment
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
         super.setUserVisibleHint(isVisibleToUser);
+
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            System.instance.getAppUser().fetchFriendUpdates();
         }
-//        else {  }
     }
 
 

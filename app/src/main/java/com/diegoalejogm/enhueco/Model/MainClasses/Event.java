@@ -73,7 +73,7 @@ public class Event implements Serializable
 
     }
 
-    public static Event eventFromJSONObject (JSONObject object) throws JSONException
+    public static Event fromJSONObject(JSONObject object) throws JSONException
     {
         // Type, name and location
         String typeString = object.getString("type");

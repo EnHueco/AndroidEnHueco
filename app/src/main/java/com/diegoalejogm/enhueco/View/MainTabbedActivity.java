@@ -30,7 +30,7 @@ import java.util.List;
 
 import static com.diegoalejogm.enhueco.View.InGapFragment.*;
 
-public class MainTabbedActivity extends AppCompatActivity implements FriendsFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
+public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
 
     private static final String LOG = "MainTabbedActivity";
@@ -61,6 +61,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("En Hueco");
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
@@ -76,19 +77,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-    }
-
-
-    @Override
-    protected void onResumeFragments()
-    {
-        super.onResumeFragments();
-        if(tabLayout.getSelectedTabPosition()==1)
-        {
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
-            FriendsFragment fragment = (FriendsFragment) mainPagerAdapter.fragment[1];
-            fragment.refresh();
-        }
     }
 
     @Override
@@ -191,7 +179,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
             try
             {
                 User friend = System.instance.getAppUser().addFriendFromStringEncodedFriendRepresentation(result.getContents());
-                FriendsFragment fr = (FriendsFragment) mainPagerAdapter.getItem(1);
+                FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
                 fr.refresh();
                 Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();
             }
@@ -283,15 +271,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
     {
 
         final String[] tabNames = {"En Hueco", "Amigos", "Mi perfil"};
-        Fragment fragment[];
         public MainPagerAdapter(FragmentManager fm)
         {
             super(fm);
-            fragment = new Fragment[3];
-            fragment[0] = new InGapFragment();
-            fragment[1] = new FriendsFragment();
-            fragment[2] = new MyProfileFragment();
-
         }
 
         @Override
@@ -300,7 +282,16 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendsFrag
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            return fragment[position];
+            switch (position)
+            {
+                case 0:
+                    return new InGapFragment();
+                case 1:
+                    return new FriendListFragment();
+                case 2:
+                    return new MyProfileFragment();
+            }
+            return null;
 
         }
 

@@ -2,6 +2,7 @@ package com.diegoalejogm.enhueco.View;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -74,10 +75,12 @@ public class InGapFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            System.instance.getAppUser().fetchFriendUpdates();
         }
 //        else {  }
     }
+
+
 
     private void refresh()
     {
@@ -100,11 +103,12 @@ public class InGapFragment extends ListFragment
 
         if (null != mListener)
         {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-//            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
+            intent.putExtra("friendID", System.instance.getAppUser().getFriends().get(position).getID());
+            startActivity(intent);
         }
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {

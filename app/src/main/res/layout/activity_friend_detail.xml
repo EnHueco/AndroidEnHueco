@@ -1,113 +1,143 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
-             android:weightSum="1000"
-             android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
+              android:orientation="vertical">
 
-    <FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
-                 android:layout_weight="500">
+	<FrameLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			>
 
-        <ImageView
-                android:layout_width="fill_parent"
-                android:id="@+id/friendImageImageView"
-                android:layout_height="fill_parent"
-                android:layout_margin="0dp"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds= "true"
-                />
+		<ImageView
+				android:layout_width="fill_parent"
+				android:id="@+id/friendImageImageView"
+				android:layout_height="fill_parent"
+				android:layout_margin="0dp"
+				android:scaleType="centerCrop"
+				android:adjustViewBounds="true"
+				/>
 
-        <LinearLayout android:layout_width="fill_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="start|bottom"
-                      android:orientation="vertical"
-                      android:layout_marginStart="30dp"
-                      android:layout_marginLeft="15dp"
-                      android:layout_marginEnd="150dp"
-                      android:layout_marginRight="150dp"
-                      android:layout_marginBottom="20dp">
+		<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="start|bottom"
+				android:orientation="vertical"
+				android:layout_marginStart="30dp"
+				android:layout_marginLeft="15dp"
+				android:layout_marginEnd="150dp"
+				android:layout_marginRight="150dp"
+				android:layout_marginBottom="20dp">
 
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="#FFFFFF"
-                    android:text="Diego Alejandro Gómez Mosquera"
-                    android:maxLines="2"
-                    android:id="@+id/friendNameTextView"/>
+			<TextView
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:textSize="20sp"
+					android:textColor="#FFFFFF"
+					android:text="Diego Alejandro Gómez Mosquera"
+					android:maxLines="2"
+					android:id="@+id/friendNameTextView"/>
 
-            <TextView
-                    android:layout_width="142dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="da.gomez11"
-                    android:textColor="#FFFFFF"
-                    android:id="@+id/friendUsernameTextView"/>
-        </LinearLayout>
-    </FrameLayout>
+			<TextView
+					android:layout_width="142dp"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:text="da.gomez11"
+					android:textColor="#FFFFFF"
+					android:id="@+id/friendUsernameTextView"/>
+		</LinearLayout>
+	</FrameLayout>
 
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="-30dp"
-                  android:layout_gravity="end">
+	<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="-30dp"
+			android:layout_marginBottom="5dp"
+			android:layout_gravity="end">
 
-        <android.support.design.widget.FloatingActionButton
-                android:id="@+id/favoriteIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:tint="@android:color/white"
-                android:src="@android:drawable/ic_input_add"
-                android:layout_marginRight="15dp"
-                android:layout_marginEnd="15dp"/>
+		<!--<android.support.design.widget.FloatingActionButton-->
+				<!--android:id="@+id/favoriteIcon"-->
+				<!--android:layout_width="wrap_content"-->
+				<!--android:layout_height="wrap_content"-->
+				<!--android:tint="@android:color/white"-->
+				<!--android:src="@android:drawable/ic_input_add"-->
+				<!--android:layout_marginRight="15dp"-->
+				<!--android:layout_marginEnd="15dp"/>-->
 
-        <android.support.design.widget.FloatingActionButton
-                android:id="@+id/calendarButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:tint="@android:color/white"
-                android:src="@android:drawable/ic_menu_my_calendar"
-                android:layout_marginRight="30dp"
-                android:layout_marginEnd="30dp"/>
+		<android.support.design.widget.FloatingActionButton
+				android:id="@+id/calendarButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:tint="@android:color/white"
+				android:src="@android:drawable/ic_menu_my_calendar"
+				android:layout_marginRight="30dp"
+				android:layout_marginEnd="30dp"/>
 
-    </LinearLayout>
+	</LinearLayout>
 
-    <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="500"
-                    >
+	<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="-10dp"
+			android:paddingBottom="20dp"
+			android:orientation="horizontal"
+			android:gravity="center"
+			>
 
-        <!--<Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:text="WA"
-                android:textSize="8sp"
-                android:id="@+id/button4"
-                android:layout_below="@+id/button3" android:layout_alignLeft="@+id/button3"
-                android:layout_alignStart="@+id/button3"/>
+		<mehdi.sakout.fancybuttons.FancyButton
+				xmlns:fancy="http://schemas.android.com/apk/res-auto"
+				android:id="@+id/fancyBtnWhatsapp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="13dp"
+				android:layout_marginLeft="5dp"
+				android:layout_marginRight="5dp"
+				fancy:fb_borderColor="#FFFFFF"
+				fancy:fb_borderWidth="1dp"
+				fancy:fb_defaultColor="#43d854"
+				fancy:fb_focusColor="#02B418"
+				fancy:fb_fontIconResource="&#xf232;"
+				fancy:fb_iconPosition="left"
+				fancy:fb_radius="50dp"
+				fancy:fb_textColor="#FFFFFF"
+				/>
 
-        <Button android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:text="Call"
-                android:textSize="8sp"
-                android:id="@+id/button5"
-                android:layout_below="@+id/button3"
-                android:layout_toEndOf="@+id/button4"
-                android:layout_toRightOf="@+id/button4"
-                android:layout_marginLeft="4dp"
-                android:layout_marginStart="4dp"
-                android:layout_alignBottom="@+id/button4"/> -->
+		<mehdi.sakout.fancybuttons.FancyButton
+				xmlns:fancy="http://schemas.android.com/apk/res-auto"
+				android:id="@+id/fancyBtnCall"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="13dp"
+				fancy:fb_borderWidth="1dp"
+				android:layout_marginLeft="5dp"
+				android:layout_marginRight="5dp"
+				fancy:fb_defaultColor="#2ebd59"
+				fancy:fb_focusColor="#03882B"
+				fancy:fb_fontIconResource="&#xf095;"
+				fancy:fb_iconPosition="left"
+				fancy:fb_radius="50dp"
+				fancy:fb_textColor="#FFFFFF"
+				/>
 
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Huecos en común"
-                android:id="@+id/commonGapsButton"
-                android:layout_marginLeft="29dp"
-                android:layout_marginStart="29dp"
-                android:layout_centerVertical="true" android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" android:layout_gravity="center"/>
+		<mehdi.sakout.fancybuttons.FancyButton
+				xmlns:fancy="http://schemas.android.com/apk/res-auto"
+				android:id="@+id/fancyBtnCrossGaps"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="13dp"
+				fancy:fb_borderWidth="1dp"
+				fancy:fb_defaultColor="#00704a"
+				android:layout_marginLeft="5dp"
+				android:layout_marginRight="5dp"
+				fancy:fb_focusColor="#003C28"
+				fancy:fb_fontIconResource="&#xf274;"
+				fancy:fb_iconPosition="left"
+				fancy:fb_radius="50dp"
+				fancy:fb_textColor="#FFFFFF"
+				/>
 
-    </LinearLayout>
+	</LinearLayout>
 
 </LinearLayout>

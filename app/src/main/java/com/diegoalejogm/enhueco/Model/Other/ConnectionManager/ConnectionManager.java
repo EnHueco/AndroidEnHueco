@@ -18,7 +18,7 @@ public class ConnectionManager
 {
     static RequestQueue requestQueue = Volley.newRequestQueue(EHApplication.getAppContext());
 
-    public static void sendAsyncRequest (final ConnectionManagerRequest request, final ConnectionManagerCompletionHandler completionHandler)
+    public static void sendAsyncRequest(final ConnectionManagerRequest request, final ConnectionManagerCompletionHandler completionHandler)
     {
         int method;
 
@@ -49,12 +49,13 @@ public class ConnectionManager
                 {
                     completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
                 }
-            }){
+            })
+            {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if(com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
@@ -80,12 +81,13 @@ public class ConnectionManager
                     completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
                     error.printStackTrace();
                 }
-            }){
+            })
+            {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if(com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
@@ -98,7 +100,58 @@ public class ConnectionManager
         requestQueue.add(jsonRequest);
     }
 
-    public static JSONResponse sendSyncRequest (ConnectionManagerRequest request) throws ExecutionException, InterruptedException
+    public static void sendAsyncRequest(final ConnectionManagerArrayRequest request, final ConnectionManagerCompletionHandler completionHandler)
+
+    {
+        int method;
+
+        if (request.method.equals(HTTPMethod.GET))
+        {
+            method = Request.Method.GET;
+        }
+        else
+        {
+            method = Request.Method.POST;
+        }
+
+        JsonRequest jsonRequest;
+
+
+        jsonRequest = new JsonArrayRequest(method, request.URL, request.params.orNull(), new Response.Listener<JSONArray>()
+        {
+            @Override
+            public void onResponse(JSONArray response)
+            {
+                completionHandler.onSuccess(new JSONResponse(null, response));
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+//                    completionHandler.onFailure(new ConnectionManagerArrayCompoundError(error, request));
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map headers = new HashMap();
+                if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                {
+                    headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
+                    headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                }
+                return headers;
+            }
+        };
+
+
+        requestQueue.add(jsonRequest);
+    }
+
+
+    public static JSONResponse sendSyncRequest(ConnectionManagerRequest request) throws ExecutionException, InterruptedException
     {
         int method;
 
@@ -127,6 +180,58 @@ public class ConnectionManager
 
         Object response = future.get();
 
-        return request.responseIsArray? new JSONResponse(null, (JSONArray) response) : new JSONResponse((JSONObject) response, null);
+        return request.responseIsArray ? new JSONResponse(null, (JSONArray) response) : new JSONResponse((JSONObject) response, null);
+    }
+
+    public static JSONResponse sendSyncRequest(ConnectionManagerArrayRequest request) throws ExecutionException, InterruptedException
+    {
+        int method;
+
+        if (request.method.equals(HTTPMethod.GET)) method = Request.Method.GET;
+        else method = Request.Method.POST;
+
+        RequestFuture future = RequestFuture.newFuture();
+        JsonRequest jsonRequest;
+
+        if (request.responseIsArray)
+        {
+            jsonRequest = new JsonArrayRequest(method, request.URL, future, future)
+            {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError
+                {
+                    Map headers = new HashMap();
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    {
+                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                    }
+                    return headers;
+                }
+            };
+        }
+        else
+        {
+            jsonRequest = new JsonArrayRequest(method, request.URL, request.params.orNull(), future, future)
+            {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError
+                {
+                    Map headers = new HashMap();
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    {
+                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                    }
+                    return headers;
+                }
+            };
+        }
+
+        requestQueue.add(jsonRequest);
+
+        Object response = future.get();
+
+        return request.responseIsArray ? new JSONResponse(null, (JSONArray) response) : new JSONResponse((JSONObject) response, null);
     }
 }
