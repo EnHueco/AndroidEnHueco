@@ -15,18 +15,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.R;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 /**
  * A fragment representing a list of Items.
@@ -35,9 +29,10 @@ import com.google.zxing.integration.android.IntentResult;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class FriendsFragment extends ListFragment
+public class FriendListFragment extends ListFragment
 {
 
+    private static final String LOG = "FriendListFragment";
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
 
@@ -45,7 +40,7 @@ public class FriendsFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FriendsFragment()
+    public FriendListFragment()
     {
     }
 
@@ -56,12 +51,11 @@ public class FriendsFragment extends ListFragment
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
 
-
-
         IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, filterSearch);
+        IntentFilter filterDelete = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, filterDelete);
 
-//        System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
@@ -73,7 +67,13 @@ public class FriendsFragment extends ListFragment
             // Get extra data included in the Intent
             if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES))
             {
-                FriendsFragment.this.refresh();
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
+                FriendListFragment.this.refresh();
+            }
+            else if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION))
+            {
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION);
+                FriendListFragment.this.refresh();
             }
 //            Log.d("receiver", "Got message: " + message);
         }
@@ -134,7 +134,7 @@ public class FriendsFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            System.instance.getAppUser().fetchFriendUpdates();
         }
 //        else {  }
     }

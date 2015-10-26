@@ -1,10 +1,12 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telecom.Connection;
 import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Other.*;
@@ -21,6 +23,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Diego on 10/11/15.
@@ -53,7 +56,7 @@ public class AppUser extends User implements Serializable
     {
         User user = User.userFromJSONObject(object.getJSONObject("user"));
         String token = object.getString("value");
-        return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getLastUpdatedOn());
+        return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getUpdatedOn());
     }
 
     public String getToken()
@@ -116,47 +119,37 @@ public class AppUser extends User implements Serializable
      */
     public void fetchFriendRequests()
     {
-        final JSONObject params = new JSONObject();
-
-        try
+        ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
+        ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
         {
-            ConnectionManagerRequest incomingRequestsRequest = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.of(params), true);
-            ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler()
+            @Override
+            public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
             {
-                @Override
-                public void onSuccess(Either<JSONObject, JSONArray> responseJSON)
+                try
                 {
-                    try
+                    ArrayList<User> requests = new ArrayList<>();
+                    JSONArray array = responseJSON.right;
+                    for (int i = 0; i < array.length(); i++)
                     {
-                        ArrayList<User> requests = new ArrayList<>();
-                        JSONArray array = responseJSON.right;
-                        for (int i = 0; i < array.length(); i++)
-                        {
-                            JSONObject user = array.getJSONObject(i);
-                            requests.add(User.userFromJSONObject(user));
-                        }
-                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
-                        intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                        JSONObject user = array.getJSONObject(i);
+                        requests.add(User.userFromJSONObject(user));
                     }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+                    Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+                    intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
                 }
-
-                @Override
-                public void onFailure(ConnectionManagerCompoundError error)
+                catch (Exception e)
                 {
-                    Log.v(LOG, error.toString());
+                    e.printStackTrace();
                 }
-            });
+            }
 
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                Log.v(LOG, error.toString());
+            }
+        });
     }
 
     /**
@@ -165,85 +158,135 @@ public class AppUser extends User implements Serializable
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    public void fetchUpdatesForFriendsAndFriendSchedules()
+    private void fetchUpdatesForFriendsAndFriendSchedules(JSONArray friendArray)
     {
-        JSONObject params = new JSONObject();
 
-        try
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT;
+        ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(url, HTTPMethod.POST, Optional.of(friendArray), true);
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
-            ConnectionManager.sendAsyncRequest(new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT, HTTPMethod.GET, Optional.of(params), true), new ConnectionManagerCompletionHandler()
+            @Override
+            public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
             {
-                @Override
-                public void onSuccess(Either<JSONObject, JSONArray> eitherJSONObjectOrJSONArray)
+                try
                 {
-                    try
+                    JSONArray friendsJSON = eitherJSONObjectOrJSONArray.right;
+                    for (int i = 0; i < friendsJSON.length(); i++)
                     {
-                        List<User> newFriends = new ArrayList<User>();
+                        JSONObject friendJSON = friendsJSON.getJSONObject(i);
 
-                        Date currentDate = new Date();
-
-                        Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                        globalCalendar.setTime(currentDate);
-
-                        Calendar localCalendar = Calendar.getInstance();
-
-                        JSONArray friendsJSON = eitherJSONObjectOrJSONArray.right;
-
-                        for (int i = 0; i < friendsJSON.length(); i++)
+                        // TODO: Use hash to search user
+                        User oldFriend = null;
+                        for (User friend : AppUser.this.friends)
                         {
-                            JSONObject friendJSON = friendsJSON.getJSONObject(i);
-
-                            User newFriend = User.userFromJSONObject(friendJSON);
-
-//                            JSONObject scheduleJSON = friendJSON.getJSONObject("schedule");
-                            JSONArray eventsJSON = friendJSON.getJSONArray("gap_set");
-
-                            for (int j = 0; j < eventsJSON.length(); j++)
-                            {
-                                JSONObject eventJSON = eventsJSON.getJSONObject(j);
-                                Event newEvent = Event.eventFromJSONObject(eventJSON);
-
-                                //Locate event in local array of weekdays based on its UTC startHour
-
-                                globalCalendar.set(Calendar.DAY_OF_WEEK, newEvent.getStartHour().get(Calendar.DAY_OF_WEEK));
-                                globalCalendar.set(Calendar.HOUR_OF_DAY, newEvent.getStartHour().get(Calendar.HOUR_OF_DAY));
-                                globalCalendar.set(Calendar.MINUTE, newEvent.getStartHour().get(Calendar.MINUTE));
-
-                                localCalendar.setTime(globalCalendar.getTime());
-
-                                int localStartHourWeekDay = localCalendar.get(Calendar.DAY_OF_WEEK);
-
-                                DaySchedule daySchedule = newFriend.getSchedule().getWeekDays()[localStartHourWeekDay];
-                                daySchedule.addEvent(newEvent);
-                            }
-
-                            newFriends.add(newFriend);
+                            if (friend.getUsername().equals(friendJSON.getString("login"))) oldFriend = friend;
                         }
 
-                        friends.clear();
-                        friends.addAll(newFriends);
+                        if (oldFriend != null) oldFriend.updateWithJSON(friendJSON);
+                        else
+                        {
+                            User newFriend = User.userWithScheduleFromJSONObject(friendJSON);
+                            System.instance.getAppUser().friends.add(newFriend);
+                        }
+                    }
 
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
-                    }
-                    catch (JSONException | ParseException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
                 }
-
-                @Override
-                public void onFailure(ConnectionManagerCompoundError error)
+                catch (JSONException e)
                 {
-                    Log.e(LOG, error.toString());
+                    e.printStackTrace();
                 }
-            });
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                Log.e(LOG, error.toString());
+            }
+        });
+
     }
 
+
+    /**
+     * Friends sync information from the server and generates request to updated if needed via Notification Center.
+     * <p/>
+     * Notifications
+     * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
+     */
+    public void fetchFriendUpdates()
+    {
+
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;
+        ConnectionManagerRequest r = new ConnectionManagerRequest(url, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
+        ConnectionManager.sendAsyncRequest(r, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(Either<JSONObject, JSONArray> response)
+            {
+                JSONArray friendsJSON = response.right;
+                try
+                {
+                    JSONArray friendsToSync = new JSONArray();
+                    HashMap<String, Boolean> friendsInServer = new HashMap<String, Boolean>();
+                    for (int i = 0; i < friendsJSON.length(); i++)
+                    {
+                        JSONObject friendJSON = friendsJSON.getJSONObject(0);
+
+                        String friendJSONID = friendJSON.getString("login"); friendsInServer.put(friendJSONID, true);
+                        Date serverFriendupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("updated_on"));
+                        Date serverFriendScheduleupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("schedule_updated_on"));
+
+                        // TODO: Use hash to search user
+                        User friendFound = null;
+                        for (User friend : AppUser.this.friends)
+                        {
+                            if (friend.getUsername().equals(friendJSONID)) friendFound = friend;
+                        }
+
+                        if (friendFound == null
+                                || serverFriendupdatedOn.getTime() > friendFound.getUpdatedOn().getTime()
+                                || serverFriendScheduleupdatedOn.getTime() > friendFound.getSchedule().getUpdatedOn().getTime())
+                        {
+                            friendJSON.remove("updated_on");
+                            friendJSON.remove("schedule_updated_on");
+                            friendsToSync.put(friendJSON);
+                        }
+                    }
+
+                    boolean removeFriend = false;
+                    for (User friend : AppUser.this.friends)
+                    {
+                        if (!friendsInServer.containsKey(friend.getUsername()))
+                        {
+                            AppUser.this.friends.remove(friend);
+                            removeFriend = true;
+                        }
+                    }
+                    if(removeFriend)
+                    {
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
+                    }
+
+                    if (friendsToSync.length() > 0)
+                    {
+                        fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
+                    }
+                }
+
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                Log.e(LOG, error.toString());
+            }
+        });
+    }
 
     /**
      * Returns all friends that are currently in gap.
@@ -553,15 +596,10 @@ public class AppUser extends User implements Serializable
                     System.instance.getAppUser().friends.add(AppUser.userFromJSONObject(friendship.getJSONObject("secondUser")));
                     LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
                 }
-                catch (JSONException e)
+                catch (ParseException | JSONException e)
                 {
                     e.printStackTrace();
                 }
-                catch (ParseException e)
-                {
-                    e.printStackTrace();
-                }
-
             }
 
             @Override
