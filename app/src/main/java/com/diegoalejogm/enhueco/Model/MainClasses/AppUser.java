@@ -27,7 +27,6 @@ import java.util.*;
  */
 public class AppUser extends User implements Serializable
 {
-
     private static final String LOG = "AppUser";
     private String token;
 
@@ -158,16 +157,102 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Fetches full friends and schedule information from the server and notifies the result via Notification Center.
+     * Friends sync information from the server and generates request to updated if needed via Notification Center.
      * <p/>
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    private void fetchUpdatesForFriendsAndFriendSchedules(JSONArray friendArray)
+    public void fetchUpdatesForFriendsAndFriendSchedules()
     {
 
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;
+        ConnectionManagerRequest r = new ConnectionManagerRequest(url, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
+
+        ConnectionManager.sendAsyncRequest(r, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(JSONResponse response)
+            {
+                JSONArray friendsJSON = response.jsonArray;
+
+                try
+                {
+                    JSONArray friendsToSync = new JSONArray();
+                    HashMap<String, Boolean> friendsInServer = new HashMap<String, Boolean>();
+
+                    for (int i = 0; i < friendsJSON.length(); i++)
+                    {
+                        JSONObject friendJSON = friendsJSON.getJSONObject(i);
+
+                        String friendJSONID = friendJSON.getString("login"); friendsInServer.put(friendJSONID, true);
+                        Date serverFriendupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("updated_on"));
+                        Date serverFriendScheduleupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("schedule_updated_on"));
+
+                        // TODO: Use hash to search user
+                        User friendFound = null;
+
+                        for (User friend : friends)
+                        {
+                            if (friend.getUsername().equals(friendJSONID)) friendFound = friend;
+                        }
+
+                        if (friendFound == null
+                                || serverFriendupdatedOn.getTime() > friendFound.getUpdatedOn().getTime()
+                                || serverFriendScheduleupdatedOn.getTime() > friendFound.getSchedule().getUpdatedOn().getTime())
+                        {
+                            friendJSON.remove("updated_on");
+                            friendJSON.remove("schedule_updated_on");
+                            friendsToSync.put(friendJSON);
+                        }
+                    }
+
+                    boolean removeFriend = false;
+
+                    for (User friend : friends)
+                    {
+                        if (!friendsInServer.containsKey(friend.getUsername()))
+                        {
+                            friends.remove(friend);
+                            removeFriend = true;
+                        }
+                    }
+
+                    if(removeFriend)
+                    {
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
+                    }
+
+                    if (friendsToSync.length() > 0)
+                    {
+                        _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
+                    }
+                }
+
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                Log.e(LOG, error.toString());
+            }
+        });
+    }
+
+    /**
+     * Fetches full friends and schedule information from the server and notifies the result via Notification Center.
+     *
+     * Notifications
+     * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
+     */
+    private void _fetchUpdatesForFriendsAndFriendSchedules(JSONArray friendArray)
+    {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT;
         ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(url, HTTPMethod.POST, Optional.of(friendArray), true);
+
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
             @Override
@@ -221,87 +306,6 @@ public class AppUser extends User implements Serializable
             }
         });
 
-    }
-
-
-    /**
-     * Friends sync information from the server and generates request to updated if needed via Notification Center.
-     * <p/>
-     * Notifications
-     * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
-     */
-    public void fetchFriendUpdates()
-    {
-
-        String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;
-        ConnectionManagerRequest r = new ConnectionManagerRequest(url, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
-        ConnectionManager.sendAsyncRequest(r, new ConnectionManagerCompletionHandler()
-        {
-            @Override
-            public void onSuccess(JSONResponse response)
-            {
-                JSONArray friendsJSON = response.jsonArray;
-                try
-                {
-                    JSONArray friendsToSync = new JSONArray();
-                    HashMap<String, Boolean> friendsInServer = new HashMap<String, Boolean>();
-                    for (int i = 0; i < friendsJSON.length(); i++)
-                    {
-                        JSONObject friendJSON = friendsJSON.getJSONObject(0);
-
-                        String friendJSONID = friendJSON.getString("login"); friendsInServer.put(friendJSONID, true);
-                        Date serverFriendupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("updated_on"));
-                        Date serverFriendScheduleupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("schedule_updated_on"));
-
-                        // TODO: Use hash to search user
-                        User friendFound = null;
-                        for (User friend : AppUser.this.friends)
-                        {
-                            if (friend.getUsername().equals(friendJSONID)) friendFound = friend;
-                        }
-
-                        if (friendFound == null
-                                || serverFriendupdatedOn.getTime() > friendFound.getUpdatedOn().getTime()
-                                || serverFriendScheduleupdatedOn.getTime() > friendFound.getSchedule().getUpdatedOn().getTime())
-                        {
-                            friendJSON.remove("updated_on");
-                            friendJSON.remove("schedule_updated_on");
-                            friendsToSync.put(friendJSON);
-                        }
-                    }
-
-                    boolean removeFriend = false;
-                    for (User friend : AppUser.this.friends)
-                    {
-                        if (!friendsInServer.containsKey(friend.getUsername()))
-                        {
-                            AppUser.this.friends.remove(friend);
-                            removeFriend = true;
-                        }
-                    }
-                    if(removeFriend)
-                    {
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
-                    }
-
-                    if (friendsToSync.length() > 0)
-                    {
-                        fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
-                    }
-                }
-
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(ConnectionManagerCompoundError error)
-            {
-                Log.e(LOG, error.toString());
-            }
-        });
     }
 
     /**

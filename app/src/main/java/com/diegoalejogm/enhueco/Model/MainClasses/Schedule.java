@@ -16,8 +16,6 @@ public class Schedule extends EHSynchronizable implements Serializable
 {
     private DaySchedule[] weekDays;
 
-    private Date updatedOn;
-
     public static final String[] weekDayNames = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 
     public Schedule()
@@ -25,7 +23,6 @@ public class Schedule extends EHSynchronizable implements Serializable
         super("", new Date());
 
         weekDays = new DaySchedule[8];
-        updatedOn = new Date();
 
         for (int i = 1; i < weekDays.length; i++)
         {
@@ -38,7 +35,6 @@ public class Schedule extends EHSynchronizable implements Serializable
         super("", updatedOn);
 
         weekDays = new DaySchedule[8];
-        updatedOn = new Date();
 
         for (int i = 1; i < weekDays.length; i++)
         {

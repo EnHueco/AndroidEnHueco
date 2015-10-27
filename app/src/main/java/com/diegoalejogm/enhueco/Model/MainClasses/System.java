@@ -24,8 +24,6 @@ public class System
 {
     public static final System instance = new System();
 
-
-
     public class EHSystemNotification
     {
         public static final String SYSTEM_DID_LOGIN = "SYSTEM_DID_LOGIN", SYSTEM_COULD_NOT_LOGIN_WITH_ERROR = "SYSTEM_COULD_NOT_LOGIN_WITH_ERROR";

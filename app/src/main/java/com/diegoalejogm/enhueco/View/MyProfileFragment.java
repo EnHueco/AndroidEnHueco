@@ -56,4 +56,15 @@ public class MyProfileFragment extends Fragment
 
         return view;
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser)
+        {
+            System.instance.getAppUser().fetchUpdatesForAppUserAndSchedule();
+        }
+    }
 }

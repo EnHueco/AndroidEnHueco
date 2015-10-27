@@ -128,7 +128,7 @@ public class FriendListFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchFriendUpdates();
+            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
 

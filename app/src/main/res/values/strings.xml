@@ -32,4 +32,5 @@
 		<item>Viernes</item>
 		<item>Sabado</item>
 	</string-array>
+    <string name="title_activity_select_calendar">SelectCalendarActivity</string>
 </resources>

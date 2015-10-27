@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.View;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -54,13 +55,21 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         mWeekView.setEventLongPressListener(this);
     }
 
-
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect)
     {
-//        Intent intent = new Intent(this, AddEditEventActivity.class);
-//        intent.putExtra(EVENT_EXTRA, event.getId());
-//        startActivity(intent);
+        Intent intent = new Intent(this, AddEditEventActivity.class);
+
+        Calendar startHour = event.getStartTime();
+        startHour.setTimeZone(TimeZone.getDefault());
+
+        int localWeekday = startHour.get(Calendar.DAY_OF_WEEK);
+
+        startHour.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Event eventToEdit = System.instance.getAppUser().getSchedule().getWeekDays()[localWeekday].getEventWithStartHour(startHour).get();
+
+        intent.putExtra("eventToEdit", eventToEdit);
+        startActivity(intent);
     }
 
     @Override
@@ -68,14 +77,12 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     {
         super.onResume();
         mWeekView.notifyDatasetChanged();
-
     }
 
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect)
     {
         Log.v("Schedule Activity", "EVENT LONG PRESS");
-
     }
 
     @Override
@@ -152,8 +159,13 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
 //                Log.v(LOG, "Event end: " + endCalendarLocal.get(Calendar.HOUR_OF_DAY) + ":" + endCalendarLocal.get(Calendar.MINUTE));
                 // Add weekViewEvent
-                events.add(new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal));
+
+                WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal);
+                weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.GAP)? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
+
+                events.add(weekViewEvent);
             }
+
             globalCalendar.add(Calendar.DATE, 1);
         }
 

@@ -75,7 +75,7 @@ public class InGapFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchFriendUpdates();
+            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
 //        else {  }
     }

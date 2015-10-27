@@ -19,9 +19,6 @@ import java.util.TimeZone;
 
 public class Event implements Serializable
 {
-
-
-
     public enum EventType
     {
         GAP, CLASS
@@ -35,7 +32,6 @@ public class Event implements Serializable
     private final Calendar startHour;
     private final Calendar endHour;
     private final Optional<String> location;
-
 
     public Event(EventType type, Optional<String> name, Optional<String> location, Calendar startHour, Calendar endHour)
     {
@@ -144,12 +140,12 @@ public class Event implements Serializable
 
     public Calendar getStartHour()
     {
-        return startHour;
+        return (Calendar) startHour.clone();
     }
 
     public Calendar getEndHour()
     {
-        return endHour;
+        return (Calendar) endHour.clone();
     }
 
     public Optional<String> getLocation()

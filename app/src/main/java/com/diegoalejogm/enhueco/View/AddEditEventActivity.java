@@ -22,6 +22,7 @@ import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 public class AddEditEventActivity extends AppCompatActivity implements View.OnClickListener
@@ -30,21 +31,23 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     private static final String LOG = "AddEditEventActivity";
     RadioGroup eventType;
     RadioButton gapEventType;
-    EditText eventName, eventLocation;
+    EditText eventNameText, eventLocationText;
     EditText startTimeText, endTimeText, weekDaysText;
     Calendar startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
-    
+
     Optional<Event> eventToEdit;
 
     public static final String EVENT_EXTRA = "Event";
-   
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_event);
+
+        eventToEdit = Optional.of((Event) getIntent().getSerializableExtra("eventToEdit"));
 
         // Get views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -52,14 +55,12 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         endTimeText = (EditText) findViewById(R.id.endTimeEditText);
         gapEventType = (RadioButton) findViewById(R.id.radioButton);
         weekDaysText = (EditText) findViewById(R.id.weekDaysEditText);
-        eventName = (EditText) findViewById(R.id.eventNameTextEdit);
-        eventLocation = (EditText) findViewById(R.id.eventLocationTextEdit);
+        eventNameText = (EditText) findViewById(R.id.eventNameTextEdit);
+        eventLocationText = (EditText) findViewById(R.id.eventLocationTextEdit);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Evento");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        eventToEdit = Optional.of((Event) getIntent().getSerializableExtra(EVENT_EXTRA));
 
         startTime = Calendar.getInstance(TimeZone.getDefault());
         endTime = Calendar.getInstance(TimeZone.getDefault());
@@ -77,7 +78,22 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
         if (eventToEdit.isPresent())
         {
+            Event eventToEdit = this.eventToEdit.get();
 
+            eventNameText.setText(eventToEdit.getName().orNull());
+            eventLocationText.setText(eventToEdit.getLocation().orNull());
+
+            Calendar calendar =  Calendar.getInstance();
+            Date currentDate = new Date();
+
+            calendar.setTime(eventToEdit.getStartHourInDate(currentDate));
+            startTime = (Calendar) calendar.clone();
+
+            calendar.setTime(eventToEdit.getEndHourInDate(currentDate));
+            endTime = (Calendar) calendar.clone();
+
+            updateTextEdit(startTimeText, startTime);
+            updateTextEdit(endTimeText, endTime);
         }
     }
 
@@ -107,11 +123,12 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                 {
-                    AddEditEventActivity.this.updateCalendar(AddEditEventActivity.this.startTime, hourOfDay, minute);
-                    AddEditEventActivity.this.updateTextEdit(AddEditEventActivity.this.startTimeText,
-                            AddEditEventActivity.this.startTime);
+                    updateCalendar(startTime, hourOfDay, minute);
+                    updateTextEdit(startTimeText, startTime);
+
                 }
             }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false);
+
             startTimePicker.show();
         }
 
@@ -122,11 +139,12 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                 {
-                    AddEditEventActivity.this.updateCalendar(AddEditEventActivity.this.endTime, hourOfDay, minute);
-                    AddEditEventActivity.this.updateTextEdit(AddEditEventActivity.this.endTimeText,
-                            AddEditEventActivity.this.endTime);
+                    updateCalendar(endTime, hourOfDay, minute);
+                    updateTextEdit(endTimeText, endTime);
+
                 }
             }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false);
+
             endTimePicker.show();
         }
 
@@ -134,7 +152,6 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
 
             alertDialogBuilder.setTitle("Días del evento")
                     .setMultiChoiceItems(R.array.weekDay_array, selectedWeekDays, new DialogInterface.OnMultiChoiceClickListener()
@@ -150,10 +167,9 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            AddEditEventActivity.this.updateWeekDays();
+                            updateWeekDays();
                         }
                     });
-
 
             alertDialogBuilder.show();
         }
@@ -163,18 +179,30 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     {
         StringBuffer s = new StringBuffer();
         boolean first = true, all = true;
+
         for (int i = 0; i < selectedWeekDays.length; i++)
         {
             all &= selectedWeekDays[i];
+
             if (selectedWeekDays[i] && first)
             {
                 s.append(weekDaysArray[i].substring(0, 3));
                 first = false;
             }
-            else if (selectedWeekDays[i]) s.append(", ").append(weekDaysArray[i].substring(0, 3));
+            else if (selectedWeekDays[i])
+            {
+                s.append(", ").append(weekDaysArray[i].substring(0, 3));
+            }
         }
-        if (all) AddEditEventActivity.this.weekDaysText.setText("Todos");
-        else AddEditEventActivity.this.weekDaysText.setText(s.toString());
+
+        if (all)
+        {
+            weekDaysText.setText("Todos");
+        }
+        else
+        {
+            weekDaysText.setText(s.toString());
+        }
     }
 
     @Override
@@ -188,16 +216,17 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     {
         //TODO: Watch for event overlapping
 
-        if (this.eventToEdit == null)
+        if (eventToEdit == null)
         {
             DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
             for (int i = 0; i < selectedWeekDays.length; i++)
             {
                 if (!selectedWeekDays[i]) continue;
 
-                Calendar startTimeCopy = (Calendar) startTime.clone(); Calendar endTimeCopy;
+                Calendar startTimeCopy = (Calendar) startTime.clone();
+                Calendar endTimeCopy;
 
-                while(startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
+                while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
                 endTimeCopy = (Calendar) startTimeCopy.clone();
 
                 Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
@@ -205,10 +234,10 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
                 endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
 
-                Event event = new Event(eventType, Optional.of(eventName.getText().toString()), Optional.of(eventLocation.getText().toString()), startTime, endTime);
+                Event event = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of(eventLocationText.getText().toString()), startTime, endTime);
                 boolean added = weekDaysSchedule[i + 1].addEvent(event);
 
-                if(added)
+                if (added)
                 {
                     SynchronizationManager.getSharedManager().reportNewEvent(event);
                     System.instance.persistData(getApplicationContext());
