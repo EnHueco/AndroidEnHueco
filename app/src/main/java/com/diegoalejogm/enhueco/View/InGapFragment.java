@@ -47,7 +47,7 @@ public class InGapFragment extends ListFragment
 
         // TODO: Change Adapter to display your content
 
-        List<Tuple<User, Event>> data = System.instance.getAppUser().getFriendsCurrentlyInGap();
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyInGap();
 
         setListAdapter(new InGapArrayAdapter(getActivity(),
                 0, data));
@@ -75,7 +75,7 @@ public class InGapFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
 //        else {  }
     }
@@ -84,7 +84,7 @@ public class InGapFragment extends ListFragment
 
     private void refresh()
     {
-        List<Tuple<User, Event>> data = System.instance.getAppUser().getFriendsCurrentlyInGap();
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyInGap();
         setListAdapter(new InGapArrayAdapter(getActivity(),
                 0, data));
     }
@@ -104,7 +104,7 @@ public class InGapFragment extends ListFragment
         if (null != mListener)
         {
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
-            intent.putExtra("friendID", System.instance.getAppUser().getFriends().get(position).getID());
+            intent.putExtra("friendID", System.getInstance().getAppUser().getFriends().get(position).getID());
             startActivity(intent);
         }
     }

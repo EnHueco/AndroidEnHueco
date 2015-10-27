@@ -158,7 +158,7 @@ public class SynchronizationManager
         JSONObject eventJSON = event.toJSONObject();
         try
         {
-            eventJSON.put("user", System.instance.getAppUser().getUsername());
+            eventJSON.put("user", System.getInstance().getAppUser().getUsername());
         }
         catch (JSONException e)
         {

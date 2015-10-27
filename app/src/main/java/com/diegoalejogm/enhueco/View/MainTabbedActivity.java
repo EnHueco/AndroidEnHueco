@@ -137,7 +137,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void logOut(MenuItem item)
     {
 
-        System.instance.logout(getApplicationContext());
+        System.getInstance().logout(getApplicationContext());
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -146,7 +146,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void showSchedule(MenuItem item)
     {
         Intent intent = new Intent(this, ScheduleActivity.class);
-        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.instance.getAppUser().getSchedule());
+        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.getInstance().getAppUser().getSchedule());
         startActivity(intent);
     }
 
@@ -177,7 +177,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             Log.d("MainActivity", "Scanned");
             try
             {
-                User friend = System.instance.getAppUser().addFriendFromStringEncodedFriendRepresentation(result.getContents());
+                User friend = System.getInstance().getAppUser().addFriendFromStringEncodedFriendRepresentation(result.getContents());
                 FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
                 fr.refresh();
                 Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();

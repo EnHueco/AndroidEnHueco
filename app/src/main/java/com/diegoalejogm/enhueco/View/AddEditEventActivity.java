@@ -46,7 +46,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_event);
 
-        eventToEdit = Optional.of((Event) getIntent().getSerializableExtra("eventToEdit"));
+        eventToEdit = Optional.fromNullable((Event) getIntent().getSerializableExtra("eventToEdit"));
 
         // Get views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -217,16 +217,23 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         boolean canAddEvents = true;
 
 
-        DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
+        DaySchedule[] weekDaysSchedule = System.getInstance().getAppUser().getSchedule().getWeekDays();
         for (int i = 0; i < selectedWeekDays.length; i++)
         {
             if (!selectedWeekDays[i]) continue;
 
-            Calendar startTimeCopy = (Calendar) startTime.clone();
-            Calendar endTimeCopy;
+            Calendar newEventStartTime = (Calendar) startTime.clone();
+            Calendar newEventEndTime = (Calendar) endTime.clone();
 
-            while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
-            endTimeCopy = (Calendar) startTimeCopy.clone();
+            newEventStartTime.set(Calendar.DAY_OF_WEEK, i+1);
+            newEventEndTime.set(Calendar.DAY_OF_WEEK, i+1);
+
+            newEventStartTime.set(Calendar.SECOND, 0);
+            newEventStartTime.set(Calendar.MILLISECOND, 0);
+            newEventEndTime.set(Calendar.SECOND, 0);
+            newEventEndTime.set(Calendar.MILLISECOND, 0);
+
+            //while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
 
             Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
 
@@ -243,7 +250,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
             }
             else
             {
-                daySchedulesAndEventsToAdd.add(new Tuple<DaySchedule, Event>(daySchedule, newEvent));
+                daySchedulesAndEventsToAdd.add(new Tuple<>(daySchedule, newEvent));
             }
         }
 
@@ -257,13 +264,18 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 SynchronizationManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second);
             }
 
-            System.instance.persistData(getApplicationContext());
+            System.getInstance().persistData(getApplicationContext());
 
             finish();
         }
         else
         {
-            //TODO: Show error
+            new AlertDialog.Builder(this)
+                    .setTitle("Imposible agregar evento")
+                    .setMessage("La clase que estas tratando de agregar se cruza con algún otro evento en tu calendario en alguno de los días que elegiste...")
+                    .setNeutralButton(android.R.string.ok, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
     }
 

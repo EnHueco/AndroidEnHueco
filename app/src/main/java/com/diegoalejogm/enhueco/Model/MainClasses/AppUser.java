@@ -282,7 +282,7 @@ public class AppUser extends User implements Serializable
                             try
                             {
                                 User newFriend = User.fromJSONObjectWithSchedule(friendJSON);
-                                System.instance.getAppUser().friends.add(newFriend);
+                                friends.add(newFriend);
                             }
                             catch (ParseException e)
                             {
@@ -585,13 +585,13 @@ public class AppUser extends User implements Serializable
 
         // TODO: Check if existing with a HashMap.
         boolean existing = false;
-        for (int i = 0; i < System.instance.getAppUser().friends.size() && !existing; i++)
+        for (int i = 0; i < friends.size() && !existing; i++)
         {
             // If friend already exist
-            if (System.instance.getAppUser().friends.get(i).getUsername().equals(newFriend.getUsername()))
+            if (friends.get(i).getUsername().equals(newFriend.getUsername()))
             {
                 existing = true;
-                System.instance.getAppUser().friends.set(i, newFriend);
+                friends.set(i, newFriend);
             }
         }
         if (!existing) friends.add(newFriend);
@@ -603,7 +603,7 @@ public class AppUser extends User implements Serializable
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
         Log.v(LOG, url);
-        Log.v(LOG, System.instance.getAppUser().getToken());
+        Log.v(LOG, getToken());
 
         ConnectionManagerRequest request = new ConnectionManagerRequest(url, HTTPMethod.POST, Optional.<JSONObject>absent(), false);
 
@@ -615,7 +615,7 @@ public class AppUser extends User implements Serializable
                 JSONObject friendship = responseJSON.jsonObject;
                 try
                 {
-                    System.instance.getAppUser().friends.add(AppUser.fromJSONObject(friendship.getJSONObject("secondUser")));
+                    friends.add(AppUser.fromJSONObject(friendship.getJSONObject("secondUser")));
                     LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
                 }
                 catch (ParseException | JSONException e)

@@ -48,7 +48,7 @@ public class FriendListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.instance.getAppUser().getFriends());
+        friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.getInstance().getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
@@ -103,7 +103,7 @@ public class FriendListFragment extends ListFragment
         if (null != mListener)
         {
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
-            intent.putExtra("friendID", System.instance.getAppUser().getFriends().get(position).getID());
+            intent.putExtra("friendID", System.getInstance().getAppUser().getFriends().get(position).getID());
             startActivity(intent);
         }
     }
@@ -128,7 +128,7 @@ public class FriendListFragment extends ListFragment
         if (isVisibleToUser)
         {
             refresh();
-            System.instance.getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
 

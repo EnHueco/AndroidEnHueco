@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity
                         {
                             Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
                             startActivity(intent);
-                            System.instance.persistData(getApplicationContext());
+                            System.getInstance().persistData(getApplicationContext());
                             LoginActivity.this.finish();
                         }
                         else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_COULD_NOT_LOGIN_WITH_ERROR))
@@ -82,13 +82,13 @@ public class LoginActivity extends AppCompatActivity
         {
             Intent intent = new Intent(this, MainTabbedActivity.class);
             startActivity(intent);
-            System.instance.createTestAppUser(getApplicationContext());
+            System.getInstance().createTestAppUser(getApplicationContext());
             finish();
         }
         // Actual login
         else
         {
-            System.instance.login(loginString, passwordString, getApplicationContext());
+            System.getInstance().login(loginString, passwordString, getApplicationContext());
         }
 
     }

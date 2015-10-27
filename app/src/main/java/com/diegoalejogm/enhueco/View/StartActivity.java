@@ -45,7 +45,7 @@ public class StartActivity extends AppCompatActivity
 
 
         Intent intent;
-        boolean loggedIn = System.instance.loadDataFromPersistence(getApplicationContext());
+        boolean loggedIn = System.getInstance().loadDataFromPersistence(getApplicationContext());
 
         if (loggedIn) intent = new Intent(this, MainTabbedActivity.class);
         else intent = new Intent(this, LoginActivity.class);

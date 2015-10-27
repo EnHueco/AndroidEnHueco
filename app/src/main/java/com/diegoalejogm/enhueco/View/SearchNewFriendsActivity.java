@@ -144,7 +144,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     public void run()
                     {
                         Log.v(LOG, newText);
-                        if(!newText.isEmpty()) System.instance.searchUsers(newText);
+                        if(!newText.isEmpty()) System.getInstance().searchUsers(newText);
                         else SearchNewFriendsActivity.this.updateResults(new ArrayList<User>());
 //                        adapter.notifyDataSetChanged();
                     }
@@ -184,7 +184,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                 @Override
                 public void onClick(View v)
                 {
-                    System.instance.getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString());
+                    System.getInstance().getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString());
                     addFriendButton.setVisibility(View.INVISIBLE);
                 }
             });

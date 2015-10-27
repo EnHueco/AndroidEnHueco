@@ -77,7 +77,6 @@ public class Event implements Serializable
         String location = object.getString("location");
         EventType type = typeString.equals("GAP")? EventType.GAP : EventType.CLASS;
 
-
         // Weekdays
         int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));
         int endHourWeekday = Integer.parseInt(object.getString("end_hour_weekday"));
@@ -94,7 +93,7 @@ public class Event implements Serializable
         Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
         Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
 
-        return new Event(type, Optional.of(name), Optional.of(location), startHourCalendar, endHourCalendar);
+        return new Event(type, Optional.fromNullable(name), Optional.fromNullable(location), startHourCalendar, endHourCalendar);
     }
 
 

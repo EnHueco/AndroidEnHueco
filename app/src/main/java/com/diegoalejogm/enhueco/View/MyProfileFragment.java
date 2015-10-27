@@ -30,14 +30,14 @@ public class MyProfileFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
-        System.instance.getAppUser().fetchUpdatesForAppUserAndSchedule();
+        System.getInstance().getAppUser().fetchUpdatesForAppUserAndSchedule();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        User user = System.instance.getAppUser();
+        User user = System.getInstance().getAppUser();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
@@ -64,7 +64,7 @@ public class MyProfileFragment extends Fragment
 
         if (isVisibleToUser)
         {
-            System.instance.getAppUser().fetchUpdatesForAppUserAndSchedule();
+            System.getInstance().getAppUser().fetchUpdatesForAppUserAndSchedule();
         }
     }
 }

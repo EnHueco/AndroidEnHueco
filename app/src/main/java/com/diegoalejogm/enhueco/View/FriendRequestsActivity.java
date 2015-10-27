@@ -77,7 +77,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
     private void fetchFriendRequests()
     {
-        System.instance.getAppUser().fetchFriendRequests();
+        System.getInstance().getAppUser().fetchFriendRequests();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
@@ -94,7 +94,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
             }
             else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT))
             {
-                System.instance.getAppUser().fetchFriendRequests();
+                System.getInstance().getAppUser().fetchFriendRequests();
             }
 
 //            Log.d("receiver", "Got message: " + message);
@@ -152,7 +152,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 @Override
                 public void onClick(View v)
                 {
-                    System.instance.getAppUser().acceptFriendRequestToUserRequestWithUsername(user.getUsername());
+                    System.getInstance().getAppUser().acceptFriendRequestToUserRequestWithUsername(user.getUsername());
                 }
             });
 

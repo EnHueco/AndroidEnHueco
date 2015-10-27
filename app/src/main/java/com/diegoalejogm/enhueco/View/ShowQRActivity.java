@@ -27,7 +27,7 @@ public class ShowQRActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_qr);
 
-        String encodedUser = System.instance.getAppUser().getEncodedRepresentation();
+        String encodedUser = System.getInstance().getAppUser().getEncodedRepresentation();
         Bitmap myBitmap = QRCode.from(encodedUser).withSize(width,width).bitmap();
         ImageView myImage = (ImageView) findViewById(R.id.imageView);
         myImage.setImageBitmap(myBitmap);

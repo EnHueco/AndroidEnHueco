@@ -55,10 +55,10 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
                     {
-                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
-                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                        headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
                     }
                     return headers;
                 }
@@ -87,10 +87,10 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
                     {
-                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
-                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                        headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
                     }
                     return headers;
                 }
@@ -137,10 +137,10 @@ public class ConnectionManager
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map headers = new HashMap();
-                if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
                 {
-                    headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
-                    headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                    headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
+                    headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
                 }
                 return headers;
             }
@@ -201,10 +201,10 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
                     {
-                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
-                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                        headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
                     }
                     return headers;
                 }
@@ -218,10 +218,10 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.instance.getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
                     {
-                        headers.put("X-USER-ID", System.instance.getAppUser().getUsername());
-                        headers.put("X-USER-TOKEN", System.instance.getAppUser().getToken());
+                        headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
+                        headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
                     }
                     return headers;
                 }

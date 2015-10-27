@@ -27,7 +27,7 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
         void onCommonGapsSearchFriendToAddFragmentNewFriendSelected(User user);
     }
 
-    private List<User> filteredFriends = System.instance.getAppUser().getFriends();
+    private List<User> filteredFriends = System.getInstance().getAppUser().getFriends();
 
     private CommonGapsSearchFriendToAddFragmentListener listener;
     private CommonGapsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
@@ -54,7 +54,7 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
     {
         if (searchText.equals(""))
         {
-            filteredFriends = System.instance.getAppUser().getFriends();
+            filteredFriends = System.getInstance().getAppUser().getFriends();
         }
         else
         {
@@ -67,7 +67,7 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
                 }
             };
 
-            filteredFriends = Lists.newArrayList(Collections2.filter(System.instance.getAppUser().getFriends(), filterPredicate));
+            filteredFriends = Lists.newArrayList(Collections2.filter(System.getInstance().getAppUser().getFriends(), filterPredicate));
         }
 
         selectedFriendsArrayAdapter.notifyDataSetChanged();

@@ -26,7 +26,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     private static final String LOG = "ScheduleActivity";
     private FloatingActionButton fab;
     private WeekView mWeekView;
-    private Schedule schedule = System.instance.getAppUser().getSchedule();
+    private Schedule schedule = System.getInstance().getAppUser().getSchedule();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,7 +37,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.addEventButton);
-        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+        if (schedule != System.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
 
         mWeekView = (WeekView) findViewById(R.id.weekView);
 
@@ -77,7 +77,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         int localWeekday = startHour.get(Calendar.DAY_OF_WEEK);
 
         startHour.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Event eventToEdit = System.instance.getAppUser().getSchedule().getWeekDays()[localWeekday].getEventWithStartHour(startHour).get();
+        Event eventToEdit = System.getInstance().getAppUser().getSchedule().getWeekDays()[localWeekday].getEventWithStartHour(startHour).get();
 
         intent.putExtra("eventToEdit", eventToEdit);
         startActivity(intent);
@@ -110,7 +110,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
 //        Calendar temp = Calendar.getInstance(/*TimeZone.getTimeZone("UTC"))*/);
 //        Calendar temp2 = (Calendar) temp.clone(); temp2.add(Calendar.HOUR_OF_DAY, 2);
-//        System.instance.getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
+//        System.getInstance().getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
 
         int id = 0;
         // Iterate through month
@@ -200,6 +200,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     {
         this.schedule = schedule;
 
-        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+        if (schedule != System.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
     }
 }

@@ -27,7 +27,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
     public static final String SCHEDULE_EXTRA = "Schedule";
     private static final String LOG = "ScheduleActivity";
     private WeekView mWeekView;
-    private Schedule schedule = System.instance.getAppUser().getSchedule();
+    private Schedule schedule = System.getInstance().getAppUser().getSchedule();
     private FloatingActionButton fab;
 
     @Nullable
@@ -51,7 +51,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         fab = (FloatingActionButton) view.findViewById(R.id.addEventButton);
-        if (schedule != System.instance.getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+        if (schedule != System.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
 
         mWeekView = (WeekView) view.findViewById(R.id.weekView);
 
@@ -107,7 +107,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
 
 //        Calendar temp = Calendar.getInstance(/*TimeZone.getTimeZone("UTC"))*/);
 //        Calendar temp2 = (Calendar) temp.clone(); temp2.add(Calendar.HOUR_OF_DAY, 2);
-//        System.instance.getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
+//        System.getInstance().getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
 
         int id = 0;
         // Iterate through month
@@ -115,7 +115,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         {
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
-            List<Event> currentWeekDayEvents = System.instance.getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
+            List<Event> currentWeekDayEvents = System.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
             for (int j = 0; j < currentWeekDayEvents.size(); j++)
             {
                 Event currentEvent = currentWeekDayEvents.get(j);
@@ -167,6 +167,6 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
     {
         this.schedule = schedule;
 
-        if (schedule != System.instance.getAppUser().getSchedule() && fab != null) fab.setVisibility(View.GONE);
+        if (schedule != System.getInstance().getAppUser().getSchedule() && fab != null) fab.setVisibility(View.GONE);
     }
 }

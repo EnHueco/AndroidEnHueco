@@ -22,7 +22,14 @@ import java.util.*;
  */
 public class System
 {
-    public static final System instance = new System();
+    private static System instance = new System();
+
+    public static System getInstance ()
+    {
+        if (instance == null) instance = new System();
+
+        return instance;
+    }
 
     public class EHSystemNotification
     {

@@ -80,7 +80,7 @@ public class SelectCalendarActivity extends AppCompatActivity implements ListVie
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
         DeviceCalendar calendar = calendars.get(position);
-        System.instance.getAppUser().importFromCalendarWithID(calendar.ID, false);
+        System.getInstance().getAppUser().importFromCalendarWithID(calendar.ID, false);
 
         finish();
     }

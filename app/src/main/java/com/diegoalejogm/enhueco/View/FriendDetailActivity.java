@@ -32,7 +32,7 @@ public class FriendDetailActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
-        for (User user : System.instance.getAppUser().getFriends())
+        for (User user : System.getInstance().getAppUser().getFriends())
         {
             if (user.getID().equals(getIntent().getStringExtra("friendID")))
             {

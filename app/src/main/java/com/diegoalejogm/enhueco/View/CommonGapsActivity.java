@@ -42,9 +42,9 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
         searchView = (SearchView) findViewById(R.id.searchView);
         selectedFriendsFlowLayout = (FlowLayout) findViewById(R.id.selectedFriendsFlowLayout);
 
-        addFriendToSelectedFriendsAndReloadData(System.instance.getAppUser());
+        addFriendToSelectedFriendsAndReloadData(System.getInstance().getAppUser());
 
-        for (User user: System.instance.getAppUser().getFriends())
+        for (User user: System.getInstance().getAppUser().getFriends())
         {
             if (user.getID().equals(getIntent().getStringExtra("initialFriendID")))
             {
@@ -84,7 +84,7 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
 
     public void prepareInfoAndReloadScheduleData ()
     {
-        Schedule commonGapsSchedule = System.instance.getAppUser().getCommonGapsScheduleForUsers(selectedFriends.toArray(new User[0]));
+        Schedule commonGapsSchedule = System.getInstance().getAppUser().getCommonGapsScheduleForUsers(selectedFriends.toArray(new User[0]));
         scheduleFragment.setSchedule(commonGapsSchedule);
         scheduleFragment.reloadData();
     }
