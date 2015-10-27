@@ -11,54 +11,78 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class SelectCalendarActivity extends AppCompatActivity
+public class SelectCalendarActivity extends AppCompatActivity implements ListView.OnItemClickListener
 {
-    ListView listView;
-    ArrayAdapter<DeviceCalendar> adapter;
+    private ListView listView;
+    private ArrayAdapter<DeviceCalendar> adapter;
+    private List<DeviceCalendar> calendars = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_calendar);
+        setTitle("Selecciona un calendario");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         listView = (ListView) findViewById(R.id.listView);
 
-        List<DeviceCalendar> calendars = new ArrayList<>();
-        Cursor cursor = getContentResolver().query(Uri.parse("content://com.android.calendar/calendars"), new String[] { "_id", "calendar_displayName" }, null, null, null);
+        listView.setOnItemClickListener(this);
 
-        while (cursor.moveToNext())
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED)
         {
-            final String ID = cursor.getString(0);
-            final String displayName = cursor.getString(1);
-            final Boolean selected = !cursor.getString(2).equals("0");
-            final String accountName = cursor.getString(3);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, 0);
+        }
+        else
+        {
+            Cursor cursor = getContentResolver().query(Uri.parse("content://com.android.calendar/calendars"), new String[] { "_id", "calendar_displayName" }, null, null, null);
 
-            calendars.add(new DeviceCalendar(displayName, ID));
+            while (cursor.moveToNext())
+            {
+                final String ID = cursor.getString(0);
+                final String displayName = cursor.getString(1);
+                final Boolean selected = !cursor.getString(2).equals("0");
+                final String accountName = cursor.getString(3);
+
+                calendars.add(new DeviceCalendar(displayName, ID));
+            }
         }
 
         adapter = new CalendarsAdapter(this, 0, calendars);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        DeviceCalendar calendar = calendars.get(position);
+        System.instance.getAppUser().importFromCalendarWithID(calendar.ID, false);
+
+        finish();
     }
 
     class DeviceCalendar
@@ -97,5 +121,4 @@ public class SelectCalendarActivity extends AppCompatActivity
             return view;
         }
     }
-
 }

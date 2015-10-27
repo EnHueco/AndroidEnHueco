@@ -76,7 +76,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         tabLayout.setOnTabSelectedListener(this);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
     }
 
     @Override

@@ -16,14 +16,13 @@ import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.Other.SynchronizationManager;
+import com.diegoalejogm.enhueco.Model.Other.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 
 public class AddEditEventActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -214,37 +213,58 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
     public void addEvent(MenuItem item)
     {
-        //TODO: Watch for event overlapping
+        List<Tuple<DaySchedule, Event>> daySchedulesAndEventsToAdd = new ArrayList<>();
+        boolean canAddEvents = true;
 
-        if (eventToEdit == null)
+
+        DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
+        for (int i = 0; i < selectedWeekDays.length; i++)
         {
-            DaySchedule[] weekDaysSchedule = System.instance.getAppUser().getSchedule().getWeekDays();
-            for (int i = 0; i < selectedWeekDays.length; i++)
+            if (!selectedWeekDays[i]) continue;
+
+            Calendar startTimeCopy = (Calendar) startTime.clone();
+            Calendar endTimeCopy;
+
+            while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
+            endTimeCopy = (Calendar) startTimeCopy.clone();
+
+            Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
+
+            startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+            endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+
+            Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of(eventLocationText.getText().toString()), startTime, endTime);
+
+            DaySchedule daySchedule = weekDaysSchedule[i + 1];
+
+            if (!daySchedule.canAddEvent(newEvent, eventToEdit))
             {
-                if (!selectedWeekDays[i]) continue;
-
-                Calendar startTimeCopy = (Calendar) startTime.clone();
-                Calendar endTimeCopy;
-
-                while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
-                endTimeCopy = (Calendar) startTimeCopy.clone();
-
-                Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
-
-                startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-                endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-
-                Event event = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of(eventLocationText.getText().toString()), startTime, endTime);
-                boolean added = weekDaysSchedule[i + 1].addEvent(event);
-
-                if (added)
-                {
-                    SynchronizationManager.getSharedManager().reportNewEvent(event);
-                    System.instance.persistData(getApplicationContext());
-                }
+                canAddEvents = false;
+            }
+            else
+            {
+                daySchedulesAndEventsToAdd.add(new Tuple<DaySchedule, Event>(daySchedule, newEvent));
             }
         }
-        finish();
+
+        if (canAddEvents)
+        {
+            if (eventToEdit.isPresent()) eventToEdit.get().getDaySchedule().removeEvent(eventToEdit.get());
+
+            for (Tuple<DaySchedule, Event> dayScheduleAndEvent: daySchedulesAndEventsToAdd)
+            {
+                dayScheduleAndEvent.first.addEvent(dayScheduleAndEvent.second);
+                SynchronizationManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second);
+            }
+
+            System.instance.persistData(getApplicationContext());
+
+            finish();
+        }
+        else
+        {
+            //TODO: Show error
+        }
     }
 
     public void cancelEvent(MenuItem item)

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
@@ -53,6 +54,16 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
         // Set long press listener for events.
         mWeekView.setEventLongPressListener(this);
+
+        findViewById(R.id.importButton).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(ScheduleActivity.this, SelectCalendarActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

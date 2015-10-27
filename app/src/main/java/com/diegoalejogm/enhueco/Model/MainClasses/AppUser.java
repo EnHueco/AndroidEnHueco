@@ -479,6 +479,8 @@ public class AppUser extends User implements Serializable
             DaySchedule weekDayDaySchedule = getSchedule().getWeekDays()[localWeekDayNumber];
             weekDayDaySchedule.addEvent(newEvent);
 
+            SynchronizationManager.getSharedManager().reportNewEvent(newEvent);
+
             cursor.moveToNext();
         }
 
