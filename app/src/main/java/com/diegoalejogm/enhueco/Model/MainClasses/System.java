@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
+import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
 import com.diegoalejogm.enhueco.View.SearchNewFriendsActivity;

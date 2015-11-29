@@ -65,8 +65,6 @@ public class SelectCalendarActivity extends AppCompatActivity implements ListVie
             {
                 final String ID = cursor.getString(0);
                 final String displayName = cursor.getString(1);
-                final Boolean selected = !cursor.getString(2).equals("0");
-                final String accountName = cursor.getString(3);
 
                 calendars.add(new DeviceCalendar(displayName, ID));
             }

@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
+package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
 
 public class ConnectionManagerCompoundError
 {

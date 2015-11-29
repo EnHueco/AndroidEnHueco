@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Other;
+package com.diegoalejogm.enhueco.Model.Managers;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -6,14 +6,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
+import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
 import com.google.common.base.Optional;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -48,7 +47,6 @@ public class SynchronizationManager
         FIFO queue containing pending requests that failed because of a network error.
      */
     private Queue<SynchronizationManagerQueueItem> pendingRequestsQueue = new LinkedBlockingDeque<>();
-
 
     private SynchronizationManager () {}
 

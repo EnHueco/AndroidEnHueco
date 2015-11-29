@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
 import android.net.Uri;
+import com.diegoalejogm.enhueco.Model.Managers.ProximityManager;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
@@ -26,6 +27,9 @@ public class User extends EHSynchronizable implements Serializable
 
     private Optional<String> imageURL;
     private String phoneNumber;
+
+    private boolean isNearby;
+    private Optional<String> currentBSSID;
 
     private Schedule schedule = new Schedule();
 
@@ -111,6 +115,28 @@ public class User extends EHSynchronizable implements Serializable
     public void setSchedule(Schedule schedule)
     {
         this.schedule = schedule;
+    }
+
+    public boolean isNearby()
+    {
+        return isNearby;
+    }
+
+    public Optional<String> getCurrentBSSID()
+    {
+        return currentBSSID;
+    }
+
+    public void setCurrentBSSID(Optional<String> currentBSSID)
+    {
+        this.currentBSSID = currentBSSID;
+        refreshIsNearby();
+    }
+
+    public void refreshIsNearby ()
+    {
+        AppUser appUser = System.getInstance().getAppUser();
+        isNearby = currentBSSID.isPresent() && appUser.getCurrentBSSID().isPresent() && ProximityManager.getSharedManager().accessPointsAreNear(currentBSSID.get(), appUser.getCurrentBSSID().get());
     }
 
     /** Returns user current gap, or nil if user is not in a gap. */

@@ -1,11 +1,6 @@
-package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
+package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
 
 import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 
 public interface ConnectionManagerCompletionHandler
 {

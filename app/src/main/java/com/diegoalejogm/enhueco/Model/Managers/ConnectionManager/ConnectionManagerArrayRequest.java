@@ -1,20 +1,20 @@
-package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
+package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
 
 import com.google.common.base.Optional;
-import org.json.JSONObject;
+import org.json.JSONArray;
 
-public class ConnectionManagerRequest
+public class ConnectionManagerArrayRequest
 {
     public final String URL;
     public final HTTPMethod method;
-    public final Optional<JSONObject> params;
+    public final Optional<JSONArray> params;
     public final boolean responseIsArray;
 
     /**
      * @param params JSON parameters to send with a POST request
      * @param responseIsArray True if the JSON response is expected to be a JSON array, false if expected to be a single JSON object.
      */
-    public ConnectionManagerRequest(String URL, HTTPMethod method, Optional<JSONObject> params, boolean responseIsArray)
+    public ConnectionManagerArrayRequest(String URL, HTTPMethod method, Optional<JSONArray> params, boolean responseIsArray)
     {
         this.URL = URL;
         this.method = method;

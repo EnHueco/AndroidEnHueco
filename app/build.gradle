@@ -38,5 +38,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.bumptech.glide:glide:3.5.2'
     compile 'in.srain.cube:ultra-ptr:1.0.11'
-
+    compile 'org.jgrapht:jgrapht-core:0.9.1'
+    compile 'net.sf.opencsv:opencsv:2.3'
 }

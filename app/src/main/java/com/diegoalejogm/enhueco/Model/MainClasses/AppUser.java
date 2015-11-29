@@ -7,8 +7,9 @@ import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.diegoalejogm.enhueco.Model.EHApplication;
+import com.diegoalejogm.enhueco.Model.Managers.SynchronizationManager;
 import com.diegoalejogm.enhueco.Model.Other.*;
-import com.diegoalejogm.enhueco.Model.Other.ConnectionManager.*;
+import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
 import com.diegoalejogm.enhueco.View.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -63,6 +64,18 @@ public class AppUser extends User implements Serializable
     public List<User> getFriends()
     {
         return friends;
+    }
+
+    @Override
+    public void refreshIsNearby()
+    {
+        if (getCurrentBSSID().isPresent())
+        {
+            for (User friend : friends)
+            {
+                friend.refreshIsNearby();
+            }
+        }
     }
 
     /**

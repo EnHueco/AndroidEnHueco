@@ -1,12 +1,10 @@
-package com.diegoalejogm.enhueco.Model.Other.ConnectionManager;
+package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
 import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
-import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

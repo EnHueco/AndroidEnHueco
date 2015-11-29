@@ -1,6 +1,5 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
-import com.diegoalejogm.enhueco.Model.Other.SynchronizationManager;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
