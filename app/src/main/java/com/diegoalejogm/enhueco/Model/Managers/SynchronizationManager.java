@@ -32,7 +32,7 @@ public class SynchronizationManager
         /** CompletionHandler to be called when reattempting the request */
         public ConnectionManagerCompletionHandler completionHandler;
 
-        /** Object associated with the request (For example, the Gap that was going to be updated). */
+        /** Object associated with the request (For example, the free time period that was going to be updated). */
          public EHSynchronizable associatedObject;
 
         public SynchronizationManagerQueueItem(ConnectionManagerRequest request, ConnectionManagerCompletionHandler completionHandler, EHSynchronizable associatedObject)
@@ -90,7 +90,7 @@ public class SynchronizationManager
        @param request: NSURLRequest that was attempted
 
        @param completionHandler: CompletionHandler to be called when reattempting the request.
-       @param associatedObject: Object associated with the request (For example, the Gap that was going to be updated).
+       @param associatedObject: Object associated with the request (For example, the free time period that was going to be updated).
      */
     public void trySendingAsyncRequestToURL(final ConnectionManagerRequest request,
                                                final ConnectionManagerCompletionHandler completionHandler,
@@ -151,7 +151,7 @@ public class SynchronizationManager
      */
     public void reportNewEvent (Event event)
     {
-        String url = EHURLS.BASE + EHURLS.GAPS_SEGMENT;
+        String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT;
 
         JSONObject eventJSON = event.toJSONObject();
         try

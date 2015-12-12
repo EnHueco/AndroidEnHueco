@@ -322,36 +322,36 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Returns all friends that are currently in gap.
+     * Returns all friends that are currently free.
      *
-     * @return Friend in gap with their current gap
+     * @return Friends with their current free time period
      */
-    public List<Tuple<User, Event>> getFriendsCurrentlyInGap()
+    public List<Tuple<User, Event>> getFriendsCurrentlyFree()
     {
-        List<Tuple<User, Event>> friendsAndGaps = new ArrayList<>();
+        List<Tuple<User, Event>> friendsAndFreeTimePeriods = new ArrayList<>();
 
         for (User friend : friends)
         {
-            Optional<Event> currentGap = friend.getCurrentGap();
+            Optional<Event> currentFreeTimePeriod = friend.getCurrentFreeTimePeriod();
 
-            if (currentGap.isPresent())
+            if (currentFreeTimePeriod.isPresent())
             {
-                friendsAndGaps.add(new Tuple<User, Event>(friend, currentGap.get()));
+                friendsAndFreeTimePeriods.add(new Tuple<User, Event>(friend, currentFreeTimePeriod.get()));
             }
         }
 
-        return friendsAndGaps;
+        return friendsAndFreeTimePeriods;
     }
 
     /**
-     * Returns a schedule with the common gaps of the users provided.
+     * Returns a schedule with the common free time periods of the users provided.
      */
-    public Schedule getCommonGapsScheduleForUsers(User[] users)
+    public Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
     {
         Date currentDate = new Date();
-        Schedule commonGapsSchedule = new Schedule();
+        Schedule commonFreeTimePeriodsSchedule = new Schedule();
 
-        if (users.length < 2) return commonGapsSchedule;
+        if (users.length < 2) return commonFreeTimePeriodsSchedule;
 
         for (int i = 1; i < getSchedule().getWeekDays().length; i++)
         {
@@ -360,43 +360,43 @@ public class AppUser extends User implements Serializable
                 @Override
                 public boolean apply(Event event)
                 {
-                    return event.getType().equals(Event.EventType.GAP);
+                    return event.getType().equals(Event.EventType.FREE_TIME);
                 }
             };
 
-            Collection<Event> currentCommonGaps = Collections2.filter(users[0].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate);
+            Collection<Event> currentCommonFreeTimePeriods = Collections2.filter(users[0].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate);
 
             for (int j = 1; j < users.length; j++)
             {
-                Collection<Event> newCommonGaps = new ArrayList<>();
+                Collection<Event> newCommonFreeTimePeriods = new ArrayList<>();
 
-                for (Event gap1 : currentCommonGaps)
+                for (Event freeTimePeriod1 : currentCommonFreeTimePeriods)
                 {
-                    Date startHourInCurrentDate1 = gap1.getStartHourInDate(currentDate);
-                    Date endHourInCurrentDate1 = gap1.getEndHourInDate(currentDate);
+                    Date startHourInCurrentDate1 = freeTimePeriod1.getStartHourInDate(currentDate);
+                    Date endHourInCurrentDate1 = freeTimePeriod1.getEndHourInDate(currentDate);
 
-                    for (Event gap2 : Collections2.filter(users[j].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate))
+                    for (Event freeTimePeriod2 : Collections2.filter(users[j].getSchedule().getWeekDays()[i].getEvents(), eventsFilterPredicate))
                     {
-                        Date startHourInCurrentDate2 = gap2.getStartHourInDate(currentDate);
-                        Date endHourInCurrentDate2 = gap2.getEndHourInDate(currentDate);
+                        Date startHourInCurrentDate2 = freeTimePeriod2.getStartHourInDate(currentDate);
+                        Date endHourInCurrentDate2 = freeTimePeriod2.getEndHourInDate(currentDate);
 
                         if (!(endHourInCurrentDate1.before(startHourInCurrentDate2) || startHourInCurrentDate1.after(endHourInCurrentDate2)))
                         {
-                            Calendar startHour = ((startHourInCurrentDate1.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2)) ? gap1.getStartHour() : gap2.getStartHour());
-                            Calendar endHour = ((endHourInCurrentDate1.after(startHourInCurrentDate2) && endHourInCurrentDate1.before(endHourInCurrentDate2)) ? gap1.getEndHour() : gap2.getEndHour());
+                            Calendar startHour = ((startHourInCurrentDate1.after(startHourInCurrentDate2) && startHourInCurrentDate1.before(endHourInCurrentDate2)) ? freeTimePeriod1.getStartHour() : freeTimePeriod2.getStartHour());
+                            Calendar endHour = ((endHourInCurrentDate1.after(startHourInCurrentDate2) && endHourInCurrentDate1.before(endHourInCurrentDate2)) ? freeTimePeriod1.getEndHour() : freeTimePeriod2.getEndHour());
 
-                            newCommonGaps.add(new Event(Event.EventType.GAP, startHour, endHour));
+                            newCommonFreeTimePeriods.add(new Event(Event.EventType.FREE_TIME, startHour, endHour));
                         }
                     }
                 }
 
-                currentCommonGaps = newCommonGaps;
+                currentCommonFreeTimePeriods = newCommonFreeTimePeriods;
             }
 
-            commonGapsSchedule.getWeekDays()[i].setEvents(currentCommonGaps);
+            commonFreeTimePeriodsSchedule.getWeekDays()[i].setEvents(currentCommonFreeTimePeriods);
         }
 
-        return commonGapsSchedule;
+        return commonFreeTimePeriodsSchedule;
     }
 
     /**
@@ -429,7 +429,7 @@ public class AppUser extends User implements Serializable
         });
     }
 
-    public void importFromCalendarWithID(String calendarID, boolean generateGapsBetweenClasses)
+    public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
     {
         Collection<Event> importedEvents = new ArrayList<>();
 
@@ -497,9 +497,9 @@ public class AppUser extends User implements Serializable
             cursor.moveToNext();
         }
 
-        if (generateGapsBetweenClasses)
+        if (generateFreeTimePeriodsBetweenClasses)
         {
-            //TODO: Calculate Gaps and add them
+            //TODO: Calculate free time periods and add them
         }
     }
 
@@ -574,21 +574,21 @@ public class AppUser extends User implements Serializable
         Date lastUpdated = new Date();
         newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, lastUpdated);
 
-        String[] gaps = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(multipleElementsCharacter));
-        for (String gap : gaps)
+        String[] freeTimePeriods = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(multipleElementsCharacter));
+        for (String freeTimePeriodString : freeTimePeriods)
         {
-            String[] gapValues = gap.split(Character.toString(separationCharacter));
+            String[] freeTimePeriodValues = freeTimePeriodString.split(Character.toString(separationCharacter));
             Calendar startTime = Calendar.getInstance();
             Calendar endTime = Calendar.getInstance();
 
-            Event.EventType eventType = gapValues[0].equals("G") ? Event.EventType.GAP : Event.EventType.CLASS;
-            int weekday = Integer.parseInt(gapValues[1]);
+            Event.EventType eventType = freeTimePeriodValues[0].equals("G") ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
+            int weekday = Integer.parseInt(freeTimePeriodValues[1]);
             // Get Start Date
-            String[] startTimeValues = gapValues[2].split(Character.toString(hourMinuteSeparationChacter));
+            String[] startTimeValues = freeTimePeriodValues[2].split(Character.toString(hourMinuteSeparationChacter));
             startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
             startTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
             // Get End Date
-            String[] endTimeValues = gapValues[3].split(Character.toString(hourMinuteSeparationChacter));
+            String[] endTimeValues = freeTimePeriodValues[3].split(Character.toString(hourMinuteSeparationChacter));
             endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
             endTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
 

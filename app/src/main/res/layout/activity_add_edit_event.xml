@@ -63,7 +63,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:text="Hueco"
-						android:id="@+id/radioButton"
+						android:id="@+id/freeTimeEventTypeRadioButton"
 						android:checked="true"/>
 
 				<RadioButton

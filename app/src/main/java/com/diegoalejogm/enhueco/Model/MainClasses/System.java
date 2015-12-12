@@ -69,7 +69,7 @@ public class System
         Calendar endHour = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         endHour.add(Calendar.HOUR_OF_DAY, 2);
         Calendar localCalendar = Calendar.getInstance();
-        friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.GAP, startHour, endHour));
+        friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.FREE_TIME, startHour, endHour));
         appUser.getFriends().add(friend2);
 
         persistData(context);

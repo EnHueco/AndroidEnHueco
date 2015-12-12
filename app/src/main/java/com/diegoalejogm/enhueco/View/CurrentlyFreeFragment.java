@@ -27,7 +27,7 @@ import java.util.*;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class InGapFragment extends ListFragment
+public class CurrentlyFreeFragment extends ListFragment
 {
 
     private OnFragmentInteractionListener mListener;
@@ -36,7 +36,7 @@ public class InGapFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public InGapFragment()
+    public CurrentlyFreeFragment()
     {
     }
 
@@ -47,9 +47,9 @@ public class InGapFragment extends ListFragment
 
         // TODO: Change Adapter to display your content
 
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyInGap();
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyFree();
 
-        setListAdapter(new InGapArrayAdapter(getActivity(),
+        setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
                 0, data));
     }
 
@@ -84,8 +84,8 @@ public class InGapFragment extends ListFragment
 
     private void refresh()
     {
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyInGap();
-        setListAdapter(new InGapArrayAdapter(getActivity(),
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyFree();
+        setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
                 0, data));
     }
 
@@ -133,13 +133,13 @@ public class InGapFragment extends ListFragment
     }
 
 
-    static class InGapArrayAdapter extends ArrayAdapter<Tuple<User, Event>>
+    static class CurrentlyFreeArrayAdapter extends ArrayAdapter<Tuple<User, Event>>
     {
 
         Context context;
         List<Tuple<User, Event>> objects;
 
-        public InGapArrayAdapter(Context context, int resource, List<Tuple<User, Event>> objects)
+        public CurrentlyFreeArrayAdapter(Context context, int resource, List<Tuple<User, Event>> objects)
         {
             super(context, resource, objects);
             this.context = context;
@@ -158,13 +158,13 @@ public class InGapFragment extends ListFragment
             TextView tv1 = (TextView) view.findViewById(R.id.enHuecoItem_nameTextView);
             tv1.setText(user.toString());
 
-            TextView tv2 = (TextView) view.findViewById(R.id.gapRemainingTimeText);
+            TextView tv2 = (TextView) view.findViewById(R.id.freeTimePeriodRemainingTimeText);
             Calendar localTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             int remainingMinutes = (event.getEndHour().get(Calendar.HOUR_OF_DAY) * 60 + event.getEndHour().get(Calendar.MINUTE))
                     - (localTime.get(Calendar.HOUR_OF_DAY) * 60 + localTime.get(Calendar.MINUTE));
 
-            Log.v("InGapFragment", remainingMinutes+"");
+            Log.v("CurrentlyFreeFragment", remainingMinutes+"");
             int remainingHour = remainingMinutes / 60;
             remainingMinutes -= remainingHour * 60;
 

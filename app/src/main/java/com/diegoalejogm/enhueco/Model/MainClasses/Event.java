@@ -1,8 +1,5 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.text.Editable;
 import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
@@ -21,7 +18,7 @@ public class Event implements Serializable
 {
     public enum EventType
     {
-        GAP, CLASS
+        FREE_TIME, CLASS
     }
     
     private DaySchedule daySchedule;
@@ -75,7 +72,7 @@ public class Event implements Serializable
         String typeString = object.getString("type");
         String name = object.getString("name");
         String location = object.getString("location");
-        EventType type = typeString.equals("GAP")? EventType.GAP : EventType.CLASS;
+        EventType type = typeString.equals("FREE_TIME")? EventType.FREE_TIME : EventType.CLASS;
 
         // Weekdays
         int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));

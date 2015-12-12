@@ -28,7 +28,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.diegoalejogm.enhueco.View.InGapFragment.*;
+import static com.diegoalejogm.enhueco.View.CurrentlyFreeFragment.*;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
@@ -284,7 +284,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             switch (position)
             {
                 case 0:
-                    return new InGapFragment();
+                    return new CurrentlyFreeFragment();
                 case 1:
                     return new FriendListFragment();
                 case 2:

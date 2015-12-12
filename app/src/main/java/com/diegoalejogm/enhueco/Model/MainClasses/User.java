@@ -1,20 +1,14 @@
 package com.diegoalejogm.enhueco.Model.MainClasses;
 
-import android.net.Uri;
 import com.diegoalejogm.enhueco.Model.Managers.ProximityManager;
-import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by Diego on 10/9/15.
@@ -139,8 +133,8 @@ public class User extends EHSynchronizable implements Serializable
         isNearby = currentBSSID.isPresent() && appUser.getCurrentBSSID().isPresent() && ProximityManager.getSharedManager().accessPointsAreNear(currentBSSID.get(), appUser.getCurrentBSSID().get());
     }
 
-    /** Returns user current gap, or nil if user is not in a gap. */
-    public Optional<Event> getCurrentGap ()
+    /** Returns user current free time period, or nil if user is not free. */
+    public Optional<Event> getCurrentFreeTimePeriod()
     {
         Date currentDate = new Date();
 
@@ -149,7 +143,7 @@ public class User extends EHSynchronizable implements Serializable
 
         for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
         {
-            if (event.getType().equals(Event.EventType.GAP))
+            if (event.getType().equals(Event.EventType.FREE_TIME))
             {
                 Date startHourInCurrentDate = event.getStartHourInDate(currentDate);
                 Date endHourInCurrentDate = event.getEndHourInDate(currentDate);

@@ -14,9 +14,9 @@
             android:textSize="12sp"
             android:textColor="#FFFFFF"
             android:textAllCaps="false"
-            android:id="@+id/commonGapsSelectedFriendButton"
+            android:id="@+id/commonFreeTimePeriodsSelectedFriendButton"
             android:text="Pepito Alberto Perez Uribe"
             android:layout_weight="10"
-            android:background="@drawable/common_gaps_selected_friend_button"/>
+            android:background="@drawable/common_free_time_periods_selected_friend_button"/>
 
 </RelativeLayout>

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
@@ -20,23 +19,23 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class CommonGapsSearchFriendToAddFragment extends ListFragment
+public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
 {
-    public interface CommonGapsSearchFriendToAddFragmentListener
+    public interface CommonFreeTimePeriodsSearchFriendToAddFragmentListener
     {
-        void onCommonGapsSearchFriendToAddFragmentNewFriendSelected(User user);
+        void onCommonFreeTimePeriodsSearchFriendToAddFragmentNewFriendSelected(User user);
     }
 
     private List<User> filteredFriends = System.getInstance().getAppUser().getFriends();
 
-    private CommonGapsSearchFriendToAddFragmentListener listener;
-    private CommonGapsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
+    private CommonFreeTimePeriodsSearchFriendToAddFragmentListener listener;
+    private CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
 
-    public CommonGapsSearchFriendToAddFragment()
+    public CommonFreeTimePeriodsSearchFriendToAddFragment()
     {
     }
 
-    public void setListener(CommonGapsSearchFriendToAddFragmentListener listener)
+    public void setListener(CommonFreeTimePeriodsSearchFriendToAddFragmentListener listener)
     {
         this.listener = listener;
     }
@@ -46,7 +45,7 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        selectedFriendsArrayAdapter = new CommonGapsFriendsSearchResultsArrayAdapter(getActivity(), 0, filteredFriends);
+        selectedFriendsArrayAdapter = new CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(selectedFriendsArrayAdapter);
     }
     
@@ -80,16 +79,16 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
 
         if (listener != null)
         {
-            listener.onCommonGapsSearchFriendToAddFragmentNewFriendSelected(filteredFriends.get(position));
+            listener.onCommonFreeTimePeriodsSearchFriendToAddFragmentNewFriendSelected(filteredFriends.get(position));
         }
     }
 
-    public class CommonGapsFriendsSearchResultsArrayAdapter extends ArrayAdapter<User>
+    public class CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter extends ArrayAdapter<User>
     {
         Context context;
         List<User> objects;
 
-        public CommonGapsFriendsSearchResultsArrayAdapter(Context context, int resource, List<User> objects)
+        public CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter(Context context, int resource, List<User> objects)
         {
             super(context, resource, objects);
             this.context = context;
@@ -100,7 +99,7 @@ public class CommonGapsSearchFriendToAddFragment extends ListFragment
         public View getView(int position, View convertView, ViewGroup parent)
         {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.item_common_gaps_search_friend_to_add_results, null);
+            View view = inflater.inflate(R.layout.item_common_free_time_periods_search_friend_to_add_results, null);
 
             TextView button = (TextView) view.findViewById(R.id.nameTextView);
             button.setText(objects.get(position).getName());

@@ -18,11 +18,11 @@ import com.wefika.flowlayout.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommonGapsActivity extends AppCompatActivity implements CommonGapsSearchFriendToAddFragment.CommonGapsSearchFriendToAddFragmentListener
+public class CommonFreeTimePeriodsActivity extends AppCompatActivity implements CommonFreeTimePeriodsSearchFriendToAddFragment.CommonFreeTimePeriodsSearchFriendToAddFragmentListener
 {
     private SearchView searchView;
 
-    CommonGapsSearchFriendToAddFragment commonGapsSearchFriendToAddFragment = new CommonGapsSearchFriendToAddFragment();
+    CommonFreeTimePeriodsSearchFriendToAddFragment commonFreeTimePeriodsSearchFriendToAddFragment = new CommonFreeTimePeriodsSearchFriendToAddFragment();
     ScheduleFragment scheduleFragment = new ScheduleFragment();
 
     FlowLayout selectedFriendsFlowLayout;
@@ -35,9 +35,9 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
     {
         super.onCreate(savedInstanceState);
 
-        commonGapsSearchFriendToAddFragment.setListener(this);
+        commonFreeTimePeriodsSearchFriendToAddFragment.setListener(this);
 
-        setContentView(R.layout.activity_common_gaps);
+        setContentView(R.layout.activity_common_free_time_periods);
 
         searchView = (SearchView) findViewById(R.id.searchView);
         selectedFriendsFlowLayout = (FlowLayout) findViewById(R.id.selectedFriendsFlowLayout);
@@ -73,7 +73,7 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                commonGapsSearchFriendToAddFragment.filterContentForSearchText(newText);
+                commonFreeTimePeriodsSearchFriendToAddFragment.filterContentForSearchText(newText);
                 return false;
             }
         });
@@ -84,8 +84,8 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
 
     public void prepareInfoAndReloadScheduleData ()
     {
-        Schedule commonGapsSchedule = System.getInstance().getAppUser().getCommonGapsScheduleForUsers(selectedFriends.toArray(new User[0]));
-        scheduleFragment.setSchedule(commonGapsSchedule);
+        Schedule commonFreeTimePeriodsSchedule = System.getInstance().getAppUser().getCommonFreeTimePeriodsScheduleForUsers(selectedFriends.toArray(new User[0]));
+        scheduleFragment.setSchedule(commonFreeTimePeriodsSchedule);
         scheduleFragment.reloadData();
     }
 
@@ -115,15 +115,15 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
 
     public void switchToSearch ()
     {
-        if (currentFragment == commonGapsSearchFriendToAddFragment) return;
+        if (currentFragment == commonFreeTimePeriodsSearchFriendToAddFragment) return;
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.replace(R.id.fragment_container, commonGapsSearchFriendToAddFragment);
+        fragmentTransaction.replace(R.id.fragment_container, commonFreeTimePeriodsSearchFriendToAddFragment);
         fragmentTransaction.addToBackStack(null);
 
-        currentFragment = commonGapsSearchFriendToAddFragment;
+        currentFragment = commonFreeTimePeriodsSearchFriendToAddFragment;
 
         findViewById(R.id.selectedFriendsScrollView).setVisibility(View.GONE);
 
@@ -136,14 +136,14 @@ public class CommonGapsActivity extends AppCompatActivity implements CommonGapsS
 
         for (User user: selectedFriends)
         {
-            View cell = LayoutInflater.from(this).inflate(R.layout.item_common_gaps_selected_friend, null);
-            ((Button) cell.findViewById(R.id.commonGapsSelectedFriendButton)).setText(user.getName());
+            View cell = LayoutInflater.from(this).inflate(R.layout.item_common_free_time_periods_selected_friend, null);
+            ((Button) cell.findViewById(R.id.commonFreeTimePeriodsSelectedFriendButton)).setText(user.getName());
             selectedFriendsFlowLayout.addView(cell);
         }
     }
 
     @Override
-    public void onCommonGapsSearchFriendToAddFragmentNewFriendSelected(User friend)
+    public void onCommonFreeTimePeriodsSearchFriendToAddFragmentNewFriendSelected(User friend)
     {
         addFriendToSelectedFriendsAndReloadData(friend);
     }

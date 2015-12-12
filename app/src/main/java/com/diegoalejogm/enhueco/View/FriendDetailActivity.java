@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
@@ -97,20 +96,20 @@ public class FriendDetailActivity extends Activity
             });
         }
 
-        FancyButton crossGapsFB = (FancyButton) findViewById(R.id.fancyBtnCrossGaps);
+        FancyButton commonFreeTimePeriodsFB = (FancyButton) findViewById(R.id.fancyBtnCommonFreeTimePeriods);
         TextView friendNameTextView = (TextView) findViewById(R.id.friendNameTextView);
         TextView friendUsernameTextView = (TextView) findViewById(R.id.friendUsernameTextView);
         ImageView friendImageImageView = (ImageView) findViewById(R.id.friendImageImageView);
 
         whatsappFB.setFontIconSize(35);
         callFB.setFontIconSize(35);
-        crossGapsFB.setFontIconSize(35);
-        crossGapsFB.setOnClickListener(new View.OnClickListener()
+        commonFreeTimePeriodsFB.setFontIconSize(35);
+        commonFreeTimePeriodsFB.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                onCommonGapsButtonPressed(v);
+                onCommonFreeTimePeriodsButtonPressed(v);
             }
         });
 
@@ -130,9 +129,9 @@ public class FriendDetailActivity extends Activity
         }
     }
 
-    public void onCommonGapsButtonPressed (View view)
+    public void onCommonFreeTimePeriodsButtonPressed(View view)
     {
-        Intent intent = new Intent(this, CommonGapsActivity.class);
+        Intent intent = new Intent(this, CommonFreeTimePeriodsActivity.class);
         intent.putExtra("initialFriendID", friend.getID());
         startActivity(intent);
     }

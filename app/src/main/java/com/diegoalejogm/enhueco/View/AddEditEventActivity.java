@@ -29,7 +29,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
     private static final String LOG = "AddEditEventActivity";
     RadioGroup eventType;
-    RadioButton gapEventType;
+    RadioButton freeTimeEventTypeRadioButton;
     EditText eventNameText, eventLocationText;
     EditText startTimeText, endTimeText, weekDaysText;
     Calendar startTime, endTime;
@@ -52,7 +52,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         startTimeText = (EditText) findViewById(R.id.startTimeEditText);
         endTimeText = (EditText) findViewById(R.id.endTimeEditText);
-        gapEventType = (RadioButton) findViewById(R.id.radioButton);
+        freeTimeEventTypeRadioButton = (RadioButton) findViewById(R.id.freeTimeEventTypeRadioButton);
         weekDaysText = (EditText) findViewById(R.id.weekDaysEditText);
         eventNameText = (EditText) findViewById(R.id.eventNameTextEdit);
         eventLocationText = (EditText) findViewById(R.id.eventLocationTextEdit);
@@ -235,7 +235,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
             //while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
 
-            Event.EventType eventType = gapEventType.isChecked() ? Event.EventType.GAP : Event.EventType.CLASS;
+            Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
 
             startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
             endTime.setTimeZone((TimeZone.getTimeZone("UTC")));

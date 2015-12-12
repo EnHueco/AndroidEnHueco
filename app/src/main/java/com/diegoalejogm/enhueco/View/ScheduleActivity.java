@@ -8,14 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.R;
 import android.support.v7.widget.Toolbar;
 
-import java.sql.Time;
 import java.util.*;
 
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
@@ -172,7 +170,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
                 // Add weekViewEvent
 
                 WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal);
-                weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.GAP)? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
+                weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.FREE_TIME)? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
 
                 events.add(weekViewEvent);
             }

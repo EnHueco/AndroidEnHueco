@@ -36,7 +36,7 @@ public class DaySchedule implements Serializable
     }
 
     /**
-     * Returns true if event doesn't overlap with any gap or class, excluding eventToExclude.
+     * Returns true if event doesn't overlap with any free time period or class, excluding eventToExclude.
      */
     public boolean canAddEvent(Event newEvent, Optional<Event> eventToExclude)
     {

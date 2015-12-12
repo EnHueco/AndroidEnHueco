@@ -29,7 +29,7 @@
 			android:layout_height="wrap_content"
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:text="Small Text"
-			android:id="@+id/gapRemainingTimeText"
+			android:id="@+id/freeTimePeriodRemainingTimeText"
 			android:layout_below="@+id/enHuecoItem_nameTextView"
 			android:layout_toRightOf="@+id/userIcon"
 			android:layout_toEndOf="@+id/userIcon"/>
