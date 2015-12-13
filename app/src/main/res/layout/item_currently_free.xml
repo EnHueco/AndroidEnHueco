@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+				android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+		>
+
+	<ImageView
+			android:layout_width="70dp"
+			android:layout_height="70dp"
+			android:id="@+id/friendImageImageView"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="18dp"
+			android:text="Pepito Alberto Pérez Uribe"
+			android:id="@+id/friendNameTextView"
+			android:layout_alignParentTop="true"
+			android:layout_toRightOf="@+id/friendImageImageView"
+			android:layout_toEndOf="@+id/friendImageImageView"/>
+
+	<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="24dp"
+			android:id="@+id/timeLinearLayout"
+			android:layout_toRightOf="@+id/friendImageImageView"
+			android:layout_below="@+id/friendNameTextView">
+
+		<ImageView
+				android:layout_width="15dp"
+				android:layout_height="15dp"
+				android:id="@+id/imageView2"
+				android:layout_gravity="center_vertical"
+				/>
+
+		<TextView
+				android:layout_gravity="center_vertical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="6:30 PM"
+				android:id="@+id/freeTimePeriodRemainingTimeText"
+				/>
+	</LinearLayout>
+
+	<TextView
+			android:layout_toRightOf="@+id/friendImageImageView"
+			android:layout_below="@+id/timeLinearLayout"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="Hueco (ML 507)"
+			android:textColor="@color/mb_blue"
+			android:id="@+id/a"
+			/>
+
+</RelativeLayout>

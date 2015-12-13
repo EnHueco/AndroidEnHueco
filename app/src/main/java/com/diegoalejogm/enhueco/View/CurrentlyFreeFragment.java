@@ -70,14 +70,15 @@ public class CurrentlyFreeFragment extends ListFragment
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
         super.setUserVisibleHint(isVisibleToUser);
+
         if (isVisibleToUser)
         {
             refresh();
             System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
-//        else {  }
     }
 
 
@@ -154,8 +155,8 @@ public class CurrentlyFreeFragment extends ListFragment
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-            View view = inflater.inflate(R.layout.item_enhueco, null);
-            TextView tv1 = (TextView) view.findViewById(R.id.enHuecoItem_nameTextView);
+            View view = inflater.inflate(R.layout.item_currently_free, null);
+            TextView tv1 = (TextView) view.findViewById(R.id.friendNameTextView);
             tv1.setText(user.toString());
 
             TextView tv2 = (TextView) view.findViewById(R.id.freeTimePeriodRemainingTimeText);
