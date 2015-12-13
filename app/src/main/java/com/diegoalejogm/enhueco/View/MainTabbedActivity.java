@@ -28,7 +28,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.diegoalejogm.enhueco.View.CurrentlyFreeFragment.*;
+import static com.diegoalejogm.enhueco.View.CurrentlyAvailableFragment.*;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
@@ -196,7 +196,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(
                 this);
         LayoutInflater factory = LayoutInflater.from(this);
-        final View view = factory.inflate(R.layout.item_enhueco, null);
+        final View view = factory.inflate(R.layout.item_currently_available, null);
 
         List<DialogOption> data = new ArrayList<DialogOption>();
         data.add(new DialogOption("Buscar amigo", null));
@@ -284,7 +284,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             switch (position)
             {
                 case 0:
-                    return new CurrentlyFreeFragment();
+                    return new CurrentlyAvailableFragment();
                 case 1:
                     return new FriendListFragment();
                 case 2:

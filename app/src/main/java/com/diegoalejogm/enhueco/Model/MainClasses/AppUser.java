@@ -322,11 +322,11 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Returns all friends that are currently free.
+     * Returns all friends that are currently available.
      *
      * @return Friends with their current free time period
      */
-    public List<Tuple<User, Event>> getFriendsCurrentlyFree()
+    public List<Tuple<User, Event>> getCurrentlyAvailableFriends()
     {
         List<Tuple<User, Event>> friendsAndFreeTimePeriods = new ArrayList<>();
 

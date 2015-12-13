@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,7 @@ import java.util.*;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class CurrentlyFreeFragment extends ListFragment
+public class CurrentlyAvailableFragment extends ListFragment
 {
 
     private OnFragmentInteractionListener mListener;
@@ -36,7 +35,7 @@ public class CurrentlyFreeFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CurrentlyFreeFragment()
+    public CurrentlyAvailableFragment()
     {
     }
 
@@ -47,7 +46,7 @@ public class CurrentlyFreeFragment extends ListFragment
 
         // TODO: Change Adapter to display your content
 
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyFree();
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
 
         setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
                 0, data));
@@ -85,7 +84,7 @@ public class CurrentlyFreeFragment extends ListFragment
 
     private void refresh()
     {
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getFriendsCurrentlyFree();
+        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
         setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
                 0, data));
     }
@@ -155,7 +154,7 @@ public class CurrentlyFreeFragment extends ListFragment
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-            View view = inflater.inflate(R.layout.item_currently_free, null);
+            View view = inflater.inflate(R.layout.item_currently_available, null);
             TextView tv1 = (TextView) view.findViewById(R.id.friendNameTextView);
             tv1.setText(user.toString());
 
@@ -165,7 +164,6 @@ public class CurrentlyFreeFragment extends ListFragment
             int remainingMinutes = (event.getEndHour().get(Calendar.HOUR_OF_DAY) * 60 + event.getEndHour().get(Calendar.MINUTE))
                     - (localTime.get(Calendar.HOUR_OF_DAY) * 60 + localTime.get(Calendar.MINUTE));
 
-            Log.v("CurrentlyFreeFragment", remainingMinutes+"");
             int remainingHour = remainingMinutes / 60;
             remainingMinutes -= remainingHour * 60;
 
