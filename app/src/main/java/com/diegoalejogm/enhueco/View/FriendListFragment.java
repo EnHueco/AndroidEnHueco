@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -13,14 +13,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.diegoalejogm.enhueco.Model.MainClasses.Event;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.R;
 
+import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 /**
  * A fragment representing a list of Items.
@@ -162,11 +170,49 @@ public class FriendListFragment extends ListFragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
+            User user = objects.get(position);
+            Event nextFreeTime = user.nextFreeTimePeriod();
+
+
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.item_friend, null);
 
-            TextView tv1 = (TextView) view.findViewById(R.id.enHuecoFriend_nameTextView);
-            tv1.setText(objects.get(position).toString());
+            ImageView iv = (ImageView) view.findViewById(R.id.friendIcon);
+            Transformation transformation = new RoundedTransformationBuilder().oval(true).build();
+
+            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+
+            TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);
+            tv1.setText(user.toString());
+
+            TextView nextFreeTimeHourTextView = (TextView) view.findViewById(R.id.nextFreeTime);
+            TextView nextFreeTimeHourNameTextView = (TextView) view.findViewById(R.id.nextFreeTimeName);
+
+            if(nextFreeTime != null)
+            {
+                DecimalFormat mFormat = new DecimalFormat("00");
+                String postFix = "AM";
+
+                String name = nextFreeTime.getName().get();
+                int hour = nextFreeTime.getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
+                int minute = nextFreeTime.getStartHour().get(Calendar.MINUTE);
+                if(hour > 12)
+                {
+                    hour-=12;
+                    postFix = "PM";
+                }
+                String time = mFormat.format(hour) +  ":" + mFormat.format(minute) + " " + postFix;
+
+                nextFreeTimeHourTextView.setText(time);
+                nextFreeTimeHourNameTextView.setText(name);
+            }
+            else
+            {
+                nextFreeTimeHourTextView.setText("-- --");
+                nextFreeTimeHourNameTextView.setText("");
+            }
+
+
 
             return view;
         }

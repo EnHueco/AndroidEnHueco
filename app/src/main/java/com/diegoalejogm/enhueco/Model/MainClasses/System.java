@@ -7,7 +7,7 @@ import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
-import com.diegoalejogm.enhueco.View.SearchNewFriendsActivity;
+import com.diegoalejogm.enhueco.view.SearchNewFriendsActivity;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;

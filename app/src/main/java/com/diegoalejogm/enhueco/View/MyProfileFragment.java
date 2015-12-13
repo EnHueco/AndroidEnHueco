@@ -1,7 +1,6 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

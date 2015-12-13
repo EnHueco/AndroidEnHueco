@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View.dummy;
+package com.diegoalejogm.enhueco.view.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

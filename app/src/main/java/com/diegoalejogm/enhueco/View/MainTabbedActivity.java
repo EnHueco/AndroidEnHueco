@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,7 +28,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.diegoalejogm.enhueco.View.CurrentlyAvailableFragment.*;
+import static com.diegoalejogm.enhueco.view.CurrentlyAvailableFragment.*;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {

@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -129,16 +129,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
                 Calendar endTimeEvent = (Calendar) currentEvent.getEndHour().clone();
                 endTimeEvent.setTimeZone(TimeZone.getDefault());
 
-                // Update global Calendar to match start time
-//                Log.v(LOG, "Event start: " + currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getStartHour().get(Calendar.MINUTE));
-//                Log.v(LOG, "Timezone start: " + currentEvent.getStartHour().getTimeZone().getDisplayName());
-//
-//                Log.v(LOG, "Event end: " + currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getEndHour().get(Calendar.MINUTE));
-//                Log.v(LOG, "Timezone end: " + currentEvent.getEndHour().getTimeZone().getDisplayName());
-//                globalCalendar.set(Calendar.HOUR_OF_DAY, currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY));
-//                globalCalendar.set(Calendar.MINUTE, currentEvent.getStartHour().get(Calendar.MINUTE));
-//                globalCalendar.set(Calendar.DAY_OF_WEEK, currentEvent.getStartHour().get(Calendar.DAY_OF_WEEK));
-
                 // Set global calendar time in start local calendar
                 Calendar startCalendarLocal = (Calendar) globalCalendar.clone();
                 startCalendarLocal.setTimeZone(TimeZone.getDefault());
@@ -150,23 +140,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
                 endCalendarLocal.set(Calendar.HOUR_OF_DAY, endTimeEvent.get(Calendar.HOUR_OF_DAY));
                 endCalendarLocal.set(Calendar.MINUTE, endTimeEvent.get(Calendar.MINUTE));
 
-
-//                Log.v(LOG, "Event start: " + startCalendarLocal.get(Calendar.HOUR_OF_DAY) + ":" + startCalendarLocal.get(Calendar.MINUTE));
-
-
-//                // Update global Calendar to match end time
-//                globalCalendar.set(Calendar.HOUR_OF_DAY, currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY));
-//                globalCalendar.set(Calendar.MINUTE, currentEvent.getEndHour().get(Calendar.MINUTE));
-
-                // Set global calendar time in end local calendar
-//                Calendar endCalendarLocal = (Calendar) currentEvent.getEndHour().clone();
-//                endCalendarLocal.setTimeZone(TimeZone.getDefault());
-//                startCalendarLocal.set(Calendar.YEAR, globalCalendar.get(Calendar.YEAR));
-//                endCalendarLocal.set(Calendar.DAY_OF_MONTH, globalCalendar.get(Calendar.DAY_OF_MONTH));
-//                endCalendarLocal.set(Calendar.MONTH, globalCalendar.get(Calendar.MONTH));
-//                startCalendarLocal.set(Calendar.DAY_OF_WEEK, globalCalendar.get(Calendar.DAY_OF_WEEK));
-
-//                Log.v(LOG, "Event end: " + endCalendarLocal.get(Calendar.HOUR_OF_DAY) + ":" + endCalendarLocal.get(Calendar.MINUTE));
                 // Add weekViewEvent
 
                 WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal);

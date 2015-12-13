@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;

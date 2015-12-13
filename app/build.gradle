@@ -26,6 +26,13 @@ dependencies {
     compile 'com.android.support:design:23.0.1'
 
     //External dependencies
+
+    // Image download framework
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // Rounded images
+    compile 'com.makeramen:roundedimageview:2.2.1'
+
     compile 'com.github.alamkanak:android-week-view:1.2.3'
     compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'
