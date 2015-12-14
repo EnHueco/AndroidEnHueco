@@ -63,7 +63,7 @@ public class AppUser extends User implements Serializable
 
     public List<User> getFriends()
     {
-        return friends;
+        return friends; //new ArrayList<User>(Arrays.asList(this));
     }
 
     @Override

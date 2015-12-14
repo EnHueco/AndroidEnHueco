@@ -1,25 +1,26 @@
 package com.diegoalejogm.enhueco.View;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.diegoalejogm.enhueco.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import mehdi.sakout.fancybuttons.FancyButton;
 
 public class FriendDetailActivity extends Activity
 {
     private User friend;
+
+    private ImageView imageImageView;
+    private ImageView backgroundImageView;
 
     public FriendDetailActivity()
     {
@@ -42,7 +43,16 @@ public class FriendDetailActivity extends Activity
 
         setContentView(R.layout.activity_friend_detail);
 
-        FancyButton whatsappFB = (FancyButton) findViewById(R.id.fancyBtnWhatsapp);
+        TextView firstNamesTextView = (TextView) findViewById(R.id.firstNamesTextView);
+        firstNamesTextView.setText(friend.getFirstNames());
+
+        TextView lastNamesTextView = (TextView) findViewById(R.id.lastNamesTextView);
+        lastNamesTextView.setText(friend.getLastNames());
+
+        imageImageView = (ImageView) findViewById(R.id.imageImageView);
+        backgroundImageView = (ImageView) findViewById(R.id.backgroundImageImageView);
+
+        /*FancyButton whatsappFB = (FancyButton) findViewById(R.id.fancyBtnWhatsapp);
         FancyButton callFB = (FancyButton) findViewById(R.id.fancyBtnCall);
 
         if (friend.getPhoneNumber() == null || friend.getPhoneNumber().isEmpty())
@@ -97,8 +107,6 @@ public class FriendDetailActivity extends Activity
         }
 
         FancyButton commonFreeTimePeriodsFB = (FancyButton) findViewById(R.id.fancyBtnCommonFreeTimePeriods);
-        TextView friendNameTextView = (TextView) findViewById(R.id.friendNameTextView);
-        TextView friendUsernameTextView = (TextView) findViewById(R.id.friendUsernameTextView);
         ImageView friendImageImageView = (ImageView) findViewById(R.id.friendImageImageView);
 
         whatsappFB.setFontIconSize(35);
@@ -111,25 +119,46 @@ public class FriendDetailActivity extends Activity
             {
                 onCommonFreeTimePeriodsButtonPressed(v);
             }
-        });
+        });*/
+    }
 
-        friendNameTextView.setText(friend.getName());
-        friendUsernameTextView.setText(friend.getUsername());
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
 
+        updateProfileImage();
+    }
+
+    public void updateProfileImage ()
+    {
         if (friend.getImageURL().isPresent() && !friend.getImageURL().get().isEmpty())
         {
-            friendNameTextView.setTextColor(Color.parseColor("#FFFFFF"));
-            friendUsernameTextView.setTextColor(Color.parseColor("#FFFFFF"));
-            Picasso.with(this).load(friend.getImageURL().get()).into(friendImageImageView);
-        }
-        else
-        {
-            friendNameTextView.setTextColor(Color.parseColor("#000000"));
-            friendUsernameTextView.setTextColor(Color.parseColor("#000000"));
+            Picasso.with(this).load(EHURLS.BASE + friend.getImageURL().get()).into(imageImageView);
+            Picasso.with(this).load(EHURLS.BASE + friend.getImageURL().get()).into(backgroundImageView, new Callback()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 1, 120));
+                }
+
+                @Override
+                public void onError()
+                {
+                }
+            });
         }
     }
 
     public void onCommonFreeTimePeriodsButtonPressed(View view)
+    {
+        Intent intent = new Intent(this, CommonFreeTimePeriodsActivity.class);
+        intent.putExtra("initialFriendID", friend.getID());
+        startActivity(intent);
+    }
+
+    public void onViewScheduleButtonPressed(View view)
     {
         Intent intent = new Intent(this, CommonFreeTimePeriodsActivity.class);
         intent.putExtra("initialFriendID", friend.getID());

@@ -4,7 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="mainInterfaceColor">#FF4081</color>
-    <color name="mainComplementaryInterfaceColor">#FF4081</color>
+    <color name="mainInterfaceColor">#00A286</color>
+
+    <color name="defaultToolbarColor">#00A286</color>
+
+    <color name="mainComplementaryInterfaceColor">#00A286</color>
 
 </resources>

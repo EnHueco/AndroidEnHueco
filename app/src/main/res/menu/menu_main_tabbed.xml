@@ -25,25 +25,10 @@
 			/>
 
 	<item
-			android:id="@+id/action_schedule"
-			android:title="@string/mySchedule"
+			android:id="@+id/action_settings"
+			android:title="@string/settings"
 			android:orderInCategory="103"
 			app:showAsAction="ifRoom"
-			android:onClick="showSchedule"/>
-
-	<item
-			android:id="@+id/action_qr_code"
-			android:title="@string/MyQRCode"
-			android:orderInCategory="104"
-			app:showAsAction="ifRoom"
-			android:onClick="showQRCode"/>
-
-	<item
-			android:id="@+id/action_log_out"
-			android:title="@string/LogOut"
-			android:orderInCategory="105"
-			app:showAsAction="ifRoom"
-			android:onClick="logOut"/>
-
+			android:onClick="onSettingsButtonPressed"/>
 
 </menu>

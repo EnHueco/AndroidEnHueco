@@ -1,12 +1,17 @@
 package com.diegoalejogm.enhueco.View;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,12 +20,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.List;
-
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
 
 /**
  * A fragment representing a list of Items.
@@ -87,6 +91,11 @@ public class FriendListFragment extends ListFragment
         }
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
 
     @Override
     public void onDetach()
@@ -127,6 +136,23 @@ public class FriendListFragment extends ListFragment
 
         if (isVisibleToUser)
         {
+            final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+
+            Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+            Integer colorTo = ContextCompat.getColor(getContext(), R.color.defaultToolbarColor);
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+            colorAnimation.setDuration(400);
+
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+            {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator)
+                {
+                    appBarLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
+                }
+            });
+            colorAnimation.start();
+
             refresh();
             System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }

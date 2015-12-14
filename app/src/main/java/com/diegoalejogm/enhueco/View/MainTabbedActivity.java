@@ -2,6 +2,7 @@ package com.diegoalejogm.enhueco.View;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,8 +33,10 @@ import static com.diegoalejogm.enhueco.View.CurrentlyAvailableFragment.*;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
-
     private static final String LOG = "MainTabbedActivity";
+
+    public static final int APP_BAR_LAYOUT_SIZE = 90;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -44,10 +47,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
      */
     private MainPagerAdapter mainPagerAdapter;
 
+    private AppBarLayout appBarLayout;
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager viewPager;
+
     private ArrayList<Integer> hiddenMenuItems;
     private TabLayout tabLayout;
 
@@ -70,6 +76,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(mainPagerAdapter);
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         tabLayout.setupWithViewPager(viewPager);
@@ -86,23 +94,19 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         if (tabLayout.getSelectedTabPosition() == 0)
         {
             menu.findItem(R.id.action_add_friend).setVisible(false);
-            menu.findItem(R.id.action_schedule).setVisible(false);
             menu.findItem(R.id.action_requests).setVisible(false);
-            menu.findItem(R.id.action_log_out).setVisible(false);
-            menu.findItem(R.id.action_qr_code).setVisible(false);
+            menu.findItem(R.id.action_settings).setVisible(false);
         }
 
         if (tabLayout.getSelectedTabPosition() == 1)
         {
-            menu.findItem(R.id.action_log_out).setVisible(false);
-            menu.findItem(R.id.action_qr_code).setVisible(false);
-            menu.findItem(R.id.action_schedule).setVisible(false);
+            menu.findItem(R.id.action_settings).setVisible(false);
         }
         if (tabLayout.getSelectedTabPosition() == 2)
         {
-            menu.findItem(R.id.action_search).setVisible(false);
-            menu.findItem(R.id.action_requests).setVisible(false);
             menu.findItem(R.id.action_add_friend).setVisible(false);
+            menu.findItem(R.id.action_requests).setVisible(false);
+            menu.findItem(R.id.action_search).setVisible(false);
         }
 
         return true;
@@ -141,13 +145,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    public void showSchedule(MenuItem item)
-    {
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.getInstance().getAppUser().getSchedule());
-        startActivity(intent);
     }
 
     public void showQRCode(MenuItem item)
@@ -260,6 +257,38 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     {
         Intent intent = new Intent(this, FriendRequestsActivity.class);
         startActivity(intent);
+    }
+
+    public AppBarLayout getAppBarLayout()
+    {
+        return appBarLayout;
+    }
+
+    public TabLayout getTabLayout()
+    {
+        return tabLayout;
+    }
+
+    public ViewPager getViewPager()
+    {
+        return viewPager;
+    }
+
+    public void onProfileViewScheduleButtonPressed(View view)
+    {
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.getInstance().getAppUser().getSchedule());
+        startActivity(intent);
+    }
+
+    public void onViewMyQRButtonPressed (View view)
+    {
+        showQRCode();
+    }
+
+    public void onSettingsButtonPressed(MenuItem item)
+    {
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     /**

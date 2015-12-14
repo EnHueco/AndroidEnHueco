@@ -1,17 +1,25 @@
 package com.diegoalejogm.enhueco.View;
 
 
-import android.content.IntentFilter;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.Model.MainClasses.User;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.diegoalejogm.enhueco.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 
@@ -20,6 +28,9 @@ import com.squareup.picasso.Picasso;
  */
 public class MyProfileFragment extends Fragment
 {
+    private ImageView imageImageView;
+    private ImageView backgroundImageView;
+
     public MyProfileFragment()
     {
         // Required empty public constructor
@@ -41,20 +52,67 @@ public class MyProfileFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
-        TextView tv1 = (TextView) view.findViewById(R.id.fullNameTextView);
-        tv1.setText(user.getName());
+        TextView firstNamesTextView = (TextView) view.findViewById(R.id.firstNamesTextView);
+        firstNamesTextView.setText(user.getFirstNames());
 
-        TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
-        tv2.setText(user.getUsername());
+        TextView lastNamesTextView = (TextView) view.findViewById(R.id.lastNamesTextView);
+        lastNamesTextView.setText(user.getLastNames());
 
-        ImageView profileImage= (ImageView) view.findViewById(R.id.profileImageImageView);
+        imageImageView = (ImageView) view.findViewById(R.id.imageImageView);
+        backgroundImageView = (ImageView) view.findViewById(R.id.backgroundImageImageView);
+
+        return view;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        updateProfileImage();
+    }
+
+    public void updateProfileImage ()
+    {
+        User user = System.getInstance().getAppUser();
 
         if (user.getImageURL().isPresent() && !user.getImageURL().get().isEmpty())
         {
-            Picasso.with(this.getContext()).load(user.getImageURL().get()).into(profileImage);
-        }
+            Picasso.with(getContext()).load(EHURLS.BASE + user.getImageURL().get()).into(imageImageView);
+            Picasso.with(getContext()).load(EHURLS.BASE + user.getImageURL().get()).into(backgroundImageView, new Callback()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 1, 120));
 
-        return view;
+                    if (((MainTabbedActivity) getActivity()).getTabLayout().getSelectedTabPosition() == 2)  //This fragment is visible (TODO: Find a more elegant way to do this)
+                    {
+                        final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+
+                        Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+                        Integer colorTo = Color.argb(50, 20, 20, 20);
+                        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                        colorAnimation.setDuration(400);
+
+                        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+                        {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator animator)
+                            {
+                                appBarLayout.setBackgroundColor((Integer)animator.getAnimatedValue());
+                            }
+                        });
+                        colorAnimation.start();
+                    }
+                }
+
+                @Override
+                public void onError()
+                {
+                }
+            });
+        }
     }
 
     @Override
@@ -64,6 +122,26 @@ public class MyProfileFragment extends Fragment
 
         if (isVisibleToUser)
         {
+            if (imageImageView != null && imageImageView.getDrawable() != null)
+            {
+                final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+
+                Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+                Integer colorTo = Color.argb(50, 20, 20, 20);
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                colorAnimation.setDuration(500);
+
+                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+                {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator)
+                    {
+                        appBarLayout.setBackgroundColor((Integer)animator.getAnimatedValue());
+                    }
+                });
+                colorAnimation.start();
+            }
+
             System.getInstance().getAppUser().fetchUpdatesForAppUserAndSchedule();
         }
     }
