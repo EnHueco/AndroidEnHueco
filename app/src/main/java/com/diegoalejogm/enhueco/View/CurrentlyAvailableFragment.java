@@ -9,12 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.Model.Other.Tuple;
 import com.diegoalejogm.enhueco.R;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -155,23 +160,29 @@ public class CurrentlyAvailableFragment extends ListFragment
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
             View view = inflater.inflate(R.layout.item_currently_available, null);
-            TextView tv1 = (TextView) view.findViewById(R.id.friendNameTextView);
+
+            ImageView iv = (ImageView) view.findViewById(R.id.friendIcon);
+            Transformation transformation = new RoundedTransformationBuilder().oval(true).build();
+
+            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+
+            TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);
             tv1.setText(user.toString());
 
-            TextView tv2 = (TextView) view.findViewById(R.id.freeTimePeriodRemainingTimeText);
-            Calendar localTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-
-            int remainingMinutes = (event.getEndHour().get(Calendar.HOUR_OF_DAY) * 60 + event.getEndHour().get(Calendar.MINUTE))
-                    - (localTime.get(Calendar.HOUR_OF_DAY) * 60 + localTime.get(Calendar.MINUTE));
-
-            int remainingHour = remainingMinutes / 60;
-            remainingMinutes -= remainingHour * 60;
+            TextView tv2 = (TextView) view.findViewById(R.id.freeTimeEndTime);
+            Calendar localTime = event.getEndHourCalendarInLocalTimezone();
 
             DecimalFormat mFormat = new DecimalFormat("00");
 
+            int hour = localTime.get(Calendar.HOUR_OF_DAY);
+            String ampm = "AM";
+            if(localTime.get(Calendar.HOUR_OF_DAY) > 12)
+            {
+                hour-=12; ampm = "PM";
+            }
 
-            String timeRemaining = remainingHour > 0 ? mFormat.format(remainingHour) + ":" + mFormat.format(remainingMinutes) + " horas" :
-                    mFormat.format(remainingMinutes) + " min";
+            String timeRemaining = mFormat.format(hour) + ":"
+                    + mFormat.format(localTime.get(Calendar.MINUTE)) + " " + ampm;
             tv2.setText(timeRemaining);
             return view;
         }

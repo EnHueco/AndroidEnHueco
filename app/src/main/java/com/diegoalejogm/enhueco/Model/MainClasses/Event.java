@@ -225,4 +225,23 @@ public class Event implements Serializable, Comparable<Event>
         cal.setTimeZone(TimeZone.getDefault());
         return cal;
     }
+
+    public boolean isCurrentlyHappening()
+    {
+        Calendar current = Calendar.getInstance(TimeZone.getDefault());
+        Calendar startHour = this.getStartHourCalendarInLocalTimezone();
+        Calendar endHour = this.getEndHourCalendarInLocalTimezone();
+
+        boolean isAfterStart = current.get(Calendar.HOUR_OF_DAY) > startHour.get(Calendar.HOUR_OF_DAY)
+                || ( current.get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY) &&
+                    current.get(Calendar.MINUTE) >= startHour.get(Calendar.MINUTE)
+                    );
+
+        boolean isBeforeEnd = current.get(Calendar.HOUR_OF_DAY) < endHour.get(Calendar.HOUR_OF_DAY)
+                || ( current.get(Calendar.HOUR_OF_DAY) == endHour.get(Calendar.HOUR_OF_DAY) &&
+                current.get(Calendar.MINUTE) < startHour.get(Calendar.MINUTE)
+        );
+
+        return isAfterStart && isBeforeEnd;
+    }
 }

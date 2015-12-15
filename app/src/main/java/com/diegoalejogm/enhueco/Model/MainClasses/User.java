@@ -249,4 +249,25 @@ public class User extends EHSynchronizable implements Serializable
         }
         return ans;
     }
+
+    public Event currentGap()
+    {
+        Event ans = null;
+        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
+        {
+            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
+            if(event.isCurrentlyHappening())
+            {
+                ans = event;
+                break;
+            }
+        }
+
+        return ans;
+
+    }
+
 }

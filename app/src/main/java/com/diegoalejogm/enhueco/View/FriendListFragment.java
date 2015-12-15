@@ -56,6 +56,10 @@ public class FriendListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+
+
+
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.getInstance().getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
 
@@ -78,6 +82,7 @@ public class FriendListFragment extends ListFragment
                 refresh();
             }
         }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
+
     }
 
     @Override
@@ -167,12 +172,14 @@ public class FriendListFragment extends ListFragment
             this.objects = objects;
         }
 
+
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
             User user = objects.get(position);
-            Event nextFreeTime = user.nextFreeTimePeriod();
-
+            Event eventShown = user.currentGap();
+            if(eventShown == null) eventShown = user.nextFreeTimePeriod();
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.item_friend, null);
@@ -188,14 +195,13 @@ public class FriendListFragment extends ListFragment
             TextView nextFreeTimeHourTextView = (TextView) view.findViewById(R.id.nextFreeTime);
             TextView nextFreeTimeHourNameTextView = (TextView) view.findViewById(R.id.nextFreeTimeName);
 
-            if(nextFreeTime != null)
+            if(eventShown != null)
             {
                 DecimalFormat mFormat = new DecimalFormat("00");
                 String postFix = "AM";
 
-                String name = nextFreeTime.getName().get();
-                int hour = nextFreeTime.getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
-                int minute = nextFreeTime.getStartHour().get(Calendar.MINUTE);
+                int hour = eventShown.getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
+                int minute = eventShown.getStartHour().get(Calendar.MINUTE);
                 if(hour > 12)
                 {
                     hour-=12;
@@ -204,7 +210,7 @@ public class FriendListFragment extends ListFragment
                 String time = mFormat.format(hour) +  ":" + mFormat.format(minute) + " " + postFix;
 
                 nextFreeTimeHourTextView.setText(time);
-                nextFreeTimeHourNameTextView.setText(name);
+                nextFreeTimeHourNameTextView.setText(eventShown.getName().or(""));
             }
             else
             {
@@ -212,9 +218,9 @@ public class FriendListFragment extends ListFragment
                 nextFreeTimeHourNameTextView.setText("");
             }
 
-
-
             return view;
         }
+
+
     }
 }

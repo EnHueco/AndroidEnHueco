@@ -33,6 +33,9 @@ dependencies {
     // Rounded images
     compile 'com.makeramen:roundedimageview:2.2.1'
 
+    //
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+
     compile 'com.github.alamkanak:android-week-view:1.2.3'
     compile 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     compile 'com.google.zxing:core:3.2.0'
