@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.diegoalejogm.enhueco" >
+          package="com.diegoalejogm.enhueco">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
 
     <application
@@ -17,9 +17,9 @@
         android:theme="@style/AppTheme.NoActionBar" >
         <activity android:name=".view.StartActivity" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".view.LoginActivity" >
@@ -65,18 +65,22 @@
         </activity>
         <activity android:name=".view.SearchNewFriendsActivity" >
             <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                    android:name="android.app.searchable"
+                    android:resource="@xml/searchable"/>
         </activity>
         <activity android:name=".view.SearchResultsActivity" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".view.SelectCalendarActivity"
             android:label="@string/title_activity_select_calendar"
             android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+                android:name=".view.SettingsActivity"
+                android:label="@string/title_activity_settings">
         </activity>
     </application>
 

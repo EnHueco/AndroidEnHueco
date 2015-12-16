@@ -3,20 +3,23 @@ package com.diegoalejogm.enhueco.view;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.RectF;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.R;
-import android.support.v7.widget.Toolbar;
-
-import java.util.*;
-
+import com.diegoalejogm.enhueco.Model.MainClasses.Event;
+import com.diegoalejogm.enhueco.Model.MainClasses.Schedule;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.R;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
 
 public class ScheduleActivity extends AppCompatActivity implements WeekView.EventLongPressListener, WeekView.EventClickListener, WeekView.MonthChangeListener, WeekView.EmptyViewClickListener
 {
@@ -38,6 +41,8 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         if (schedule != System.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
 
         mWeekView = (WeekView) findViewById(R.id.weekView);
+
+        mWeekView.setNumberOfVisibleDays(3);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Mi Horario");

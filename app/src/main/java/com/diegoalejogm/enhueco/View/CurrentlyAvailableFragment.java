@@ -1,10 +1,15 @@
 package com.diegoalejogm.enhueco.view;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.Event;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.Model.Other.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
@@ -22,7 +28,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * A fragment representing a list of Items.
@@ -74,12 +82,39 @@ public class CurrentlyAvailableFragment extends ListFragment
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+        appBarLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser)
         {
+            //((MainTabbedActivity) getActivity()).getWindow().setStatusBarColor(getResources().getColor(R.color.mb_gray)=;
+            final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+
+            Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+            Integer colorTo = ContextCompat.getColor(getContext(), R.color.colorPrimary);
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+            colorAnimation.setDuration(400);
+
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+            {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator)
+                {
+                    appBarLayout.setBackgroundColor((Integer)animator.getAnimatedValue());
+                }
+            });
+            colorAnimation.start();
+
             refresh();
             System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }

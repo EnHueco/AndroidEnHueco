@@ -1,29 +1,31 @@
 package com.diegoalejogm.enhueco.view;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.Event;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.Model.MainClasses.User;
 import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.R;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
@@ -56,9 +58,6 @@ public class FriendListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-
-
 
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.getInstance().getAppUser().getFriends());
         setListAdapter(friendArrayAdapter);
@@ -100,6 +99,11 @@ public class FriendListFragment extends ListFragment
         }
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
 
     @Override
     public void onDetach()
@@ -131,6 +135,8 @@ public class FriendListFragment extends ListFragment
     {
         super.onActivityCreated(savedInstanceState);
         setEmptyText("No tienes amigos. \n Selecciona AGREGAR para agregar uno");
+        getListView().setFastScrollEnabled(true);
+        getListView().setFastScrollAlwaysVisible(true);
     }
 
     @Override
@@ -140,6 +146,24 @@ public class FriendListFragment extends ListFragment
 
         if (isVisibleToUser)
         {
+            final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
+
+            Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+            Integer colorTo = ContextCompat.getColor(getContext(), R.color.colorPrimary);
+
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+            colorAnimation.setDuration(400);
+
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+            {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator)
+                {
+                    appBarLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
+                }
+            });
+            colorAnimation.start();
+
             refresh();
             System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
         }
@@ -160,16 +184,40 @@ public class FriendListFragment extends ListFragment
     {
     }
 
-    public class FriendsArrayAdapter extends ArrayAdapter<User>
+    public class FriendsArrayAdapter extends ArrayAdapter<User> implements SectionIndexer
     {
 
         Context context;
         List<User> objects;
+        HashMap<String, Integer> mapIndex;
+        String[] sections;
+
         public FriendsArrayAdapter(Context context, int resource, List<User> objects)
         {
             super(context, resource, objects);
             this.context = context;
             this.objects = objects;
+
+            mapIndex = new LinkedHashMap<String, Integer>();
+
+            for (int x = 0; x < objects.size(); x++) {
+                String user = objects.get(x).getUsername();
+                String ch = user.substring(0, 1);
+                ch = ch.toUpperCase(Locale.US);
+
+                // HashMap will prevent duplicates
+                mapIndex.put(ch, x);
+            }
+            
+            // create a list from the set to sort
+            Set<String> sectionLetters = mapIndex.keySet();
+            ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+
+            Collections.sort(sectionList);
+
+            sections = new String[sectionList.size()];
+
+            sectionList.toArray(sections);
         }
 
 
@@ -222,5 +270,22 @@ public class FriendListFragment extends ListFragment
         }
 
 
+        @Override
+        public Object[] getSections()
+        {
+            return sections;
+        }
+
+        @Override
+        public int getPositionForSection(int sectionIndex)
+        {
+            return mapIndex.get(sections[sectionIndex]);
+        }
+
+        @Override
+        public int getSectionForPosition(int position)
+        {
+            return 0;
+        }
     }
 }

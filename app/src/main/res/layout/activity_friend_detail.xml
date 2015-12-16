@@ -1,143 +1,109 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              tools:context="com.diegoalejogm.enhueco.view.FriendDetailActivity"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:fancy="http://schemas.android.com/apk/res-auto"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
+		>
 
-	<FrameLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
+	<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/backgroundImageImageView"
+			android:scaleType="centerCrop"
+			android:layout_margin="0dp"
+			/>
+
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+					xmlns:fancy="http://schemas.android.com/apk/res-auto"
+					xmlns:tools="http://schemas.android.com/tools"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:paddingTop="98dp"
+					tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
 			>
 
-		<ImageView
-				android:layout_width="fill_parent"
-				android:id="@+id/friendImageImageView"
-				android:layout_height="fill_parent"
-				android:layout_margin="0dp"
-				android:scaleType="centerCrop"
-				android:adjustViewBounds="true"
-				/>
-
-		<LinearLayout
-				android:layout_width="fill_parent"
+		<RelativeLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="start|bottom"
-				android:orientation="vertical"
-				android:layout_marginStart="30dp"
-				android:layout_marginLeft="15dp"
-				android:layout_marginEnd="150dp"
-				android:layout_marginRight="150dp"
-				android:layout_marginBottom="20dp">
+				android:gravity="center_horizontal"
+				android:paddingTop="20dp"
+				>
+
+			<de.hdodenhof.circleimageview.CircleImageView
+					xmlns:app="http://schemas.android.com/apk/res-auto"
+					android:layout_width="190dp"
+					android:layout_height="190dp"
+					android:scaleType="centerCrop"
+					android:layout_margin="0dp"
+					android:id="@+id/imageImageView"
+					android:layout_centerHorizontal="true"/>
 
 			<TextView
-					android:layout_width="fill_parent"
+					android:layout_marginTop="8dp"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:textSize="20sp"
+					android:textSize="18sp"
+					android:text="Pepito Alberto"
+					android:layout_below="@id/imageImageView"
 					android:textColor="#FFFFFF"
-					android:text="Diego Alejandro Gómez Mosquera"
+					android:gravity="center"
 					android:maxLines="2"
-					android:id="@+id/friendNameTextView"/>
+					android:id="@+id/firstNamesTextView"/>
 
 			<TextView
-					android:layout_width="142dp"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="da.gomez11"
+					android:textSize="18sp"
+					android:gravity="center_horizontal"
+					android:text="Pérez Uribe"
 					android:textColor="#FFFFFF"
-					android:id="@+id/friendUsernameTextView"/>
-		</LinearLayout>
-	</FrameLayout>
+					android:layout_below="@+id/firstNamesTextView"
+					android:id="@+id/lastNamesTextView"/>
+		</RelativeLayout>
 
-	<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="-30dp"
-			android:layout_marginBottom="5dp"
-			android:layout_gravity="end">
-
-		<!--<android.support.design.widget.FloatingActionButton-->
-				<!--android:id="@+id/favoriteIcon"-->
-				<!--android:layout_width="wrap_content"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:tint="@android:color/white"-->
-				<!--android:src="@android:drawable/ic_input_add"-->
-				<!--android:layout_marginRight="15dp"-->
-				<!--android:layout_marginEnd="15dp"/>-->
-
-		<android.support.design.widget.FloatingActionButton
-				android:id="@+id/calendarButton"
-				android:layout_width="wrap_content"
+		<RelativeLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:tint="@android:color/white"
-				android:src="@android:drawable/ic_menu_my_calendar"
-				android:layout_marginRight="30dp"
-				android:layout_marginEnd="30dp"/>
+				android:gravity="bottom"
+				android:paddingTop="30dp"
+				android:paddingBottom="20dp"
+				android:layout_alignParentBottom="true">
 
-	</LinearLayout>
+			<mehdi.sakout.fancybuttons.FancyButton
+					android:id="@+id/commonFreeTimePeriodsButton"
+					android:layout_width="160dp"
+					android:layout_height="48dp"
+					android:layout_centerHorizontal="true"
+					android:paddingLeft="20dp"
+					android:paddingRight="20dp"
+					fancy:fb_defaultColor="#AABBBBBB"
+					fancy:fb_iconPosition="left"
+					fancy:fb_radius="30dp"
+					fancy:fb_text="Huecos en común"
+					fancy:fb_textColor="#FFFFFF"
+					android:onClick="onCommonFreeTimePeriodsButtonPressed"
+					/>
 
-	<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="-10dp"
-			android:paddingBottom="20dp"
-			android:orientation="horizontal"
-			android:gravity="center"
-			>
+			<mehdi.sakout.fancybuttons.FancyButton
+					android:id="@+id/viewScheduleButton"
+					android:layout_marginTop="8dp"
+					android:layout_below="@id/commonFreeTimePeriodsButton"
+					android:layout_width="160dp"
+					android:layout_height="48dp"
+					android:layout_centerHorizontal="true"
+					android:paddingLeft="20dp"
+					android:paddingRight="20dp"
+					fancy:fb_defaultColor="#AABBBBBB"
+					fancy:fb_iconPosition="left"
+					fancy:fb_radius="30dp"
+					fancy:fb_text="Ver Horario"
+					fancy:fb_textColor="#FFFFFF"
+					android:onClick="onViewScheduleButtonPressed"
+					/>
 
-		<mehdi.sakout.fancybuttons.FancyButton
-				xmlns:fancy="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/fancyBtnWhatsapp"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:padding="13dp"
-				android:layout_marginLeft="5dp"
-				android:layout_marginRight="5dp"
-				fancy:fb_borderColor="#FFFFFF"
-				fancy:fb_borderWidth="1dp"
-				fancy:fb_defaultColor="#43d854"
-				fancy:fb_focusColor="#02B418"
-				fancy:fb_fontIconResource="&#xf232;"
-				fancy:fb_iconPosition="left"
-				fancy:fb_radius="50dp"
-				fancy:fb_textColor="#FFFFFF"
-				/>
+		</RelativeLayout>
 
-		<mehdi.sakout.fancybuttons.FancyButton
-				xmlns:fancy="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/fancyBtnCall"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:padding="13dp"
-				fancy:fb_borderWidth="1dp"
-				android:layout_marginLeft="5dp"
-				android:layout_marginRight="5dp"
-				fancy:fb_defaultColor="#2ebd59"
-				fancy:fb_focusColor="#03882B"
-				fancy:fb_fontIconResource="&#xf095;"
-				fancy:fb_iconPosition="left"
-				fancy:fb_radius="50dp"
-				fancy:fb_textColor="#FFFFFF"
-				/>
+	</RelativeLayout>
 
-		<mehdi.sakout.fancybuttons.FancyButton
-				xmlns:fancy="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/fancyBtnCommonFreeTimePeriods"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:padding="13dp"
-				fancy:fb_borderWidth="1dp"
-				fancy:fb_defaultColor="#00704a"
-				android:layout_marginLeft="5dp"
-				android:layout_marginRight="5dp"
-				fancy:fb_focusColor="#003C28"
-				fancy:fb_fontIconResource="&#xf274;"
-				fancy:fb_iconPosition="left"
-				fancy:fb_radius="50dp"
-				fancy:fb_textColor="#FFFFFF"
-				/>
-
-	</LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
