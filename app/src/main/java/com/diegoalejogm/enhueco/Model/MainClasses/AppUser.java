@@ -23,9 +23,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 
-/**
- * Created by Diego on 10/11/15.
- */
 public class AppUser extends User implements Serializable
 {
     private static final String LOG = "AppUser";
@@ -427,6 +424,16 @@ public class AppUser extends User implements Serializable
             }
 
         });
+    }
+
+    /**
+     * Posts an instant free time period that everyone sees and that overrides any classes present in the app user's schedule during the instant free time period duration.
+     * Network operation must succeed immediately or else the newFreeTimePeriod is discarded.
+     * @param newFreeTimePeriod Event that represents the free time period to be posted
+     */
+    public void postInstantFreeTime (Event newFreeTimePeriod, BasicOperationCompletionListener listener)
+    {
+        listener.onSuccess();
     }
 
     public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)

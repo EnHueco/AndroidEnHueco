@@ -14,7 +14,7 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="@dimen/appbar_padding_top"
 			android:theme="@style/AppTheme.AppBarOverlay"
-			android:background="#00A286">
+			android:background="@color/defaultToolbarColor">
 
 		<android.support.v7.widget.Toolbar
 				android:id="@+id/toolbar"

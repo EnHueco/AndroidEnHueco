@@ -100,8 +100,8 @@ public class Event implements Serializable
         try
         {
             object.put("type", type);
-            object.put("name", name);
-            object.put("location", location);
+            object.put("name", name.orNull());
+            object.put("location", location.orNull());
             object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
             object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
             object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));

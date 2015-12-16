@@ -91,6 +91,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_tabbed, menu);
+
+        menu.findItem(R.id.action_search).setVisible(false);
+
         if (tabLayout.getSelectedTabPosition() == 0)
         {
             menu.findItem(R.id.action_add_friend).setVisible(false);
@@ -100,13 +103,16 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
         if (tabLayout.getSelectedTabPosition() == 1)
         {
+            menu.findItem(R.id.action_turn_invisible).setVisible(false);
+            menu.findItem(R.id.action_im_available).setVisible(false);
             menu.findItem(R.id.action_settings).setVisible(false);
         }
         if (tabLayout.getSelectedTabPosition() == 2)
         {
+            menu.findItem(R.id.action_turn_invisible).setVisible(false);
+            menu.findItem(R.id.action_im_available).setVisible(false);
             menu.findItem(R.id.action_add_friend).setVisible(false);
             menu.findItem(R.id.action_requests).setVisible(false);
-            menu.findItem(R.id.action_search).setVisible(false);
         }
 
         return true;
@@ -289,6 +295,16 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void onSettingsButtonPressed(MenuItem item)
     {
         startActivity(new Intent(this, SettingsActivity.class));
+    }
+
+    public void onTurnInvisibleButtonPressed(MenuItem item)
+    {
+    }
+
+    public void onImAvailableButtonPressed(MenuItem item)
+    {
+        InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
+        fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
     }
 
     /**

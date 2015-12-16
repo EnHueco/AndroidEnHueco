@@ -4,6 +4,20 @@
       tools:context="com.diegoalejogm.enhueco.View.MainTabbedActivity">
 
 	<item
+			android:id="@+id/action_turn_invisible"
+			android:icon="@drawable/ic_invisible"
+			android:title="@string/action_turn_ivisible"
+			app:showAsAction="ifRoom"
+			android:onClick="onTurnInvisibleButtonPressed"/>
+
+	<item
+			android:id="@+id/action_im_available"
+			android:icon="@drawable/ic_im_available"
+			android:title="@string/action_im_available"
+			android:onClick="onImAvailableButtonPressed"
+			app:showAsAction="ifRoom"/>
+
+	<item
 			android:id="@+id/action_requests"
 			android:title="@string/requests"
 			android:orderInCategory="100"
