@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 
 public class LoginActivity extends AppCompatActivity

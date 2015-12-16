@@ -8,7 +8,7 @@ import android.view.Display;
 import android.widget.ImageView;
 import com.diegoalejogm.enhueco.R;
 import net.glxn.qrgen.android.QRCode;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 
 
 public class ShowQRActivity extends AppCompatActivity

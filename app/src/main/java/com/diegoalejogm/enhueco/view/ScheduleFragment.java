@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.diegoalejogm.enhueco.Model.MainClasses.Event;
-import com.diegoalejogm.enhueco.Model.MainClasses.Schedule;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.Event;
+import com.diegoalejogm.enhueco.model.mainClasses.Schedule;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.ArrayList;

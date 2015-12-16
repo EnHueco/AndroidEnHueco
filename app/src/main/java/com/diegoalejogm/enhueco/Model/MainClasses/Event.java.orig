@@ -1,11 +1,12 @@
-package com.diegoalejogm.enhueco.model.mainClasses;
+package com.diegoalejogm.enhueco.Model.MainClasses;
 
-import com.diegoalejogm.enhueco.model.other.Utilities;
+import com.diegoalejogm.enhueco.Model.Other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -135,7 +136,11 @@ public class Event implements Serializable, Comparable<Event>
         {
             object.put("type", type);
             object.put("name", name.orNull());
+<<<<<<< HEAD
             object.put("location", location.orNull());
+=======
+            object.put("location", location);
+>>>>>>> 5c1f229b2e0b8164cf2dfb9ac7dc47b38a223de3
             object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
             object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
             object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));

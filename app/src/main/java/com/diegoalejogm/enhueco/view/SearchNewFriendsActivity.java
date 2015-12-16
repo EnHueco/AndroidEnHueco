@@ -18,8 +18,8 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.*;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import mehdi.sakout.fancybuttons.FancyButton;
 

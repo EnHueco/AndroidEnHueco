@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
 import java.io.Serializable;
 import java.text.DateFormat;

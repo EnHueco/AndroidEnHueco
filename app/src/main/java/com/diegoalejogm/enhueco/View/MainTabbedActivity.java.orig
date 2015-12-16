@@ -21,8 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
-import com.diegoalejogm.enhueco.model.mainClasses.*;
-import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.Model.MainClasses.*;
+import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -314,6 +314,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
+<<<<<<< HEAD:app/src/main/java/com/diegoalejogm/enhueco/View/MainTabbedActivity.java
     public void onTurnInvisibleButtonPressed(MenuItem item)
     {
     }
@@ -324,7 +325,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
     }
 
-    public void onProfileImagePressed(View view)
+=======
+    public void profileImagePressed(View view)
     {
         pickImage();
     }
@@ -339,6 +341,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
 
 
+>>>>>>> 5c1f229b2e0b8164cf2dfb9ac7dc47b38a223de3:app/src/main/java/com/diegoalejogm/enhueco/view/MainTabbedActivity.java
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

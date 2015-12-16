@@ -1,12 +1,12 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
+import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.managers.connectionManager.*;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.view.SearchNewFriendsActivity;
 import com.google.common.base.Optional;
 import org.json.JSONArray;

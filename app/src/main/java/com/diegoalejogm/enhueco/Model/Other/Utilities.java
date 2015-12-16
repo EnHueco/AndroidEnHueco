@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Other;
+package com.diegoalejogm.enhueco.model.other;
 
 import android.graphics.Bitmap;
 

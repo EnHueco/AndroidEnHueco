@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
+package com.diegoalejogm.enhueco.model.managers.connectionManager;
 
 /**
  * Created by Diego on 10/11/15.

@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

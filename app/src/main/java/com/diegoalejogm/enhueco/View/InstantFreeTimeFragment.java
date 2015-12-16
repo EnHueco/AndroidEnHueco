@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.View;
+package com.diegoalejogm.enhueco.view;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import com.diegoalejogm.enhueco.Model.MainClasses.BasicOperationCompletionListener;
-import com.diegoalejogm.enhueco.Model.MainClasses.Event;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.BasicOperationCompletionListener;
+import com.diegoalejogm.enhueco.model.mainClasses.Event;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
 

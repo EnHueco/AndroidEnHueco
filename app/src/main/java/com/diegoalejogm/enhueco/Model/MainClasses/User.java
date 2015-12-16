@@ -1,6 +1,6 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
-import com.diegoalejogm.enhueco.Model.Managers.ProximityManager;
+import com.diegoalejogm.enhueco.model.managers.ProximityManager;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;

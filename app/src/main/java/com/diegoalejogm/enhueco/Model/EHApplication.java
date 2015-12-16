@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model;
+package com.diegoalejogm.enhueco.model;
 
 import android.app.Application;
 import android.content.Context;

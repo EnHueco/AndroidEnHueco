@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
 /**
  * Created by Diego on 10/11/15.

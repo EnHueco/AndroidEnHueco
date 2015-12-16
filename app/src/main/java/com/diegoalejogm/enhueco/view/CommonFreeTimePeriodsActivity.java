@@ -10,8 +10,8 @@ import android.view.View;
 
 import android.widget.Button;
 import android.widget.SearchView;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.*;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 import com.wefika.flowlayout.FlowLayout;
 

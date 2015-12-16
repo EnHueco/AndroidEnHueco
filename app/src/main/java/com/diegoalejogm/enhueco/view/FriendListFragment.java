@@ -18,16 +18,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.Event;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.MainClasses.User;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.model.mainClasses.Event;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.User;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.R;
 
 import java.text.DecimalFormat;
 import java.util.*;
 
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;

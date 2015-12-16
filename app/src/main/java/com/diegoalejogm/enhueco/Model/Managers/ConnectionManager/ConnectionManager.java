@@ -1,10 +1,10 @@
-package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
+package com.diegoalejogm.enhueco.model.managers.connectionManager;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
-import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
+import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -53,7 +53,7 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.model.mainClasses.System.getInstance().getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
@@ -85,7 +85,7 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.model.mainClasses.System.getInstance().getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
@@ -135,7 +135,7 @@ public class ConnectionManager
             public Map<String, String> getHeaders() throws AuthFailureError
             {
                 Map headers = new HashMap();
-                if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
+                if (com.diegoalejogm.enhueco.model.mainClasses.System.getInstance().getAppUser() != null)
                 {
                     headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
                     headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
@@ -199,7 +199,7 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.model.mainClasses.System.getInstance().getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());
@@ -216,7 +216,7 @@ public class ConnectionManager
                 public Map<String, String> getHeaders() throws AuthFailureError
                 {
                     Map headers = new HashMap();
-                    if (com.diegoalejogm.enhueco.Model.MainClasses.System.getInstance().getAppUser() != null)
+                    if (com.diegoalejogm.enhueco.model.mainClasses.System.getInstance().getAppUser() != null)
                     {
                         headers.put("X-USER-ID", System.getInstance().getAppUser().getUsername());
                         headers.put("X-USER-TOKEN", System.getInstance().getAppUser().getToken());

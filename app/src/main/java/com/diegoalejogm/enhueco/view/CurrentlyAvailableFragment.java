@@ -17,11 +17,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.Event;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.MainClasses.User;
-import com.diegoalejogm.enhueco.Model.Other.Tuple;
+import com.diegoalejogm.enhueco.model.mainClasses.Event;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.mainClasses.User;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
@@ -31,7 +31,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * A fragment representing a list of Items.

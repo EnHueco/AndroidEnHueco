@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.mainClasses;
 
 import org.json.JSONArray;
 import org.json.JSONException;
