@@ -105,7 +105,7 @@ public class AppUser extends User implements Serializable
                         Schedule schedule = Schedule.fromJSON(scheduleUpdatedOn, responseObject.getJSONArray("gap_set"));
                         setSchedule(schedule);
 
-                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+                        Intent intent = new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
                     }
                     catch (Exception e)

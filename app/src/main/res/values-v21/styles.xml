@@ -4,6 +4,7 @@
 	<!--</style>-->
 	<style name="Dialog" parent="AppTheme.NoActionBar">
 		<item name="android:timePickerStyle">@style/AppTheme.NoActionBar</item>
+		<item name="android:timePickerMode">spinner</item>
 	</style>
 
 	<style name="AppTheme.NoActionBar.BlackStatusBar" parent="AppTheme.NoActionBar">

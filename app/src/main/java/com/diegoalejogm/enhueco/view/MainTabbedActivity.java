@@ -67,7 +67,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("En Hueco");
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -90,6 +89,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        getSupportActionBar().setTitle("En Hueco");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_tabbed, menu);
         if (tabLayout.getSelectedTabPosition() == 0)
@@ -168,10 +168,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result.getContents() == null) {
-            Log.d("MainActivity", "Cancelled scan");
-            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+
+
+        if(resultCode == Activity.RESULT_CANCELED)
+        {
+            // Request cancelled
         }
+        // Image Selection
         else if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
             if (data == null) {
                 //Display an error
@@ -187,7 +190,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             }
             //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
         }
-        else {
+
+        // QR Code Scan Cancelled
+        else if(result.getContents() == null) {
+            Log.d("MainActivity", "Cancelled scan");
+            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+        }
+        // QR Code Scan Succeed
+        else
+        {
             Log.d("MainActivity", "Scanned");
             try
             {

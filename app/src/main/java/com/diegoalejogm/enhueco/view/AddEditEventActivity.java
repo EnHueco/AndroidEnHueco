@@ -133,7 +133,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
 
         else if (v == endTimeText)
         {
-            TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
+            TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
             {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute)

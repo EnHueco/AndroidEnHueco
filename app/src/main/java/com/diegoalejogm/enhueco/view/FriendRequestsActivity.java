@@ -14,11 +14,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.Model.MainClasses.*;
 import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.Model.Other.EHURLS;
 import com.diegoalejogm.enhueco.R;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.util.ArrayList;
@@ -141,6 +146,9 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
             TextView tv1 = (TextView) view.findViewById(R.id.fullNameTextView);
             TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
+
+            ImageView iv = (ImageView) view.findViewById(R.id.requestIcon);
+            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().into(iv);
 
             FancyButton fb = (FancyButton) view.findViewById(R.id.btn_acceptFriendship);
 
