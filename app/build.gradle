@@ -43,6 +43,16 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     //External dependencies
+
+    // Image download framework
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // Rounded images
+    compile 'com.makeramen:roundedimageview:2.2.1'
+
+    //
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
+
     // commit hash
     compile 'com.github.medyo:fancybuttons:1.5@aar'
     compile 'com.github.medyo:fancybuttons:1.5@aar'

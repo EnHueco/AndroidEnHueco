@@ -1,63 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-				android:paddingTop="10dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
                 android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
 		>
 
 	<ImageView
+			android:id="@+id/friendIcon"
 			android:layout_width="70dp"
 			android:layout_height="70dp"
-			android:id="@+id/friendImageImageView"
-			android:layout_alignParentTop="true"
+			android:layout_marginRight="16dp"
 			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"/>
-
-	<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="18dp"
-			android:text="Pepito Alberto Pérez Uribe"
-			android:id="@+id/friendNameTextView"
 			android:layout_alignParentTop="true"
-			android:layout_toRightOf="@+id/friendImageImageView"
-			android:layout_toEndOf="@+id/friendImageImageView"/>
-
-	<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="24dp"
-			android:id="@+id/timeLinearLayout"
-			android:layout_toRightOf="@+id/friendImageImageView"
-			android:layout_below="@+id/friendNameTextView">
-
-		<ImageView
-				android:layout_width="15dp"
-				android:layout_height="15dp"
-				android:id="@+id/imageView2"
-				android:layout_gravity="center_vertical"
-				/>
-
-		<TextView
-				android:layout_gravity="center_vertical"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:text="6:30 PM"
-				android:id="@+id/freeTimePeriodRemainingTimeText"
-				/>
-	</LinearLayout>
+			android:layout_alignParentStart="true"
+			/>
 
 	<TextView
-			android:layout_toRightOf="@+id/friendImageImageView"
-			android:layout_below="@+id/timeLinearLayout"
-			android:layout_width="wrap_content"
+			android:layout_width="fill_parent"
+			android:maxLines="1"
 			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:text="Hueco (ML 507)"
-			android:textColor="@color/mb_blue"
-			android:id="@+id/a"
+			android:textSize="16sp"
+			android:text="Pepito Alberto Perez Rodriguez"
+			android:id="@+id/nameTextView"
+			android:textColor="@android:color/black"
+			android:layout_alignParentTop="true"
+			android:layout_toRightOf="@id/friendIcon"
 			/>
+	<TextView
+			android:layout_width="fill_parent"
+			android:maxLines="1"
+			android:layout_height="wrap_content"
+			android:textSize="13sp"
+			android:text="10:30 AM"
+			android:id="@+id/freeTimeEndTime"
+			android:layout_below="@id/nameTextView"
+			android:layout_toRightOf="@id/friendIcon"
+			/>
+
+	<TextView
+			android:layout_width="fill_parent"
+			android:maxLines="1"
+			android:layout_height="wrap_content"
+			android:textSize="12sp"
+			android:text="Swimming"
+			android:id="@+id/freeTimeName"
+			android:textColor="@android:color/holo_blue_dark"
+			android:layout_below="@id/freeTimeEndTime"
+			android:layout_toRightOf="@id/friendIcon"
+			/>
+
+
 
 </RelativeLayout>

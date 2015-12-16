@@ -10,7 +10,7 @@ import com.diegoalejogm.enhueco.Model.EHApplication;
 import com.diegoalejogm.enhueco.Model.Managers.SynchronizationManager;
 import com.diegoalejogm.enhueco.Model.Other.*;
 import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
-import com.diegoalejogm.enhueco.View.FriendRequestsActivity;
+import com.diegoalejogm.enhueco.view.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;

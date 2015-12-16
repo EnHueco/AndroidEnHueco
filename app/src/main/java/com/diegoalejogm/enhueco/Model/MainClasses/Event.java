@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -14,8 +15,42 @@ import java.util.TimeZone;
  * Created by Diego on 10/9/15.
  */
 
-public class Event implements Serializable
+public class Event implements Serializable, Comparable<Event>
 {
+    @Override
+    public int compareTo(Event another)
+    {
+        if(another == null) return 1;
+        Calendar thisLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        thisLocal.set(Calendar.HOUR_OF_DAY, this.getStartHour().get(Calendar.HOUR_OF_DAY));
+        thisLocal.set(Calendar.MINUTE, this.getStartHour().get(Calendar.MINUTE));
+        thisLocal.setTimeZone(TimeZone.getDefault());
+
+        Calendar anotherLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        anotherLocal.set(Calendar.HOUR_OF_DAY, another.getStartHour().get(Calendar.HOUR_OF_DAY));
+        anotherLocal.set(Calendar.MINUTE, another.getStartHour().get(Calendar.MINUTE));
+        anotherLocal.setTimeZone(TimeZone.getDefault());
+
+        // this has a greater time
+        if((thisLocal.get(Calendar.HOUR_OF_DAY) > anotherLocal.get(Calendar.HOUR_OF_DAY))
+                || ( thisLocal.get(Calendar.HOUR_OF_DAY) == anotherLocal.get(Calendar.HOUR_OF_DAY) &&
+                     thisLocal.get(Calendar.MINUTE) > anotherLocal.get(Calendar.MINUTE))
+                )
+            return 1;
+        // both have same time
+        else if ( thisLocal.get(Calendar.HOUR_OF_DAY) == anotherLocal.get(Calendar.HOUR_OF_DAY) &&
+                thisLocal.get(Calendar.MINUTE) == anotherLocal.get(Calendar.MINUTE))
+            return 0;
+        // another has greater time
+        else return -1;
+    }
+
+    public boolean isAfterCurrentTime()
+    {
+        Event event = new Event(null, Calendar.getInstance(TimeZone.getTimeZone("UTC")),null);
+        return this.compareTo(event) > 0;
+    }
+
     public enum EventType
     {
         FREE_TIME, CLASS
@@ -72,7 +107,7 @@ public class Event implements Serializable
         String typeString = object.getString("type");
         String name = object.getString("name");
         String location = object.getString("location");
-        EventType type = typeString.equals("FREE_TIME")? EventType.FREE_TIME : EventType.CLASS;
+        EventType type = typeString.equals("FREE_TIME") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
 
         // Weekdays
         int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));
@@ -175,5 +210,38 @@ public class Event implements Serializable
         globalCalendar.set(Calendar.SECOND, 0);
 
         return globalCalendar.getTime();
+    }
+
+    public Calendar getStartHourCalendarInLocalTimezone()
+    {
+        Calendar cal = ((Calendar)startHour.clone());
+        cal.setTimeZone(TimeZone.getDefault());
+        return cal;
+    }
+
+    public Calendar getEndHourCalendarInLocalTimezone()
+    {
+        Calendar cal = ((Calendar)endHour.clone());
+        cal.setTimeZone(TimeZone.getDefault());
+        return cal;
+    }
+
+    public boolean isCurrentlyHappening()
+    {
+        Calendar current = Calendar.getInstance(TimeZone.getDefault());
+        Calendar startHour = this.getStartHourCalendarInLocalTimezone();
+        Calendar endHour = this.getEndHourCalendarInLocalTimezone();
+
+        boolean isAfterStart = current.get(Calendar.HOUR_OF_DAY) > startHour.get(Calendar.HOUR_OF_DAY)
+                || ( current.get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY) &&
+                    current.get(Calendar.MINUTE) >= startHour.get(Calendar.MINUTE)
+                    );
+
+        boolean isBeforeEnd = current.get(Calendar.HOUR_OF_DAY) < endHour.get(Calendar.HOUR_OF_DAY)
+                || ( current.get(Calendar.HOUR_OF_DAY) == endHour.get(Calendar.HOUR_OF_DAY) &&
+                current.get(Calendar.MINUTE) < startHour.get(Calendar.MINUTE)
+        );
+
+        return isAfterStart && isBeforeEnd;
     }
 }

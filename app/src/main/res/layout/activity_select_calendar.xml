@@ -4,13 +4,13 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context="com.diegoalejogm.enhueco.View.SelectCalendarActivity">
+        tools:context="com.diegoalejogm.enhueco.view.SelectCalendarActivity">
 
         <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@id/container"
-                tools:context="com.diegoalejogm.enhueco.View.SelectCalendarActivity">
+                tools:context="com.diegoalejogm.enhueco.view.SelectCalendarActivity">
 
                 <android.support.design.widget.AppBarLayout
                         android:id="@+id/appbar"

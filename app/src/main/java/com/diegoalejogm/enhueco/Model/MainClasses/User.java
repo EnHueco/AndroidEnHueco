@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by Diego on 10/9/15.
@@ -218,7 +219,7 @@ public class User extends EHSynchronizable implements Serializable
         String scheduleUpdatedOnString = object.getString("schedule_updated_on");
         Date scheduleUpdatedOn = EHSynchronizable.dateFromServerString(scheduleUpdatedOnString);
 
-        Schedule.fromJSON(scheduleUpdatedOn, object.getJSONArray("gap_set"));
+        user.schedule = Schedule.fromJSON(scheduleUpdatedOn, object.getJSONArray("gap_set"));
 
         return user;
     }
@@ -230,4 +231,43 @@ public class User extends EHSynchronizable implements Serializable
     {
         super(null, null);
     }
+
+    public Event nextFreeTimePeriod()
+    {
+        Event ans = null;
+        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
+        {
+            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
+            boolean isAfterCurrentTime = event.isAfterCurrentTime();
+            if(isAfterCurrentTime && ( ans == null || event.compareTo(ans) < 0))
+            {
+                ans = event;
+            }
+        }
+        return ans;
+    }
+
+    public Event currentGap()
+    {
+        Event ans = null;
+        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
+        {
+            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
+            if(event.isCurrentlyHappening())
+            {
+                ans = event;
+                break;
+            }
+        }
+
+        return ans;
+
+    }
+
 }
