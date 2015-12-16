@@ -28,6 +28,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -59,7 +60,12 @@ public class CurrentlyAvailableFragment extends ListFragment
 
         // TODO: Change Adapter to display your content
 
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
+
+        List<Tuple<User, Event>> data = new ArrayList<>();
+
+        System.getInstance().getAppUser().getCurrentlyAvailableFriends();
+
+
 
         setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
                 0, data));

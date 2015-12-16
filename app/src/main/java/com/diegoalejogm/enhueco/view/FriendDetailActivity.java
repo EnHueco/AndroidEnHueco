@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,22 +17,20 @@ import com.diegoalejogm.enhueco.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-public class FriendDetailActivity extends Activity
+public class FriendDetailActivity extends AppCompatActivity
 {
     private User friend;
 
     private ImageView imageImageView;
     private ImageView backgroundImageView;
 
-    public FriendDetailActivity()
-    {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+
 
         for (User user : System.getInstance().getAppUser().getFriends())
         {
@@ -42,6 +42,11 @@ public class FriendDetailActivity extends Activity
         }
 
         setContentView(R.layout.activity_friend_detail);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(friend.getID());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView firstNamesTextView = (TextView) findViewById(R.id.firstNamesTextView);
         firstNamesTextView.setText(friend.getFirstNames());

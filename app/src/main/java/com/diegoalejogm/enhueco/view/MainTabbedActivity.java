@@ -1,5 +1,6 @@
 package com.diegoalejogm.enhueco.view;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
@@ -26,6 +27,8 @@ import com.diegoalejogm.enhueco.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,7 +171,23 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         if(result.getContents() == null) {
             Log.d("MainActivity", "Cancelled scan");
             Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-        } else {
+        }
+        else if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
+            if (data == null) {
+                //Display an error
+                return;
+            }
+            try
+            {
+                InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(data.getData());
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+            //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
+        }
+        else {
             Log.d("MainActivity", "Scanned");
             try
             {
@@ -288,6 +307,21 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     {
         startActivity(new Intent(this, SettingsActivity.class));
     }
+
+    public void profileImagePressed(View view)
+    {
+        pickImage();
+    }
+
+    private static final int PICK_PHOTO_FOR_AVATAR = 0;
+
+    public void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
+    }
+
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

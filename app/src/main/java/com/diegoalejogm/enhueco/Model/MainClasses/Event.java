@@ -135,7 +135,7 @@ public class Event implements Serializable, Comparable<Event>
         try
         {
             object.put("type", type);
-            object.put("name", name);
+            object.put("name", name.orNull());
             object.put("location", location);
             object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
             object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
