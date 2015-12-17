@@ -130,7 +130,7 @@ public class InstantFreeTimeFragment extends DialogFragment
             public void onClick(View v)
             {
                 Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTime);
-                System.getInstance().getAppUser().postInstantFreeTime(newFreeTimePeriod, new BasicOperationCompletionListener()
+                System.getInstance().getAppUser().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicOperationCompletionListener()
                 {
                     @Override
                     public void onSuccess()

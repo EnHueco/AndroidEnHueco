@@ -431,7 +431,7 @@ public class AppUser extends User implements Serializable
      * Network operation must succeed immediately or else the newFreeTimePeriod is discarded.
      * @param newFreeTimePeriod Event that represents the free time period to be posted
      */
-    public void postInstantFreeTime (Event newFreeTimePeriod, BasicOperationCompletionListener listener)
+    public void postInstantFreeTimePeriod(Event newFreeTimePeriod, BasicOperationCompletionListener listener)
     {
         listener.onSuccess();
     }
