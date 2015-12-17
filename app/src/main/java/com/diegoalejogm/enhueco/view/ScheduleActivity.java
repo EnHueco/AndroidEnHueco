@@ -16,10 +16,7 @@ import com.diegoalejogm.enhueco.model.mainClasses.Schedule;
 import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ScheduleActivity extends AppCompatActivity implements WeekView.EventLongPressListener, WeekView.EventClickListener, WeekView.MonthChangeListener, WeekView.EmptyViewClickListener
 {
@@ -122,12 +119,10 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
 
-            List<Event> currentWeekDayEvents = schedule.getWeekDays()[newEventWeekday].getEvents();
+            Collection<Event> currentWeekDayEvents = schedule.getWeekDays()[newEventWeekday].getEvents();
 
-            for (int j = 0; j < currentWeekDayEvents.size(); j++)
+            for (Event currentEvent: currentWeekDayEvents)
             {
-                Event currentEvent = currentWeekDayEvents.get(j);
-
                 Calendar startTimeEvent = (Calendar) currentEvent.getStartHour().clone();
                 startTimeEvent.setTimeZone(TimeZone.getDefault());
 

@@ -510,7 +510,7 @@ public class AppUser extends User implements Serializable
         }
     }
 
-    public String getEncodedRepresentation()
+    public String getStringEncodedRepresentation()
     {
         StringBuilder sb = new StringBuilder();
 
@@ -530,13 +530,14 @@ public class AppUser extends User implements Serializable
         sb.append(splitCharacter);
 
         boolean firstEvent = true;
+
         // Add events
-        for (int i = 1; i < getSchedule().getWeekDays().length; i++)
+        int i = 1;
+
+        for (DaySchedule currentDS: getSchedule().getWeekDays())
         {
-            DaySchedule currentDS = getSchedule().getWeekDays()[i];
-            for (int j = 0; j < currentDS.getEvents().size(); j++)
+            for (Event currentEvent: currentDS.getEvents())
             {
-                Event currentEvent = currentDS.getEvents().get(j);
                 Event.EventType eventType = currentEvent.getType();
                 DecimalFormat mFormat = new DecimalFormat("00");
 
@@ -556,6 +557,7 @@ public class AppUser extends User implements Serializable
                 sb.append(hourMinuteSeparationChacter);
                 sb.append(mFormat.format(currentEvent.getEndHour().get(Calendar.MINUTE)));
             }
+            i++;
         }
         sb.append(splitCharacter);
         return sb.toString();

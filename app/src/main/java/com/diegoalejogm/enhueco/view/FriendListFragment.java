@@ -18,18 +18,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.model.mainClasses.Event;
 import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.model.mainClasses.User;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
-import com.diegoalejogm.enhueco.R;
-
-import java.text.DecimalFormat;
-import java.util.*;
-
+import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * A fragment representing a list of Items.
@@ -225,8 +226,10 @@ public class FriendListFragment extends ListFragment
         public View getView(int position, View convertView, ViewGroup parent)
         {
             User user = objects.get(position);
-            Event eventShown = user.currentGap();
-            if(eventShown == null) eventShown = user.nextFreeTimePeriod();
+
+            Tuple<Optional<Event>, Optional<Event>> currentAndNextFreeTimePeriods = user.getCurrentAndNextFreeTimePeriods();
+
+            Optional<Event> eventShown = currentAndNextFreeTimePeriods.first.isPresent()? currentAndNextFreeTimePeriods.first : currentAndNextFreeTimePeriods.second;
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.item_friend, null);
@@ -242,13 +245,13 @@ public class FriendListFragment extends ListFragment
             TextView nextFreeTimeHourTextView = (TextView) view.findViewById(R.id.nextFreeTime);
             TextView nextFreeTimeHourNameTextView = (TextView) view.findViewById(R.id.nextFreeTimeName);
 
-            if(eventShown != null)
+            if(eventShown.isPresent())
             {
                 DecimalFormat mFormat = new DecimalFormat("00");
                 String postFix = "AM";
 
-                int hour = eventShown.getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
-                int minute = eventShown.getStartHour().get(Calendar.MINUTE);
+                int hour = eventShown.get().getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
+                int minute = eventShown.get().getStartHour().get(Calendar.MINUTE);
                 if(hour > 12)
                 {
                     hour-=12;
@@ -257,7 +260,7 @@ public class FriendListFragment extends ListFragment
                 String time = mFormat.format(hour) +  ":" + mFormat.format(minute) + " " + postFix;
 
                 nextFreeTimeHourTextView.setText(time);
-                nextFreeTimeHourNameTextView.setText(eventShown.getName().or(""));
+                nextFreeTimeHourNameTextView.setText(eventShown.get().getName().or(""));
             }
             else
             {

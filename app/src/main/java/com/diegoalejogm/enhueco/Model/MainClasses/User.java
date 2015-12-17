@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.model.mainClasses;
 
 import com.diegoalejogm.enhueco.model.managers.ProximityManager;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +10,8 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Diego on 10/9/15.
@@ -23,12 +25,17 @@ public class User extends EHSynchronizable implements Serializable
     private Optional<String> imageURL;
     private String phoneNumber;
 
+    /** (For efficiency) True if the user is near the App User at the current time, given the currentBSSID values. */
     private boolean isNearby;
+
     private Optional<String> currentBSSID;
 
     private Schedule schedule = new Schedule();
 
-//    public class SyncFields
+    private static final int currentBSSIDTimeToLive = 5; //5 Minutes
+
+    /** Last time we notified the app user that this user was nearby */
+    private Date lastNotifiedNearbyStatusDate;
 
     public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -122,9 +129,32 @@ public class User extends EHSynchronizable implements Serializable
         return currentBSSID;
     }
 
+    public Date getLastNotifiedNearbyStatusDate()
+    {
+        return lastNotifiedNearbyStatusDate;
+    }
+
+    public void setLastNotifiedNearbyStatusDate(Date lastNotifiedNearbyStatusDate)
+    {
+        this.lastNotifiedNearbyStatusDate = lastNotifiedNearbyStatusDate;
+    }
+
     public void setCurrentBSSID(Optional<String> currentBSSID)
     {
         this.currentBSSID = currentBSSID;
+
+        if (currentBSSID.isPresent())
+        {
+            Executors.newSingleThreadScheduledExecutor().schedule(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    setCurrentBSSID(Optional.<String>absent());
+                }
+            }, currentBSSIDTimeToLive, TimeUnit.MINUTES);
+        }
+
         refreshIsNearby();
     }
 
@@ -134,7 +164,7 @@ public class User extends EHSynchronizable implements Serializable
         isNearby = currentBSSID.isPresent() && appUser.getCurrentBSSID().isPresent() && ProximityManager.getSharedManager().accessPointsAreNear(currentBSSID.get(), appUser.getCurrentBSSID().get());
     }
 
-    /** Returns user current free time period, or nil if user is not free. */
+    /** Returns user's current free time period, or null if user is not free. */
     public Optional<Event> getCurrentFreeTimePeriod()
     {
         Date currentDate = new Date();
@@ -144,19 +174,54 @@ public class User extends EHSynchronizable implements Serializable
 
         for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
         {
-            if (event.getType().equals(Event.EventType.FREE_TIME))
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isCurrentlyHappening())
             {
-                Date startHourInCurrentDate = event.getStartHourInDate(currentDate);
-                Date endHourInCurrentDate = event.getEndHourInDate(currentDate);
-
-                if(currentDate.after(startHourInCurrentDate) && currentDate.before(endHourInCurrentDate))
-                {
-                    return Optional.of(event);
-                }
+                return Optional.of(event);
             }
         }
 
         return Optional.absent();
+    }
+
+    public Optional<Event> getNextFreeTimePeriod()
+    {
+        Optional<Event> nextFreeTimePeriod = Optional.absent();
+
+        Calendar localCalendar = Calendar.getInstance();
+        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
+        {
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isAfterCurrentTime())
+            {
+                return Optional.of(event);
+            }
+        }
+
+        return nextFreeTimePeriod;
+    }
+
+    /** Returns user's current and next free time periods. */
+    public Tuple<Optional<Event>, Optional<Event>> getCurrentAndNextFreeTimePeriods()
+    {
+        Optional<Event> currentFreeTime = Optional.absent();
+
+        Calendar localCalendar = Calendar.getInstance();
+        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
+        {
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isCurrentlyHappening())
+            {
+                currentFreeTime = Optional.of(event);
+            }
+            else if (event.isAfterCurrentTime())
+            {
+                return new Tuple<>(currentFreeTime, Optional.of(event));
+            }
+        }
+
+        return new Tuple<>(currentFreeTime, Optional.<Event>absent());
     }
 
     public Optional<Event> getNextEvent ()
@@ -223,51 +288,4 @@ public class User extends EHSynchronizable implements Serializable
 
         return user;
     }
-
-    /*
-        Returns user with values set to null
-     */
-    private User()
-    {
-        super(null, null);
-    }
-
-    public Event nextFreeTimePeriod()
-    {
-        Event ans = null;
-        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
-        {
-            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
-            boolean isAfterCurrentTime = event.isAfterCurrentTime();
-            if(isAfterCurrentTime && ( ans == null || event.compareTo(ans) < 0))
-            {
-                ans = event;
-            }
-        }
-        return ans;
-    }
-
-    public Event currentGap()
-    {
-        Event ans = null;
-        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
-        {
-            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
-            if(event.isCurrentlyHappening())
-            {
-                ans = event;
-                break;
-            }
-        }
-
-        return ans;
-
-    }
-
 }

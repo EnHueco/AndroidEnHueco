@@ -48,6 +48,7 @@ public class System
 
     public System ()
     {
+        loadDataFromPersistence();
         //deletePersistence(EHApplication.getAppContext());
     }
 
@@ -191,11 +192,11 @@ public class System
         return false;
     }
 
-    public boolean loadDataFromPersistence(Context context)
+    private boolean loadDataFromPersistence()
     {
         try
         {
-            FileInputStream fis = context.openFileInput(AppUser.FILE_NAME);
+            FileInputStream fis = EHApplication.getAppContext().openFileInput(AppUser.FILE_NAME);
             ObjectInputStream is = new ObjectInputStream(fis);
             appUser = (AppUser) is.readObject();
             is.close();
