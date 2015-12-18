@@ -1,23 +1,32 @@
 package com.diegoalejogm.enhueco.model.managers;
 
-import android.app.AlarmManager;
-import android.app.IntentService;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import com.diegoalejogm.enhueco.model.EHApplication;
-import com.diegoalejogm.enhueco.model.mainClasses.AppUser;
 import com.diegoalejogm.enhueco.model.mainClasses.Event;
 import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.User;
+import com.diegoalejogm.enhueco.model.managers.connectionManager.*;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.view.MainTabbedActivity;
 import com.google.common.base.Optional;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -28,7 +37,7 @@ import java.util.*;
 /**
  * Created by Diego on 11/9/15.
  */
-public class ProximityManager
+public class ProximityManager implements Serializable
 {
     // Values for persistence
     public static final String FILE_NAME = "proximityManager";
@@ -38,11 +47,11 @@ public class ProximityManager
     /** The interval used to report location (and get location from the app user's friends) when app user is available (i.e. in an app user's free time) */
     private static final int REPORTING_INTERVAL = 1000 * 60 * 5; //5 Minutes
 
+    public static final int MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS = 1000*60*80; //80 minutes
+
     private ProximityManager () {}
 
     private UndirectedGraph<String, DefaultEdge> wifiAccessPointsBSSIDSGraph = new SimpleGraph<>(DefaultEdge.class);
-
-    private PendingIntent reportingAlarmIntent;
 
     public static ProximityManager getSharedManager()
     {
@@ -67,6 +76,18 @@ public class ProximityManager
         }
     }
 
+    public class ProximityManagerReportingBootReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
+            {
+                ProximityManager.getSharedManager().scheduleReportingDuringCurrentOrNextFreeTimePeriods();
+            }
+        }
+    }
+
     public class ProximityManagerReportingService extends IntentService
     {
         // Must create a default constructor
@@ -85,13 +106,17 @@ public class ProximityManager
         @Override
         protected void onHandleIntent(Intent intent)
         {
+            Log.d("ProximityManager", "----------------------- Reporting !");
+
             //Report new visible access points and access point with best signal. On server's response update user's friend's BSSIDs.
-            getSharedManager().reportVisibleBestSignalAccessPointAndNewAccessPointsIfNecessary();
+            ProximityManager.getSharedManager().reportVisibleBestSignalAccessPointAndNewAccessPointsIfNecessary();
 
-            //Check if we need to stop the reporting and reschedule it.
-            AlarmManager alarmMgr = (AlarmManager) EHApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
+            boolean shouldRescheduleAlarm = true;
 
-            alarmMgr.cancel(reportingAlarmIntent);
+            if (shouldRescheduleAlarm)
+            {
+                //alarmMgr.cancel(reportingAlarmIntent);
+            }
         }
     }
 
@@ -200,13 +225,26 @@ public class ProximityManager
         scheduleReportingDuringCurrentOrNextFreeTimePeriods();
     }
 
+    public void disableBackgroundReporting ()
+    {
+        PendingIntent reportingAlarmIntent = PendingIntent.getBroadcast(EHApplication.getAppContext(),
+                ProximityManagerReportingServiceAlarmReceiver.REQUEST_CODE,
+                new Intent(EHApplication.getAppContext(), ProximityManagerReportingServiceAlarmReceiver.class),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //Cancel currently ongoing reporting
+        AlarmManager alarmManager = (AlarmManager) EHApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(reportingAlarmIntent);
+
+        //Disable reporting rescheduling upon reboot
+        ComponentName receiver = new ComponentName(EHApplication.getAppContext(), ProximityManagerReportingBootReceiver.class);
+        PackageManager pm = EHApplication.getAppContext().getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+    }
+
     private void scheduleReportingDuringCurrentOrNextFreeTimePeriods()
     {
-        Intent intent = new Intent(EHApplication.getAppContext(), ProximityManagerReportingServiceAlarmReceiver.class);
-        reportingAlarmIntent = PendingIntent.getBroadcast(EHApplication.getAppContext(), ProximityManagerReportingServiceAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) EHApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
-
         Tuple<Optional<Event>, Optional<Event>> currentAndNextFreeTimePeriods = System.getInstance().getAppUser().getCurrentAndNextFreeTimePeriods();
 
         Optional<Event> currentFreeTimePeriod = currentAndNextFreeTimePeriods.first,
@@ -229,15 +267,24 @@ public class ProximityManager
         }
         else //The day is over, user doesn't have more free time periods ahead
         {
-
+            //TODO: Look for next free time period another day and schedule for another day
         }
 
         if (currentFreeTimePeriod.isPresent() || nextFreeTimePeriod.isPresent())
         {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTriggerCalendar.getTimeInMillis(), REPORTING_INTERVAL, reportingAlarmIntent);
-        }
+            Intent intent = new Intent(EHApplication.getAppContext(), ProximityManagerReportingServiceAlarmReceiver.class);
+            PendingIntent reportingAlarmIntent = PendingIntent.getBroadcast(EHApplication.getAppContext(), ProximityManagerReportingServiceAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        persistData();
+            AlarmManager alarmManager = (AlarmManager) EHApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(reportingAlarmIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTriggerCalendar.getTimeInMillis(), REPORTING_INTERVAL, reportingAlarmIntent);
+
+            // Enable alarm to be rescheduled upon reboot
+            ComponentName receiver = new ComponentName(EHApplication.getAppContext(), ProximityManagerReportingBootReceiver.class);
+            PackageManager pm = EHApplication.getAppContext().getPackageManager();
+
+            pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        }
     }
 
     public boolean accessPointsAreNear (String bssidA, String bssidB)
@@ -284,6 +331,108 @@ public class ProximityManager
         }
 
         //TODO:
+
+        ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE, HTTPMethod.POST, Optional.<JSONObject>absent(), false);
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
+        {
+            @Override
+            public void onSuccess(JSONResponse response)
+            {
+                // Update BSSID values
+
+                JSONArray friendsJSON = response.jsonArray;
+
+                try
+                {
+                    for (int i = 0; i < friendsJSON.length(); i++)
+                    {
+                        JSONObject friendJSON = friendsJSON.getJSONObject(i);
+
+                        System.getInstance().getAppUser().getFriends().get(friendJSON.getString("login")).setCurrentBSSID(Optional.of(friendJSON.getJSONObject("location").getString("BSSID").toUpperCase()));
+                    }
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+                //Notify app user
+
+                Collection<User> friendsToNotifyToUser = System.getInstance().getAppUser().getFriendsCurrentlyNearbyAndEligibleForNotification();
+
+                Date currentDate = new Date();
+
+                for (User friend: friendsToNotifyToUser)
+                {
+                    friend.setLastNotifiedNearbyStatusDate(Optional.of(currentDate));
+                }
+
+                if (!friendsToNotifyToUser.isEmpty())
+                {
+                    String notificationText = "";
+
+                    int i = 0;
+
+                    for (User friend: friendsToNotifyToUser)
+                    {
+                        if (i <= 3)
+                        {
+                            notificationText += friend.getFirstNames();
+
+                            if (i == friendsToNotifyToUser.size()-1 && friendsToNotifyToUser.size() > 1)
+                            {
+                                notificationText += " y ";
+                            }
+                            else
+                            {
+                                notificationText += (i != 0 ? ", ":"");
+                            }
+                        }
+                        else { break; }
+
+                        i++;
+                    }
+
+                    if (friendsToNotifyToUser.size() > 3)
+                    {
+                        notificationText += " y otros amigos";
+                    }
+
+                    if (friendsToNotifyToUser.size() > 1)
+                    {
+                        notificationText += " parecen estar cerca y en hueco, ¿por qué no les escribes?";
+                    }
+                    else
+                    {
+                        notificationText += " parece estar cerca y en hueco, ¿por qué no le escribes?";
+                    }
+
+                    Intent intent = new Intent(EHApplication.getAppContext(), MainTabbedActivity.class);
+                    PendingIntent contentIntent = PendingIntent.getActivity(EHApplication.getAppContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    NotificationCompat.Builder b = new NotificationCompat.Builder(EHApplication.getAppContext());
+
+                    b.setAutoCancel(true)
+                            .setDefaults(Notification.DEFAULT_ALL)
+                            .setWhen(java.lang.System.currentTimeMillis())
+                            .setContentTitle("Amigos cerca")
+                            .setContentText(notificationText)
+                            .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_SOUND)
+                            .setContentIntent(contentIntent)
+                            .setContentInfo("Info");
+
+                    NotificationManager notificationManager = (NotificationManager) EHApplication.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(1, b.build());
+                }
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+            }
+
+        });
     }
 
     public boolean persistData()
@@ -308,7 +457,7 @@ public class ProximityManager
     {
         try
         {
-            FileInputStream fis = EHApplication.getAppContext().openFileInput(AppUser.FILE_NAME);
+            FileInputStream fis = EHApplication.getAppContext().openFileInput(FILE_NAME);
             ObjectInputStream is = new ObjectInputStream(fis);
             ProximityManager proximityManager = (ProximityManager) is.readObject();
             is.close();

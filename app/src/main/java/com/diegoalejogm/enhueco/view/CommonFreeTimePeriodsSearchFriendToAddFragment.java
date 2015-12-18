@@ -1,22 +1,23 @@
 package com.diegoalejogm.enhueco.view;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.mainClasses.*;
-import com.diegoalejogm.enhueco.model.mainClasses.System;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.mainClasses.System;
+import com.diegoalejogm.enhueco.model.mainClasses.User;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
@@ -26,7 +27,7 @@ public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
         void onCommonFreeTimePeriodsSearchFriendToAddFragmentNewFriendSelected(User user);
     }
 
-    private List<User> filteredFriends = System.getInstance().getAppUser().getFriends();
+    private List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
 
     private CommonFreeTimePeriodsSearchFriendToAddFragmentListener listener;
     private CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
@@ -53,20 +54,18 @@ public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
     {
         if (searchText.equals(""))
         {
-            filteredFriends = System.getInstance().getAppUser().getFriends();
+            filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
         }
         else
         {
-            Predicate<User> filterPredicate = new Predicate<User>()
+            filteredFriends = Lists.newArrayList(Collections2.filter(System.getInstance().getAppUser().getFriends().values(), new Predicate<User>()
             {
                 @Override
                 public boolean apply(User user)
                 {
                     return user.getName().contains(searchText);
                 }
-            };
-
-            filteredFriends = Lists.newArrayList(Collections2.filter(System.getInstance().getAppUser().getFriends(), filterPredicate));
+            }));
         }
 
         selectedFriendsArrayAdapter.notifyDataSetChanged();

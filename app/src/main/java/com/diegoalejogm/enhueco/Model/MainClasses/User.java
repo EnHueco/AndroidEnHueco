@@ -35,7 +35,7 @@ public class User extends EHSynchronizable implements Serializable
     private static final int currentBSSIDTimeToLive = 5; //5 Minutes
 
     /** Last time we notified the app user that this user was nearby */
-    private Date lastNotifiedNearbyStatusDate;
+    private Optional<Date> lastNotifiedNearbyStatusDate;
 
     public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -129,12 +129,12 @@ public class User extends EHSynchronizable implements Serializable
         return currentBSSID;
     }
 
-    public Date getLastNotifiedNearbyStatusDate()
+    public Optional<Date> getLastNotifiedNearbyStatusDate()
     {
         return lastNotifiedNearbyStatusDate;
     }
 
-    public void setLastNotifiedNearbyStatusDate(Date lastNotifiedNearbyStatusDate)
+    public void setLastNotifiedNearbyStatusDate(Optional<Date> lastNotifiedNearbyStatusDate)
     {
         this.lastNotifiedNearbyStatusDate = lastNotifiedNearbyStatusDate;
     }

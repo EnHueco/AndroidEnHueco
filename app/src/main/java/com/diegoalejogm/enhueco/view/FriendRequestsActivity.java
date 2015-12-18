@@ -61,7 +61,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
         // Broadcast managers
         IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
-        IntentFilter filterAccepted = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT);
+        IntentFilter filterAccepted = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterAccepted);
 
@@ -92,7 +92,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
                 FriendRequestsActivity.this.updateRequests(users);
             }
-            else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT))
+            else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST))
             {
                 System.getInstance().getAppUser().fetchFriendRequests();
             }
@@ -152,7 +152,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 @Override
                 public void onClick(View v)
                 {
-                    System.getInstance().getAppUser().acceptFriendRequestToUserRequestWithUsername(user.getUsername());
+                    System.getInstance().getAppUser().acceptFriendRequestFromUserWithUsername(user.getUsername());
                 }
             });
 

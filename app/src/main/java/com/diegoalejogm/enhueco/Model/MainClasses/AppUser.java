@@ -7,9 +7,13 @@ import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.managers.ProximityManager;
 import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
-import com.diegoalejogm.enhueco.model.other.*;
 import com.diegoalejogm.enhueco.model.managers.connectionManager.*;
+import com.diegoalejogm.enhueco.model.other.BasicOperationCompletionListener;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.diegoalejogm.enhueco.view.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -18,7 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -28,7 +32,7 @@ public class AppUser extends User implements Serializable
     private static final String LOG = "AppUser";
     private String token;
 
-    private List<User> friends = new ArrayList<>();
+    private HashMap<String, User> friends = new HashMap<>();
 
     // Values for persistence
     public static final String FILE_NAME = "appUser";
@@ -58,7 +62,7 @@ public class AppUser extends User implements Serializable
         return token;
     }
 
-    public List<User> getFriends()
+    public HashMap<String, User> getFriends()
     {
         return friends; //new ArrayList<User>(Arrays.asList(this));
     }
@@ -68,7 +72,7 @@ public class AppUser extends User implements Serializable
     {
         if (getCurrentBSSID().isPresent())
         {
-            for (User friend : friends)
+            for (User friend : friends.values())
             {
                 friend.refreshIsNearby();
             }
@@ -201,7 +205,7 @@ public class AppUser extends User implements Serializable
                         // TODO: Use hash to search user
                         User friendFound = null;
 
-                        for (User friend : friends)
+                        for (User friend : friends.values())
                         {
                             if (friend.getUsername().equals(friendJSONID)) friendFound = friend;
                         }
@@ -218,7 +222,7 @@ public class AppUser extends User implements Serializable
 
                     boolean removeFriend = false;
 
-                    for (User friend : friends)
+                    for (User friend : friends.values())
                     {
                         if (!friendsInServer.containsKey(friend.getUsername()))
                         {
@@ -229,7 +233,7 @@ public class AppUser extends User implements Serializable
 
                     if(removeFriend)
                     {
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
                     }
 
                     if (friendsToSync.length() > 0)
@@ -278,7 +282,7 @@ public class AppUser extends User implements Serializable
 
                         // TODO: Use hash to search user
                         User oldFriend = null;
-                        for (User friend : friends)
+                        for (User friend : friends.values())
                         {
                             if (friend.getUsername().equals(friendJSON.getString("login"))) oldFriend = friend;
                         }
@@ -292,7 +296,7 @@ public class AppUser extends User implements Serializable
                             try
                             {
                                 User newFriend = User.fromJSONObjectWithSchedule(friendJSON);
-                                friends.add(newFriend);
+                                friends.put(newFriend.getUsername(), newFriend);
                             }
                             catch (ParseException e)
                             {
@@ -319,6 +323,24 @@ public class AppUser extends User implements Serializable
     }
 
     /**
+     * Returns friends who are currently nearby and for who the app user has not been notified for
+     * a time longer than ProximityManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS
+     */
+    public Collection<User> getFriendsCurrentlyNearbyAndEligibleForNotification ()
+    {
+        return Collections2.filter(friends.values(), new Predicate<User>()
+        {
+            @Override
+            public boolean apply(User friend)
+            {
+                return friend.isNearby()
+                        && (!friend.getLastNotifiedNearbyStatusDate().isPresent()
+                        || new Date().getTime()-friend.getLastNotifiedNearbyStatusDate().get().getTime() > ProximityManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS);
+            }
+        });
+    }
+
+    /**
      * Returns all friends that are currently available.
      *
      * @return Friends with their current free time period
@@ -327,7 +349,7 @@ public class AppUser extends User implements Serializable
     {
         List<Tuple<User, Event>> friendsAndFreeTimePeriods = new ArrayList<>();
 
-        for (User friend : friends)
+        for (User friend : friends.values())
         {
             Optional<Event> currentFreeTimePeriod = friend.getCurrentFreeTimePeriod();
 
@@ -605,23 +627,12 @@ public class AppUser extends User implements Serializable
             newFriend.getSchedule().getWeekDays()[weekday].addEvent(newEvent);
         }
 
-        // TODO: Check if existing with a HashMap.
-        boolean existing = false;
-        for (int i = 0; i < friends.size() && !existing; i++)
-        {
-            // If friend already exist
-            if (friends.get(i).getUsername().equals(newFriend.getUsername()))
-            {
-                existing = true;
-                friends.set(i, newFriend);
-            }
-        }
-        if (!existing) friends.add(newFriend);
+        friends.put(newFriend.getUsername(), newFriend);
 
         return newFriend;
     }
 
-    public void acceptFriendRequestToUserRequestWithUsername(String username)
+    public void acceptFriendRequestFromUserWithUsername(String username)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
         Log.v(LOG, url);
@@ -637,8 +648,9 @@ public class AppUser extends User implements Serializable
                 JSONObject friendship = responseJSON.jsonObject;
                 try
                 {
-                    friends.add(AppUser.fromJSONObject(friendship.getJSONObject("secondUser")));
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
+                    User friend = User.fromJSONObject(friendship.getJSONObject("secondUser"));
+                    friends.put(friend.getUsername(), friend);
+                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST));
                 }
                 catch (ParseException | JSONException e)
                 {

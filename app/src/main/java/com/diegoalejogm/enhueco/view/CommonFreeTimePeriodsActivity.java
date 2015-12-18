@@ -44,7 +44,7 @@ public class CommonFreeTimePeriodsActivity extends AppCompatActivity implements 
 
         addFriendToSelectedFriendsAndReloadData(System.getInstance().getAppUser());
 
-        for (User user: System.getInstance().getAppUser().getFriends())
+        for (User user: System.getInstance().getAppUser().getFriends().values())
         {
             if (user.getID().equals(getIntent().getStringExtra("initialFriendID")))
             {

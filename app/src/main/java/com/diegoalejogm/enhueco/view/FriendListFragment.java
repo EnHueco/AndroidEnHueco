@@ -41,10 +41,11 @@ import java.util.*;
  */
 public class FriendListFragment extends ListFragment
 {
-
     private static final String LOG = "FriendListFragment";
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
+
+    private List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -59,7 +60,7 @@ public class FriendListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, System.getInstance().getAppUser().getFriends());
+        friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
@@ -77,10 +78,10 @@ public class FriendListFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION);
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND);
                 refresh();
             }
-        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_DELETION));
+        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
 
     }
 
@@ -127,6 +128,7 @@ public class FriendListFragment extends ListFragment
 
     public void refresh()
     {
+        filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter.notifyDataSetChanged();
     }
 
