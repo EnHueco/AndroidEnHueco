@@ -1,14 +1,10 @@
 package com.diegoalejogm.enhueco.view;
 
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
@@ -17,10 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.MainClasses.User;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.Utilities;
+import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.main.User;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.Utilities;
 import com.diegoalejogm.enhueco.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

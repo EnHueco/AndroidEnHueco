@@ -1,20 +1,15 @@
-package com.diegoalejogm.enhueco.Model.Managers;
+package com.diegoalejogm.enhueco.model.managers;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.widget.Toast;
 import au.com.bytecode.opencsv.CSVReader;
-import com.diegoalejogm.enhueco.Model.EHApplication;
+import com.diegoalejogm.enhueco.model.EHApplication;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import org.jgrapht.EdgeFactory;
-import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;

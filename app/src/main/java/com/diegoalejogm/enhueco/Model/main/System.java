@@ -1,12 +1,12 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.main;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
+import com.diegoalejogm.enhueco.model.*;
+import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.view.SearchNewFriendsActivity;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
@@ -22,6 +22,7 @@ import java.util.*;
  */
 public class System
 {
+
     private static System instance = new System();
 
     public static System getInstance ()
@@ -127,6 +128,7 @@ public class System
         deletePersistence(context);
     }
 
+
     private void deletePersistence(Context context)
     {
         context.deleteFile(AppUser.FILE_NAME);
@@ -210,4 +212,5 @@ public class System
         }
         return false;
     }
+
 }

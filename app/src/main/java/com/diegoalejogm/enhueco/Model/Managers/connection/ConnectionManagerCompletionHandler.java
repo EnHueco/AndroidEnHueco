@@ -1,6 +1,6 @@
-package com.diegoalejogm.enhueco.Model.Managers.ConnectionManager;
+package com.diegoalejogm.enhueco.model.managers.connection;
 
-import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 
 public interface ConnectionManagerCompletionHandler
 {

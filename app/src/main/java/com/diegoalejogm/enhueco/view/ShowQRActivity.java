@@ -8,7 +8,7 @@ import android.view.Display;
 import android.widget.ImageView;
 import com.diegoalejogm.enhueco.R;
 import net.glxn.qrgen.android.QRCode;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.main.System;
 
 
 public class ShowQRActivity extends AppCompatActivity
@@ -26,7 +26,7 @@ public class ShowQRActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_qr);
 
-        String encodedUser = System.getInstance().getAppUser().getEncodedRepresentation();
+        String encodedUser = System.getInstance().getAppUser().getQREncodedRepresentation();
         Bitmap myBitmap = QRCode.from(encodedUser).withSize(width,width).bitmap();
         ImageView myImage = (ImageView) findViewById(R.id.imageView);
         myImage.setImageBitmap(myBitmap);

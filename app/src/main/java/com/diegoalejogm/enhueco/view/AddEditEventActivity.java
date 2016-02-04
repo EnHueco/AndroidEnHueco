@@ -14,12 +14,12 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.Managers.SynchronizationManager;
-import com.diegoalejogm.enhueco.Model.Other.Tuple;
+import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.main.System;
 
 import java.text.DecimalFormat;
 import java.util.*;

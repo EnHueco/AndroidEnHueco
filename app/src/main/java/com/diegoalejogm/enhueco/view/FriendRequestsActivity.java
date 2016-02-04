@@ -17,13 +17,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
+import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.R;
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.util.ArrayList;

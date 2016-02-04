@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.main;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.Managers.SynchronizationManager;
-import com.diegoalejogm.enhueco.Model.Other.*;
-import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
+import com.diegoalejogm.enhueco.model.*;
+import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.diegoalejogm.enhueco.view.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -23,24 +25,42 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 
-/**
- * Created by Diego on 10/11/15.
- */
 public class AppUser extends User implements Serializable
 {
+    //////////////////////////////////
+    //          Attributes          //
+    //////////////////////////////////
+
+    /**
+     * Log String for this class
+     */
     private static final String LOG = "AppUser";
+
+    /**
+     * App User Token to acces API services
+     */
     private String token;
 
+    /**
+     * List of app user friends
+     */
     private List<User> friends = new ArrayList<>();
 
-    // Values for persistence
+    /**
+     * Values for persistence
+     */
     public static final String FILE_NAME = "appUser";
+
 
     // Values for QR encoding
     private static final char splitCharacter = '\\';
     private static final char separationCharacter = '-';
     private static final char multipleElementsCharacter = ',';
     private static final char hourMinuteSeparationChacter = ':';
+
+    //////////////////////////////////
+    //    Constructors & Helpers    //
+    //////////////////////////////////
 
     public AppUser(String username, String token, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
     {
@@ -56,15 +76,9 @@ public class AppUser extends User implements Serializable
         return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getUpdatedOn());
     }
 
-    public String getToken()
-    {
-        return token;
-    }
-
-    public List<User> getFriends()
-    {
-        return friends; //new ArrayList<User>(Arrays.asList(this));
-    }
+    //////////////////////////////////
+    //      Main Functionality      //
+    //////////////////////////////////
 
     @Override
     public void refreshIsNearby()
@@ -79,7 +93,9 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Checks for and downloads any updates from the server including Session Status, Friend list, Friends Schedule, User's Info
+     * Checks for and downloads any updates from the server including
+     * Session Status, Friend list, Friends Schedule, User's Info
+     * -EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE in case of success
      */
     public void fetchUpdatesForAppUserAndSchedule()
     {
@@ -130,7 +146,6 @@ public class AppUser extends User implements Serializable
 
     /**
      * Fetches updates for both outgoing and incoming friend requests on the server and notifies the result via Notification Center.
-     * <p/>
      * Notifications
      * -EHSystemNotification.SystemDidReceiveFriendRequestUpdates in case of success
      */
@@ -256,8 +271,8 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Fetches full friends and schedule information from the server and notifies the result via Notification Center.
-     *
+     * Fetches full friends and schedule information from the server
+     * and notifies the result via Notification Center.
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
@@ -292,15 +307,9 @@ public class AppUser extends User implements Serializable
                         }
                         else
                         {
-                            try
-                            {
-                                User newFriend = User.fromJSONObjectWithSchedule(friendJSON);
-                                friends.add(newFriend);
-                            }
-                            catch (ParseException e)
-                            {
-                                e.printStackTrace();
-                            }
+
+                            User newFriend = User.fromJSONObject(friendJSON);
+                            friends.add(newFriend);
                         }
                     }
 
@@ -322,8 +331,8 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Returns all friends that are currently available.
-     *
+     * Returns a list of tuples of friends & events of those friends
+     * that are currently available.
      * @return Friends with their current free time period
      */
     public List<Tuple<User, Event>> getCurrentlyAvailableFriends()
@@ -344,7 +353,9 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-     * Returns a schedule with the common free time periods of the users provided.
+     * Returns a schedule with the common free time periods of
+     * the users provided.
+     * @return schedule A schedule with the common free time periods of all users.
      */
     public Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
     {
@@ -429,6 +440,21 @@ public class AppUser extends User implements Serializable
         });
     }
 
+    /**
+     * Posts an instant free time period that everyone sees and that overrides any classes present in the app user's schedule during the instant free time period duration.
+     * Network operation must succeed immediately or else the newFreeTimePeriod is discarded.
+     * @param newFreeTimePeriod Event that represents the free time period to be posted
+     */
+    public void postInstantFreeTime (Event newFreeTimePeriod, BasicOperationCompletionListener listener)
+    {
+        listener.onSuccess();
+    }
+
+    /**
+     * Imports all events from a calendar to AppUser's calendar.
+     * @param calendarID ID of calendar to be imported
+     * @param generateFreeTimePeriodsBetweenClasses Determines if free time periods will be generated.
+     */
     public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
     {
         Collection<Event> importedEvents = new ArrayList<>();
@@ -503,7 +529,11 @@ public class AppUser extends User implements Serializable
         }
     }
 
-    public String getEncodedRepresentation()
+    /**
+     * Generates QR encoded representation of user.
+     * @return representation QR encoded representation of user.
+     */
+    public String getQREncodedRepresentation()
     {
         StringBuilder sb = new StringBuilder();
 
@@ -554,7 +584,12 @@ public class AppUser extends User implements Serializable
         return sb.toString();
     }
 
-    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser) throws Exception
+    /**
+     * Adds a friend from a QR string encoded representation and returns it.
+     * @param encodedUser Encoded friend QR string representation.
+     * @return user New friend.
+     */
+    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser)
     {
         User newFriend = null;
 
@@ -612,6 +647,10 @@ public class AppUser extends User implements Serializable
         return newFriend;
     }
 
+    /**
+     * Accept a friend request to another user with given username.
+     * @param username Username of the user who's friend request will be accepted.
+     */
     public void acceptFriendRequestToUserRequestWithUsername(String username)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
@@ -631,7 +670,7 @@ public class AppUser extends User implements Serializable
                     friends.add(AppUser.fromJSONObject(friendship.getJSONObject("secondUser")));
                     LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_ACCEPT));
                 }
-                catch (ParseException | JSONException e)
+                catch (JSONException e)
                 {
                     e.printStackTrace();
                 }
@@ -643,5 +682,19 @@ public class AppUser extends User implements Serializable
                 LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
             }
         });
+    }
+
+    //////////////////////////////////
+    //      Getters & Setters       //
+    //////////////////////////////////
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public List<User> getFriends()
+    {
+        return friends; //new ArrayList<User>(Arrays.asList(this));
     }
 }

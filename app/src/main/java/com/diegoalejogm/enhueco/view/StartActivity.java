@@ -3,7 +3,7 @@ package com.diegoalejogm.enhueco.view;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.main.System;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;

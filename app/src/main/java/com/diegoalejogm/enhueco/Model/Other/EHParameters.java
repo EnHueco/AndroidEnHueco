@@ -1,5 +1,4 @@
-package com.diegoalejogm.enhueco.Model.Other;
-
+package com.diegoalejogm.enhueco.model.other;
 /**
  * Created by Diego on 10/13/15.
  */

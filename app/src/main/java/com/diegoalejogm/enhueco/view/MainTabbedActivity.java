@@ -21,8 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
+import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -92,6 +92,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         getSupportActionBar().setTitle("En Hueco");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_tabbed, menu);
+
+        menu.findItem(R.id.action_search).setVisible(false);
+
         if (tabLayout.getSelectedTabPosition() == 0)
         {
             menu.findItem(R.id.action_add_friend).setVisible(false);
@@ -101,13 +104,16 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
         if (tabLayout.getSelectedTabPosition() == 1)
         {
+            menu.findItem(R.id.action_turn_invisible).setVisible(false);
+            menu.findItem(R.id.action_im_available).setVisible(false);
             menu.findItem(R.id.action_settings).setVisible(false);
         }
         if (tabLayout.getSelectedTabPosition() == 2)
         {
+            menu.findItem(R.id.action_turn_invisible).setVisible(false);
+            menu.findItem(R.id.action_im_available).setVisible(false);
             menu.findItem(R.id.action_add_friend).setVisible(false);
             menu.findItem(R.id.action_requests).setVisible(false);
-            menu.findItem(R.id.action_search).setVisible(false);
         }
 
         return true;
@@ -319,7 +325,17 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    public void profileImagePressed(View view)
+    public void onTurnInvisibleButtonPressed(MenuItem item)
+    {
+    }
+
+    public void onImAvailableButtonPressed(MenuItem item)
+    {
+        InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
+        fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
+    }
+
+    public void onProfileImagePressed(View view)
     {
         pickImage();
     }

@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.main;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,9 +14,23 @@ import java.util.TimeZone;
  */
 public class Schedule extends EHSynchronizable implements Serializable
 {
+    //////////////////////////////////
+    //          Attributes          //
+    //////////////////////////////////
+
+    /**
+     * Array of day schedules for each weekday
+     */
     private DaySchedule[] weekDays;
 
+    /**
+     * Array of indexed weekday names
+     */
     public static final String[] weekDayNames = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
+
+    //////////////////////////////////
+    //    Constructors & Helpers    //
+    //////////////////////////////////
 
     public Schedule()
     {
@@ -42,11 +56,14 @@ public class Schedule extends EHSynchronizable implements Serializable
         }
     }
 
-    public DaySchedule[] getWeekDays()
-    {
-        return weekDays;
-    }
 
+    /**
+     * Creates a new schedule from a JSONArray representation
+     * @param updatedOn date when schedule was last updated on
+     * @param eventsArray array of events added to the newly created schedule
+     * @return schedule new schedule with all events and attributes set
+     * @throws JSONException if JSONArray is incorrectly typed
+     */
     public static Schedule fromJSON(Date updatedOn, JSONArray eventsArray) throws JSONException
     {
         Schedule schedule = new Schedule(updatedOn);
@@ -66,5 +83,14 @@ public class Schedule extends EHSynchronizable implements Serializable
             schedule.weekDays[weekDay].addEvent(event);
         }
         return schedule;
+    }
+
+    //////////////////////////////////
+    //      Getters & Setters       //
+    //////////////////////////////////
+
+    public DaySchedule[] getWeekDays()
+    {
+        return weekDays;
     }
 }

@@ -3,7 +3,7 @@
               	xmlns:tools="http://schemas.android.com/tools"
               	android:layout_width="match_parent"
 				android:layout_height="match_parent"
-             	 tools:context="com.diegoalejogm.enhueco.View.MainTabbedActivity"
+             	 tools:context="com.diegoalejogm.enhueco.view.MainTabbedActivity"
 		>
 
 	<ImageView
@@ -20,8 +20,8 @@
 						xmlns:tools="http://schemas.android.com/tools"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
-
 						tools:context="com.diegoalejogm.enhueco.View.MainTabbedActivity"
+						android:layout_marginTop="120dp"
 				>
 
 		<RelativeLayout

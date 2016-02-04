@@ -1,14 +1,14 @@
-package com.diegoalejogm.enhueco.Model.Managers;
+package com.diegoalejogm.enhueco.model.managers;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.Model.EHApplication;
-import com.diegoalejogm.enhueco.Model.MainClasses.*;
-import com.diegoalejogm.enhueco.Model.MainClasses.System;
-import com.diegoalejogm.enhueco.Model.Managers.ConnectionManager.*;
-import com.diegoalejogm.enhueco.Model.Other.EHURLS;
-import com.diegoalejogm.enhueco.Model.Other.JSONResponse;
+import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
+import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -175,7 +175,7 @@ public class SynchronizationManager
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(com.diegoalejogm.enhueco.Model.MainClasses.System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
             }
 
         });

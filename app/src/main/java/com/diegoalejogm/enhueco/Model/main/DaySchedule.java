@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.Model.MainClasses;
+package com.diegoalejogm.enhueco.model.main;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -11,13 +11,24 @@ import java.util.*;
  */
 public class DaySchedule implements Serializable
 {
-    public String getWeekDayName()
-    {
-        return weekDayName;
-    }
 
+    //////////////////////////////////
+    //      Getters & Setters       //
+    //////////////////////////////////
+
+    /**
+     * Name of day schedule's assigned weekday
+     */
     private final String weekDayName;
+
+    /**
+     * Event list
+     */
     private ArrayList<Event> events = new ArrayList<>();
+
+    //////////////////////////////////
+    //    Constructors & Helpers    //
+    //////////////////////////////////
 
     public DaySchedule(String weekDayName)
     {
@@ -25,18 +36,15 @@ public class DaySchedule implements Serializable
         events = new ArrayList<>();
     }
 
-    public List<Event> getEvents()
-    {
-        return Collections.unmodifiableList(events);
-    }
-
-    public void setEvents(Collection<Event> events)
-    {
-        this.events = Lists.newArrayList(events);
-    }
+    //////////////////////////////////
+    //      Main Functionality      //
+    //////////////////////////////////
 
     /**
-     * Returns true if event doesn't overlap with any free time period or class, excluding eventToExclude.
+     * Checks if its possible to add an event to dayschedule, excluding an event.
+     * @param newEvent Event that will be checked.
+     * @param eventToExclude Event to exclude while checking.
+     * @return canAdd true if event doesn't overlap with any free time period or class, excluding eventToExclude
      */
     public boolean canAddEvent(Event newEvent, Optional<Event> eventToExclude)
     {
@@ -64,6 +72,8 @@ public class DaySchedule implements Serializable
 
     /**
      * Adds event if it doesn't overlap with any other event.
+     * @param newEvent Event to be added
+     * @return success Event was successfully added
      */
     public boolean addEvent(Event newEvent)
     {
@@ -97,6 +107,11 @@ public class DaySchedule implements Serializable
         return true;
     }
 
+    /**
+     * Removes an event from event's list
+     * @param event Event to be removed
+     * @return success If event could be successfully removed
+     */
     public boolean removeEvent(Event event)
     {
         return events.remove(event);
@@ -114,5 +129,24 @@ public class DaySchedule implements Serializable
             }
         }
         return Optional.absent();
+    }
+
+    //////////////////////////////////
+    //      Getters & Setters       //
+    //////////////////////////////////
+
+    public String getWeekDayName()
+    {
+        return weekDayName;
+    }
+
+    public List<Event> getEvents()
+    {
+        return Collections.unmodifiableList(events);
+    }
+
+    public void setEvents(Collection<Event> events)
+    {
+        this.events = Lists.newArrayList(events);
     }
 }
