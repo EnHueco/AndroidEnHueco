@@ -1,7 +1,6 @@
 package com.diegoalejogm.enhueco.model.main;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,9 +21,9 @@ public class DaySchedule implements Serializable
     private final String weekDayName;
 
     /**
-     * Event list
+     * Event tree
      */
-    private ArrayList<Event> events = new ArrayList<>();
+    private TreeSet<Event> events = new TreeSet<>();
 
     //////////////////////////////////
     //    Constructors & Helpers    //
@@ -33,8 +32,9 @@ public class DaySchedule implements Serializable
     public DaySchedule(String weekDayName)
     {
         this.weekDayName = weekDayName;
-        events = new ArrayList<>();
+        events = new TreeSet<>();
     }
+
 
     //////////////////////////////////
     //      Main Functionality      //
@@ -140,13 +140,13 @@ public class DaySchedule implements Serializable
         return weekDayName;
     }
 
-    public List<Event> getEvents()
+    public Collection<Event> getEvents()
     {
-        return Collections.unmodifiableList(events);
+        return events;
     }
 
     public void setEvents(Collection<Event> events)
     {
-        this.events = Lists.newArrayList(events);
+        this.events = new TreeSet<>(events);
     }
 }

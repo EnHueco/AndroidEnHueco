@@ -75,9 +75,9 @@
             <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText"
+                    android:id="@+id/freeTimeLocation"
                     android:textSize="15sp"
-                    android:layout_below="@+id/freeTimeLocation"
+                    android:layout_below="@+id/freeTimeName"
                     android:hint="Ubicación (opcional)"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -89,7 +89,7 @@
                     android:layout_marginTop="8dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="Hasta:"
-                    android:id="@+id/textView4" android:layout_below="@+id/editText"
+                    android:id="@+id/textView4" android:layout_below="@+id/freeTimeLocation"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"/>
 

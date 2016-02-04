@@ -29,9 +29,7 @@ public class FriendDetailActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-
-
-        for (User user : System.getInstance().getAppUser().getFriends())
+        for (User user : System.getInstance().getAppUser().getFriends().values())
         {
             if (user.getID().equals(getIntent().getStringExtra("friendID")))
             {

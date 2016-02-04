@@ -36,11 +36,8 @@ public class StartActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
-
-
         Intent intent;
-        boolean loggedIn = System.getInstance().loadDataFromPersistence(getApplicationContext());
+        boolean loggedIn = System.getInstance().getAppUser() != null;
 
         if (loggedIn) intent = new Intent(this, MainTabbedActivity.class);
         else intent = new Intent(this, LoginActivity.class);

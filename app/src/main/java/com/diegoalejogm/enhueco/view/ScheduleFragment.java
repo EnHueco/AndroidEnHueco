@@ -17,10 +17,7 @@ import com.diegoalejogm.enhueco.model.main.Schedule;
 import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.R;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ScheduleFragment extends Fragment implements WeekView.EventLongPressListener, WeekView.EventClickListener, WeekView.MonthChangeListener, WeekView.EmptyViewClickListener
 {
@@ -115,11 +112,10 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         {
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
-            List<Event> currentWeekDayEvents = System.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
-            for (int j = 0; j < currentWeekDayEvents.size(); j++)
-            {
-                Event currentEvent = currentWeekDayEvents.get(j);
+            Collection<Event> currentWeekDayEvents = System.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
 
+            for (Event currentEvent: currentWeekDayEvents)
+            {
                 // Update global Calendar to match start time
                 Log.v(LOG, "Event start: " + currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getStartHour().get(Calendar.MINUTE));
                 Log.v(LOG, "Event end: " + currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY) + ":" + currentEvent.getEndHour().get(Calendar.MINUTE));

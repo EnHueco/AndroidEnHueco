@@ -1,6 +1,7 @@
 package com.diegoalejogm.enhueco.model.main;
 
 import com.diegoalejogm.enhueco.model.managers.ProximityManager;
+import com.diegoalejogm.enhueco.model.other.Tuple;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Diego on 10/9/15.
@@ -47,7 +50,8 @@ public class User extends EHSynchronizable implements Serializable
     private String phoneNumber;
 
     /**
-     * Represents if user is close to App User. True if it is, False otherwise
+     * Represents if user is close to App User. (For efficiency)
+     * True if the user is near the App User at the current time, given the currentBSSID values.
      */
     private boolean isNearby;
 
@@ -55,6 +59,14 @@ public class User extends EHSynchronizable implements Serializable
      * Current Beacon SSID to which user was connected
      */
     private Optional<String> currentBSSID;
+
+    /**
+     * BSSID's Time to live
+     */
+    private static final int currentBSSIDTimeToLive = 5; //5 Minutes
+
+    /** Last time we notified the app user that this user was nearby */
+    private Optional<Date> lastNotifiedNearbyStatusDate;
 
     /**
      * User's schedule
@@ -138,8 +150,8 @@ public class User extends EHSynchronizable implements Serializable
         Date updatedOn = EHSynchronizable.dateFromServerString(updatedOnString);
 
         // if JSONObject updatedOn date is newer
-        boolean userIsNotUpdated = updatedOn.compareTo(this.getUpdatedOn()) > 0;
-        if( isNewUser || userIsNotUpdated)
+        boolean userIsNotUpdated = false;
+        if( isNewUser || (userIsNotUpdated = updatedOn.compareTo(this.getUpdatedOn()) > 0))
         {
             String username = (String) values.get("login");
             String firstNames = (String) values.get("firstNames");
@@ -164,10 +176,10 @@ public class User extends EHSynchronizable implements Serializable
             Date scheduleUpdatedOn = EHSynchronizable.dateFromServerString(scheduleUpdatedOnString);
 
 
-            boolean scheduleIsNotUpdated = scheduleUpdatedOn.compareTo(this.schedule.getUpdatedOn()) > 0;
+            boolean scheduleIsNotUpdated = false;
 
             // Updates schedule only if schedule's last update date in server is newer
-            if(isNewUser|| scheduleIsNotUpdated)
+            if(isNewUser|| (scheduleIsNotUpdated = scheduleUpdatedOn.compareTo(this.schedule.getUpdatedOn()) > 0))
             {
                 this.schedule = Schedule.fromJSON((Date)values.get("scheduleUpdatedOn"), (JSONArray) values.get("gapSet"));
             }
@@ -201,20 +213,13 @@ public class User extends EHSynchronizable implements Serializable
 
         for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
         {
-            if (event.getType().equals(Event.EventType.FREE_TIME))
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isCurrentlyHappening())
             {
-                Date startHourInCurrentDate = event.getStartHourInDate(currentDate);
-                Date endHourInCurrentDate = event.getEndHourInDate(currentDate);
-
-                if(currentDate.after(startHourInCurrentDate) && currentDate.before(endHourInCurrentDate))
-                {
-                    return Optional.of(event);
-                }
+                return Optional.of(event);
             }
         }
 
-        Optional<Event> currentFreeTimePeriod = Optional.absent();
-        return currentFreeTimePeriod;
+        return Optional.absent();
     }
 
     /**
@@ -231,22 +236,22 @@ public class User extends EHSynchronizable implements Serializable
      * Retrieves User's next "FreeTime" Event
      * @return ans Next event if exists in same day, null otherwise
      */
-    public Event nextFreeTimePeriod()
+    public Optional<Event> getNextFreeTimePeriod()
     {
-        Event ans = null;
-        Calendar calendar= Calendar.getInstance(TimeZone.getDefault());
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        Optional<Event> nextFreeTimePeriod = Optional.absent();
 
-        for(Event event : this.getSchedule().getWeekDays()[day].getEvents())
+        Calendar localCalendar = Calendar.getInstance();
+        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
         {
-            if(!event.getType().equals(Event.EventType.FREE_TIME)) continue;
-            boolean isAfterCurrentTime = event.isAfterCurrentTime();
-            if(isAfterCurrentTime && ( ans == null || event.compareTo(ans) < 0))
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isAfterCurrentTime())
             {
-                ans = event;
+                return Optional.of(event);
             }
         }
-        return ans;
+
+        return nextFreeTimePeriod;
     }
 
     /**
@@ -271,6 +276,29 @@ public class User extends EHSynchronizable implements Serializable
 
         return ans;
 
+    }
+
+    /** Returns user's current and next free time periods. */
+    public Tuple<Optional<Event>, Optional<Event>> getCurrentAndNextFreeTimePeriods()
+    {
+        Optional<Event> currentFreeTime = Optional.absent();
+
+        Calendar localCalendar = Calendar.getInstance();
+        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+
+        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
+        {
+            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isCurrentlyHappening())
+            {
+                currentFreeTime = Optional.of(event);
+            }
+            else if (event.isAfterCurrentTime())
+            {
+                return new Tuple<>(currentFreeTime, Optional.of(event));
+            }
+        }
+
+        return new Tuple<>(currentFreeTime, Optional.<Event>absent());
     }
 
     /////////////////////////////
@@ -340,7 +368,30 @@ public class User extends EHSynchronizable implements Serializable
     public void setCurrentBSSID(Optional<String> currentBSSID)
     {
         this.currentBSSID = currentBSSID;
+
+        if (currentBSSID.isPresent())
+        {
+            Executors.newSingleThreadScheduledExecutor().schedule(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    setCurrentBSSID(Optional.<String>absent());
+                }
+            }, currentBSSIDTimeToLive, TimeUnit.MINUTES);
+        }
+
         refreshIsNearby();
+    }
+
+    public Optional<Date> getLastNotifiedNearbyStatusDate()
+    {
+        return lastNotifiedNearbyStatusDate;
+    }
+
+    public void setLastNotifiedNearbyStatusDate(Optional<Date> lastNotifiedNearbyStatusDate)
+    {
+        this.lastNotifiedNearbyStatusDate = lastNotifiedNearbyStatusDate;
     }
 
     //////////////////////////////

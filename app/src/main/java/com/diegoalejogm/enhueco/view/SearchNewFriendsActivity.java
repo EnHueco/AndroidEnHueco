@@ -3,17 +3,12 @@ package com.diegoalejogm.enhueco.view;
 
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -21,6 +16,7 @@ import android.widget.TextView;
 import com.diegoalejogm.enhueco.model.main.*;
 import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.other.CompletionListener;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.util.ArrayList;
@@ -30,12 +26,12 @@ import java.util.TimerTask;
 
 public class SearchNewFriendsActivity extends AppCompatActivity implements MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
 {
-
     private static final String LOG = "SearchNewFriendsActivity";
     public static final String EXTRA_USERS = "EXTRA_USERS";
     private Timer mTimer;
     private SearchFriendArrayAdapter adapter;
-    ArrayList<User> users;
+
+    List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,38 +42,15 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         ListView friendLV = (ListView) findViewById(R.id.searchFriendListView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        users = new ArrayList<User>();
-        adapter = new SearchFriendArrayAdapter(this, 0, users);
+        adapter = new SearchFriendArrayAdapter(this, 0, filteredFriends);
         friendLV.setAdapter(adapter);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Agregar amigos");
-
-        IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
     }
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
+    private void updateResults()
     {
-
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            // Get extra data included in the Intent
-            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_RECEIVED_USER_SEARCH_RESPONSE))
-            {
-                ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(SearchNewFriendsActivity.EXTRA_USERS);
-                SearchNewFriendsActivity.this.updateResults(users);
-            }
-
-//            Log.d("receiver", "Got message: " + message);
-        }
-    };
-
-    private void updateResults(ArrayList<User> users)
-    {
-        this.users.clear();
-        this.users.addAll(users);
         adapter.notifyDataSetChanged();
     }
 
@@ -101,9 +74,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         MenuItemCompat.expandActionView(searchMenuItem);
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
 
-
         return true;
-
     }
 
     @Override
@@ -132,6 +103,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         {
             mTimer.cancel();
         }
+
         mTimer = new Timer();
         mTimer.schedule(new TimerTask()
         {
@@ -143,10 +115,21 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     @Override
                     public void run()
                     {
-                        Log.v(LOG, newText);
-                        if(!newText.isEmpty()) System.getInstance().searchUsers(newText);
-                        else SearchNewFriendsActivity.this.updateResults(new ArrayList<User>());
-//                        adapter.notifyDataSetChanged();
+                        if(!newText.isEmpty()) System.getInstance().searchUsers(newText, new CompletionListener<List<User>>()
+                        {
+                            @Override
+                            public void onSuccess(List<User> friends)
+                            {
+                                filteredFriends = friends;
+                                updateResults();
+                            }
+
+                            @Override
+                            public void onFailure()
+                            {
+
+                            }
+                        });
                     }
                 });
             }
