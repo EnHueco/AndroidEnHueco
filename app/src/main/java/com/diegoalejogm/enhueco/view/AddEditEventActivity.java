@@ -16,7 +16,7 @@ import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import com.diegoalejogm.enhueco.model.main.*;
 import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
-import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
 import com.diegoalejogm.enhueco.model.main.System;

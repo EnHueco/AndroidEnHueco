@@ -26,7 +26,7 @@ public class SynchronizationManager
 
     private class SynchronizationManagerQueueItem
     {
-        /** ConnectionManagerRequest that was attempted*/
+        /** ConnectionManagerRequest that was attempted */
         public ConnectionManagerRequest request;
 
         /** CompletionHandler to be called when reattempting the request */

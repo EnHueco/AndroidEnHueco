@@ -3,7 +3,6 @@ package com.diegoalejogm.enhueco.model.main;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.model.*;
 import com.diegoalejogm.enhueco.model.managers.connection.*;
 import com.diegoalejogm.enhueco.model.EHApplication;
 import com.diegoalejogm.enhueco.model.other.CompletionListener;
@@ -23,9 +22,37 @@ import java.util.*;
  */
 public class System
 {
+    //////////////////////////////////
+    //          Attributes          //
+    //////////////////////////////////
 
+    /**
+     * Singleton attribute and only object of the class
+     */
     private static System instance = new System();
 
+    /**
+     * App's app user
+     */
+    private AppUser appUser;
+
+    //////////////////////////////////
+    //    Constructors & Helpers    //
+    //////////////////////////////////
+
+    /**
+     * System initialization
+     */
+    public System ()
+    {
+        loadDataFromPersistence();
+        //deletePersistenceData(EHApplication.getAppContext());
+    }
+
+    /**
+     * Singleton getter for class object
+     * @return new System instance if first time called or existing one otherwise
+     */
     public static System getInstance ()
     {
         if (instance == null) instance = new System();
@@ -33,34 +60,14 @@ public class System
         return instance;
     }
 
-    public class EHSystemNotification
-    {
-        public static final String SYSTEM_DID_LOGIN = "SYSTEM_DID_LOGIN", SYSTEM_COULD_NOT_LOGIN_WITH_ERROR = "SYSTEM_COULD_NOT_LOGIN_WITH_ERROR";
-        public static final String SYSTEM_DID_RECEIVE_APPUSER_UPDATE= "SYSTEM_DID_RECEIVE_APPUSER_UPDATE";
+    //////////////////////////////////
+    //      Main Functionality      //
+    //////////////////////////////////
 
-        public static final String SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES";
-        public static final String SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES";
-        public static final String SYSTEM_DID_ADD_FRIEND = "SYSTEM_DID_ADD_FRIEND";
-        public static final String SYSTEM_DID_SEND_FRIEND_REQUEST = "SYSTEM_DID_SEND_FRIEND_REQUEST", SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST = "SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST";
-
-        public static final String SYSTEM_DID_ACCEPT_FRIEND_REQUEST = "SYSTEM_DID_ACCEPT_FRIEND_REQUEST";
-        public static final String SYSTEM_DID_DELETE_FRIEND = "SYSTEM_DID_DELETE_FRIEND";
-    }
-
-    private AppUser appUser;
-
-    public System ()
-    {
-        loadDataFromPersistence();
-
-        //deletePersistence(EHApplication.getAppContext());
-    }
-
-    public AppUser getAppUser()
-    {
-        return appUser;
-    }
-    
+    /**
+     * Tests the creation of a new appUser instance
+     * @param context Context of the view that calls the method
+     */
     public void createTestAppUser (Context context)
     {
         appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "3176694189", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
@@ -80,6 +87,12 @@ public class System
         persistData(context);
     }
 
+    /**
+     * System's login method.
+     * @param username Username of the user that wishes to log in
+     * @param password Password of the user that wishes to log in
+     * @param applicationContext Current application context
+     */
     public void login(String username, String password, final Context applicationContext)
     {
         JSONObject params = new JSONObject();
@@ -124,18 +137,21 @@ public class System
         }
     }
 
+    /**
+     * Logs out current app user
+     * @param context Current application context
+     */
     public void logout (Context context)
     {
         appUser = null;
-        deletePersistence(context);
+        deletePersistenceData(context);
     }
 
-
-    private void deletePersistence(Context context)
-    {
-        context.deleteFile(AppUser.FILE_NAME);
-    }
-
+    /**
+     * Searches users with keyword id
+     * @param id Keyword that searches for users
+     * @param listener Listener of the event
+     */
     public void searchUsers(String id, final CompletionListener<List<User>> listener)
     {
         ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<JSONObject>absent(), true);
@@ -174,8 +190,13 @@ public class System
         });
     }
 
-//    ---- PERSISTENCE ----
+//    PERSISTENCE
 
+    /**
+     * Persists all app's system data in path
+     * @param context Current context
+     * @return true if correctly persisted or false otherwise
+     */
     public boolean persistData(Context context)
     {
         try
@@ -194,6 +215,10 @@ public class System
         return false;
     }
 
+    /**
+     * Loads data from persistence
+     * @return true if data successfuly loaded, false otherwise
+     */
     private boolean loadDataFromPersistence()
     {
         try
@@ -212,4 +237,46 @@ public class System
         return false;
     }
 
+    /**
+     * Deletes persistence contents
+     * @param context
+     */
+    private void deletePersistenceData(Context context)
+    {
+        context.deleteFile(AppUser.FILE_NAME);
+    }
+
+    //////////////////////////////////
+    //      Getters & Setters       //
+    //////////////////////////////////
+
+    /**
+     * System's appUser getter
+     * @return
+     */
+    public AppUser getAppUser()
+    {
+        return appUser;
+    }
+
+    //////////////////////////////////
+    //         Other Classes        //
+    //////////////////////////////////
+
+    /**
+     * Class that contains system notification string constants
+     */
+    public class EHSystemNotification
+    {
+        public static final String SYSTEM_DID_LOGIN = "SYSTEM_DID_LOGIN", SYSTEM_COULD_NOT_LOGIN_WITH_ERROR = "SYSTEM_COULD_NOT_LOGIN_WITH_ERROR";
+        public static final String SYSTEM_DID_RECEIVE_APPUSER_UPDATE= "SYSTEM_DID_RECEIVE_APPUSER_UPDATE";
+
+        public static final String SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES";
+        public static final String SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES";
+        public static final String SYSTEM_DID_ADD_FRIEND = "SYSTEM_DID_ADD_FRIEND";
+        public static final String SYSTEM_DID_SEND_FRIEND_REQUEST = "SYSTEM_DID_SEND_FRIEND_REQUEST", SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST = "SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST";
+
+        public static final String SYSTEM_DID_ACCEPT_FRIEND_REQUEST = "SYSTEM_DID_ACCEPT_FRIEND_REQUEST";
+        public static final String SYSTEM_DID_DELETE_FRIEND = "SYSTEM_DID_DELETE_FRIEND";
+    }
 }

@@ -18,7 +18,7 @@ import com.diegoalejogm.enhueco.model.main.User;
 import com.diegoalejogm.enhueco.model.managers.connection.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
-import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.diegoalejogm.enhueco.view.MainTabbedActivity;
 import com.google.common.base.Optional;
 import org.jgrapht.UndirectedGraph;

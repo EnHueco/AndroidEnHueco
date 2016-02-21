@@ -7,17 +7,15 @@ import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.diegoalejogm.enhueco.model.*;
 import com.diegoalejogm.enhueco.model.managers.connection.*;
 import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
 
 import com.diegoalejogm.enhueco.model.EHApplication;
 import com.diegoalejogm.enhueco.model.managers.ProximityManager;
-import com.diegoalejogm.enhueco.model.managers.connection.*;
 import com.diegoalejogm.enhueco.model.other.BasicOperationCompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
-import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.diegoalejogm.enhueco.view.FriendRequestsActivity;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -86,7 +84,6 @@ public class AppUser extends User implements Serializable
     //////////////////////////////////
     //      Main Functionality      //
     //////////////////////////////////
-
 
     @Override
     public void refreshIsNearby()

@@ -1,7 +1,7 @@
 package com.diegoalejogm.enhueco.model.main;
 
 import com.diegoalejogm.enhueco.model.managers.ProximityManager;
-import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;

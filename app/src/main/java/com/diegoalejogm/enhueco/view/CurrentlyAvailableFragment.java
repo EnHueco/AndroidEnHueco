@@ -21,7 +21,7 @@ import com.diegoalejogm.enhueco.model.main.Event;
 import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.main.User;
-import com.diegoalejogm.enhueco.model.other.Tuple;
+import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;

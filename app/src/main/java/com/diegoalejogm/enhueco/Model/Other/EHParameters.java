@@ -4,6 +4,13 @@ package com.diegoalejogm.enhueco.model.other;
  */
 public class EHParameters
 {
+    /**
+     * HTTP Parameter that maps app's user User-ID
+     */
     public static final String USER_ID = "X-USER-ID";
+
+    /**
+     * HTTP Parameter that maps app's user Rest Token
+     */
     public static final String TOKEN = "X-USER-TOKEN";
 }

@@ -11,14 +11,28 @@ import java.util.TimeZone;
 
 /**
  * Created by Diego on 10/13/15.
+ * Class designed to contain various random functions
  */
 public class Utilities
 {
+    /**
+     * Transforms server encoded string date into a Java Date object
+     * @param date Server encoded string date
+     * @return new Date containing input values
+     * @throws ParseException In case the string is not correctly encoded
+     */
     public static Date dateFromServerFormattedString (String date) throws ParseException
     {
         return new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(date);
     }
 
+    /**
+     * Creates a new calendar with the specified weekday, hour and minute
+     * @param weekday Weekday desired to be added to the date. 0 is Sunday
+     * @param hour Hour of the new calendar
+     * @param minute Minute of the new calendar
+     * @return new Calendar with the input data
+     */
     public static Calendar calendarWithWeekdayHourMinute (int weekday, int hour, int minute)
     {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -32,6 +46,9 @@ public class Utilities
         return calendar;
     }
 
+    /**
+     * TODO: Add documentation
+     */
     public static Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
 
         int width = Math.round(sentBitmap.getWidth() * scale);
