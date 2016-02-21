@@ -130,7 +130,12 @@ public class User extends EHSynchronizable implements Serializable
         if (object.has("schedule_updated_on") && object.has("gap_set"))
         {
             extractedValues.put("scheduleUpdatedOn", EHSynchronizable.dateFromServerString(object.getString("schedule_updated_on")));
-            extractedValues.put("gapSet", object.getJSONArray("gap_set"));
+            extractedValues.put("schedule", object.getJSONArray("gap_set"));
+            extractedValues.put("containsSchedule", true);
+        }
+        else
+        {
+            extractedValues.put("containsSchedule", false);
         }
 
         return extractedValues;
@@ -153,7 +158,7 @@ public class User extends EHSynchronizable implements Serializable
         boolean userIsNotUpdated = false;
         if( isNewUser || (userIsNotUpdated = updatedOn.compareTo(this.getUpdatedOn()) > 0))
         {
-            String username = (String) values.get("login");
+            String username = (String) values.get("username");
             String firstNames = (String) values.get("firstNames");
             String lastNames = (String) values.get("lastNames");
             String imageURL = (String) values.get("imageURL");
@@ -168,20 +173,16 @@ public class User extends EHSynchronizable implements Serializable
             this.setUpdatedOn(updatedOn);
         }
 
-        boolean objectContainsScheduleInformation = values.containsKey("schedule") && values.containsKey("gapSet");
+        boolean objectContainsScheduleInformation = (Boolean)values.get("containsSchedule");
 
         if(objectContainsScheduleInformation)
         {
-            String scheduleUpdatedOnString = object.getString("schedule_updated_on");
-            Date scheduleUpdatedOn = EHSynchronizable.dateFromServerString(scheduleUpdatedOnString);
-
-
             boolean scheduleIsNotUpdated = false;
 
             // Updates schedule only if schedule's last update date in server is newer
-            if(isNewUser|| (scheduleIsNotUpdated = scheduleUpdatedOn.compareTo(this.schedule.getUpdatedOn()) > 0))
+            if(isNewUser|| (scheduleIsNotUpdated = ((Date)values.get("scheduleUpdatedOn")).compareTo(this.schedule.getUpdatedOn()) > 0))
             {
-                this.schedule = Schedule.fromJSON((Date)values.get("scheduleUpdatedOn"), (JSONArray) values.get("gapSet"));
+                this.schedule = Schedule.fromJSON((Date)values.get("scheduleUpdatedOn"), (JSONArray) values.get("schedule"));
             }
         }
     }

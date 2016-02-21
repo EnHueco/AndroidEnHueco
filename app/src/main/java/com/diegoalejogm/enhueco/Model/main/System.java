@@ -112,7 +112,6 @@ public class System
                     try
                     {
                         appUser = AppUser.userFromJSONObject(eitherJSONObjectOrJSONArray.jsonObject);
-                        // TODO: Persist User
                         persistData(applicationContext);
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
                     }

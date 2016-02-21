@@ -45,7 +45,7 @@ public class FriendListFragment extends ListFragment
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
 
-    private List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+    private List<User> filteredFriends;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,6 +60,7 @@ public class FriendListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
+        filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
 
@@ -121,14 +122,15 @@ public class FriendListFragment extends ListFragment
         if (null != mListener)
         {
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
-            intent.putExtra("friendID", System.getInstance().getAppUser().getFriends().get(position).getID());
+            intent.putExtra("friendID", filteredFriends.get(position).getID());
             startActivity(intent);
         }
     }
 
     public void refresh()
     {
-        filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+        filteredFriends.clear();
+        filteredFriends.addAll(new ArrayList<>(System.getInstance().getAppUser().getFriends().values()));
         friendArrayAdapter.notifyDataSetChanged();
     }
 

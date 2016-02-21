@@ -217,7 +217,8 @@ public class AppUser extends User implements Serializable
                     {
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
 
-                        String friendJSONID = friendJSON.getString("login"); friendsInServer.put(friendJSONID, true);
+                        String friendJSONID = friendJSON.getString("login");
+                        friendsInServer.put(friendJSONID, true);
                         Date serverFriendupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("updated_on"));
                         Date serverFriendScheduleupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("schedule_updated_on"));
 
@@ -239,26 +240,24 @@ public class AppUser extends User implements Serializable
                         }
                     }
 
-                    boolean removeFriend = false;
+                    boolean removedAnyFriend = false;
 
                     for (User friend : friends.values())
                     {
                         if (!friendsInServer.containsKey(friend.getUsername()))
                         {
                             friends.remove(friend);
-                            removeFriend = true;
+                            removedAnyFriend = true;
                         }
                     }
 
-                    if(removeFriend)
+                    if (removedAnyFriend)
                     {
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
                     }
 
-                    if (friendsToSync.length() > 0)
-                    {
-                        _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
-                    }
+                    boolean hasToSyncFriends = friendsToSync.length() > 0;
+                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
                 }
 
                 catch (JSONException e)
@@ -298,25 +297,20 @@ public class AppUser extends User implements Serializable
                     for (int i = 0; i < friendsJSON.length(); i++)
                     {
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
+                        String friendJSONusername = friendJSON.getString("login");
 
-                        // TODO: Use hash to search user
-                        User oldFriend = null;
-                        for (User friend : friends.values())
+                        if(friends.containsKey(friendJSONusername))
                         {
-                            if (friend.getUsername().equals(friendJSON.getString("login"))) oldFriend = friend;
-                        }
-
-                        if (oldFriend != null)
-                        {
+                            User oldFriend = friends.get(friendJSONusername);
                             oldFriend.updateWithJSON(friendJSON);
                         }
+
                         else
                         {
                             User newFriend = User.fromJSONObject(friendJSON);
                             friends.put(newFriend.getUsername(), newFriend);
                         }
                     }
-
                     LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
                 }
                 catch (JSONException e)

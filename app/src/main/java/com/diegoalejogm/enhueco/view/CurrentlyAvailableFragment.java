@@ -3,13 +3,17 @@ package com.diegoalejogm.enhueco.view;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +48,12 @@ public class CurrentlyAvailableFragment extends ListFragment
 
     private OnFragmentInteractionListener mListener;
 
+    List<Tuple<User, Event>> currentlyAvailableFriends;
+    CurrentlyFreeArrayAdapter adapter;
+
+    private static final String LOG = "CurrAvailableFragment";
+
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -57,17 +67,29 @@ public class CurrentlyAvailableFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        // TODO: Change Adapter to display your content
+        currentlyAvailableFriends = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
+        adapter = new CurrentlyFreeArrayAdapter(getActivity(), 0, currentlyAvailableFriends);
+        setListAdapter(adapter);
 
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
+                refresh();
+            }
+        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
 
-        List<Tuple<User, Event>> data = new ArrayList<>();
-
-        System.getInstance().getAppUser().getCurrentlyAvailableFriends();
-
-
-
-        setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
-                0, data));
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND);
+                refresh();
+            }
+        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
     }
 
 
@@ -129,9 +151,9 @@ public class CurrentlyAvailableFragment extends ListFragment
 
     private void refresh()
     {
-        List<Tuple<User, Event>> data = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
-        setListAdapter(new CurrentlyFreeArrayAdapter(getActivity(),
-                0, data));
+        currentlyAvailableFriends.clear();
+        currentlyAvailableFriends.addAll(System.getInstance().getAppUser().getCurrentlyAvailableFriends());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -149,7 +171,7 @@ public class CurrentlyAvailableFragment extends ListFragment
         if (null != mListener)
         {
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
-            intent.putExtra("friendID", System.getInstance().getAppUser().getFriends().get(position).getID());
+            intent.putExtra("friendID", currentlyAvailableFriends.get(position).first.getID());
             startActivity(intent);
         }
     }
@@ -211,6 +233,9 @@ public class CurrentlyAvailableFragment extends ListFragment
 
             TextView tv2 = (TextView) view.findViewById(R.id.freeTimeEndTime);
             Calendar localTime = event.getEndHourCalendarInLocalTimezone();
+
+            TextView tvFreeTimeName= (TextView) view.findViewById(R.id.freeTimeName);
+            tvFreeTimeName.setText(event.getName().or(""));
 
             DecimalFormat mFormat = new DecimalFormat("00");
 
