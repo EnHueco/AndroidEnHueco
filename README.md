@@ -30,7 +30,7 @@ Currently EnHueco is in beta, so it cannot be downloaded through any app store. 
 <img src="https://cloud.githubusercontent.com/assets/4405152/13229586/a077f6be-d999-11e5-9dc8-ff98887e2687.png" alt="alt text" width="213" height="338">
 <img src="https://cloud.githubusercontent.com/assets/4405152/13229583/a0748b50-d999-11e5-9015-01885133ae0d.png" alt="alt text" width="213" height="338">
 <img src="https://cloud.githubusercontent.com/assets/4405152/13229585/a0760386-d999-11e5-9855-a4a3b8f54a17.png" alt="alt text" width="213" height="338">
-<img src="https://cloud.githubusercontent.com/assets/4405152/13229584/a074b738-d999-11e5-8ffe-e006deb1bdc5.png" alt="alt text" width="2133" height="338">
+<img src="https://cloud.githubusercontent.com/assets/4405152/13229584/a074b738-d999-11e5-8ffe-e006deb1bdc5.png" alt="alt text" width="213" height="338">
 
 ### Tech
 
