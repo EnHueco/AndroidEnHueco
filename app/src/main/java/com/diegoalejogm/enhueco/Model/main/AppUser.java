@@ -3,16 +3,16 @@ package com.diegoalejogm.enhueco.model.main;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.diegoalejogm.enhueco.model.managers.connection.*;
-import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
-
 import com.diegoalejogm.enhueco.model.EHApplication;
 import com.diegoalejogm.enhueco.model.managers.ProximityManager;
-import com.diegoalejogm.enhueco.model.other.BasicOperationCompletionListener;
+import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
+import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.model.structures.Tuple;
@@ -191,7 +191,7 @@ public class AppUser extends User implements Serializable
 
     /**
      * Friends sync information from the server and generates request to updated if needed via Notification Center.
-     * <p/>
+     * <p>
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
@@ -253,7 +253,7 @@ public class AppUser extends User implements Serializable
 
                     if (removedAnyFriend)
                     {
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
+                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
                     }
 
                     boolean hasToSyncFriends = friendsToSync.length() > 0;
@@ -299,7 +299,7 @@ public class AppUser extends User implements Serializable
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
                         String friendJSONusername = friendJSON.getString("login");
 
-                        if(friends.containsKey(friendJSONusername))
+                        if (friends.containsKey(friendJSONusername))
                         {
                             User oldFriend = friends.get(friendJSONusername);
                             oldFriend.updateWithJSON(friendJSON);
@@ -329,14 +329,14 @@ public class AppUser extends User implements Serializable
     }
 
     /**
-<<<<<<< HEAD:app/src/main/java/com/diegoalejogm/enhueco/Model/main/AppUser.java
+     * <<<<<<< HEAD:app/src/main/java/com/diegoalejogm/enhueco/Model/main/AppUser.java
      * Returns a list of tuples of friends & events of those friends
      * that are currently available.
-=======
+     * =======
      * Returns friends who are currently nearby and for who the app user has not been notified for
      * a time longer than ProximityManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS
      */
-    public Collection<User> getFriendsCurrentlyNearbyAndEligibleForNotification ()
+    public Collection<User> getFriendsCurrentlyNearbyAndEligibleForNotification()
     {
         return Collections2.filter(friends.values(), new Predicate<User>()
         {
@@ -345,13 +345,14 @@ public class AppUser extends User implements Serializable
             {
                 return friend.isNearby()
                         && (!friend.getLastNotifiedNearbyStatusDate().isPresent()
-                        || new Date().getTime()-friend.getLastNotifiedNearbyStatusDate().get().getTime() > ProximityManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS);
+                        || new Date().getTime() - friend.getLastNotifiedNearbyStatusDate().get().getTime() > ProximityManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS);
             }
         });
     }
 
     /**
      * Returns all friends that are currently available.
+     *
      * @return Friends with their current free time period
      */
     public List<Tuple<User, Event>> getCurrentlyAvailableFriends()
@@ -374,6 +375,7 @@ public class AppUser extends User implements Serializable
     /**
      * Returns a schedule with the common free time periods of
      * the users provided.
+     *
      * @return schedule A schedule with the common free time periods of all users.
      */
     public Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
@@ -431,12 +433,12 @@ public class AppUser extends User implements Serializable
 
     /**
      * Sends a friend request to the username provided and notifies the result via Notification Center.
-     * <p/>
+     * <p>
      * Notifications
      * - EHSystemNotification.SystemDidSendFriendRequest in case of success
      * - EHSystemNotification.SystemDidFailToSendFriendRequest in case of failure
      */
-    public void sendFriendRequestToUserRequestWithUsername(String username)
+    public void sendFriendRequestToUserRequestWithUsername(String username, final BasicCompletionListener listener)
     {
         ConnectionManagerRequest request = new ConnectionManagerRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<JSONObject>absent(), false);
 
@@ -446,14 +448,27 @@ public class AppUser extends User implements Serializable
             public void onSuccess(JSONResponse eitherJSONObjectOrJSONArray)
             {
                 // TODO
-
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_SEND_FRIEND_REQUEST));
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        listener.onSuccess();
+                    }
+                });
             }
 
             @Override
-            public void onFailure(ConnectionManagerCompoundError error)
+            public void onFailure(final ConnectionManagerCompoundError error)
             {
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        listener.onFailure(error.error);
+                    }
+                });
             }
 
         });
@@ -462,16 +477,27 @@ public class AppUser extends User implements Serializable
     /**
      * Posts an instant free time period that everyone sees and that overrides any classes present in the app user's schedule during the instant free time period duration.
      * Network operation must succeed immediately or else the newFreeTimePeriod is discarded.
+     *
      * @param newFreeTimePeriod Event that represents the free time period to be posted
      */
-    public void postInstantFreeTimePeriod(Event newFreeTimePeriod, BasicOperationCompletionListener listener)
+    public void postInstantFreeTimePeriod(Event newFreeTimePeriod, final BasicCompletionListener listener)
     {
-        listener.onSuccess();
+        //TODO :
+
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                listener.onSuccess();
+            }
+        });
     }
 
     /**
      * Imports all events from a calendar to AppUser's calendar.
-     * @param calendarID ID of calendar to be imported
+     *
+     * @param calendarID                            ID of calendar to be imported
      * @param generateFreeTimePeriodsBetweenClasses Determines if free time periods will be generated.
      */
     public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
@@ -550,6 +576,7 @@ public class AppUser extends User implements Serializable
 
     /**
      * Generates QR encoded representation of user.
+     *
      * @return representation QR encoded representation of user.
      */
     public String getStringEncodedRepresentation()
@@ -576,9 +603,9 @@ public class AppUser extends User implements Serializable
         // Add events
         int i = 1;
 
-        for (DaySchedule currentDS: getSchedule().getWeekDays())
+        for (DaySchedule currentDS : getSchedule().getWeekDays())
         {
-            for (Event currentEvent: currentDS.getEvents())
+            for (Event currentEvent : currentDS.getEvents())
             {
                 Event.EventType eventType = currentEvent.getType();
                 DecimalFormat mFormat = new DecimalFormat("00");
@@ -607,6 +634,7 @@ public class AppUser extends User implements Serializable
 
     /**
      * Adds a friend from a QR string encoded representation and returns it.
+     *
      * @param encodedUser Encoded friend QR string representation.
      * @return user New friend.
      */
@@ -659,10 +687,11 @@ public class AppUser extends User implements Serializable
 
     /**
      * Accept a friend request to another user with given username.
+     *
      * @param username Username of the user who's friend request will be accepted.
      */
 
-    public void acceptFriendRequestFromUserWithUsername(String username)
+    public void acceptFriendRequestFromUserWithUsername(String username, final BasicCompletionListener listener)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
         Log.v(LOG, url);
@@ -680,7 +709,15 @@ public class AppUser extends User implements Serializable
                 {
                     User friend = User.fromJSONObject(friendship.getJSONObject("secondUser"));
                     friends.put(friend.getUsername(), friend);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST));
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            listener.onSuccess();
+                        }
+                    });
                 }
                 catch (JSONException e)
                 {
@@ -689,9 +726,16 @@ public class AppUser extends User implements Serializable
             }
 
             @Override
-            public void onFailure(ConnectionManagerCompoundError error)
+            public void onFailure(final ConnectionManagerCompoundError error)
             {
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        listener.onFailure(error.error);
+                    }
+                });
             }
         });
     }

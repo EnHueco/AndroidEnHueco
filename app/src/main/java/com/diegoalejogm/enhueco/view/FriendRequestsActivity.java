@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.model.main.*;
 import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.R;
 import com.squareup.picasso.Picasso;
@@ -64,9 +65,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
         // Broadcast managers
         IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
-        IntentFilter filterAccepted = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterAccepted);
 
         // Adapter
         requests = new ArrayList<>();
@@ -95,12 +94,6 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
                 FriendRequestsActivity.this.updateRequests(users);
             }
-            else if(intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_ACCEPT_FRIEND_REQUEST))
-            {
-                System.getInstance().getAppUser().fetchFriendRequests();
-            }
-
-//            Log.d("receiver", "Got message: " + message);
         }
     };
 
@@ -158,7 +151,20 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 @Override
                 public void onClick(View v)
                 {
-                    System.getInstance().getAppUser().acceptFriendRequestFromUserWithUsername(user.getUsername());
+                    System.getInstance().getAppUser().acceptFriendRequestFromUserWithUsername(user.getUsername(), new BasicCompletionListener()
+                    {
+                        @Override
+                        public void onSuccess()
+                        {
+                            System.getInstance().getAppUser().fetchFriendRequests();
+                        }
+
+                        @Override
+                        public void onFailure(Exception error)
+                        {
+
+                        }
+                    });
                 }
             });
 

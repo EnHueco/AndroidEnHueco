@@ -21,18 +21,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.model.main.Event;
 import com.diegoalejogm.enhueco.model.main.System;
-import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.main.User;
+import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.structures.Tuple;
-import com.diegoalejogm.enhueco.R;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -80,16 +79,6 @@ public class CurrentlyAvailableFragment extends ListFragment
                 refresh();
             }
         }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND);
-                refresh();
-            }
-        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
     }
 
 

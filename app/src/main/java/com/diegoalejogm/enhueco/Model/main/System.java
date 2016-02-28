@@ -1,10 +1,11 @@
 package com.diegoalejogm.enhueco.model.main;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.model.managers.connection.*;
+import android.os.Handler;
+import android.os.Looper;
 import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.CompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
@@ -43,7 +44,7 @@ public class System
     /**
      * System initialization
      */
-    public System ()
+    public System()
     {
         loadDataFromPersistence();
         //deletePersistenceData(EHApplication.getAppContext());
@@ -51,9 +52,10 @@ public class System
 
     /**
      * Singleton getter for class object
+     *
      * @return new System instance if first time called or existing one otherwise
      */
-    public static System getInstance ()
+    public static System getInstance()
     {
         if (instance == null) instance = new System();
 
@@ -66,13 +68,12 @@ public class System
 
     /**
      * Tests the creation of a new appUser instance
-     * @param context Context of the view that calls the method
      */
-    public void createTestAppUser (Context context)
+    public void createTestAppUser()
     {
         appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "3176694189", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
-        User friend1 = new User("da.gomez11","Diego Alejandro", "Gomez Mosquera", "3144141917", Optional.of("https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xat1/v/t1.0-9/1377456_10152974578604740_7067096578609392451_n.jpg?oh=89245c25c3ddaa4f7d1341f7788de261&oe=56925447&__gda__=1448954703_30d0fe175a8ab0b665dc074d63a087d6"), "da.gomez11", new Date());
-        User friend2 = new User("cl.jimenez12","Claudia Lucía", "Jiménez Guarín", "", Optional.<String>absent(), "cl.jimenez12", new Date());
+        User friend1 = new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", Optional.of("https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xat1/v/t1.0-9/1377456_10152974578604740_7067096578609392451_n.jpg?oh=89245c25c3ddaa4f7d1341f7788de261&oe=56925447&__gda__=1448954703_30d0fe175a8ab0b665dc074d63a087d6"), "da.gomez11", new Date());
+        User friend2 = new User("cl.jimenez12", "Claudia Lucía", "Jiménez Guarín", "", Optional.<String>absent(), "cl.jimenez12", new Date());
         appUser.getFriends().put(friend1.getUsername(), friend1);
         appUser.getFriends().put(appUser.getUsername(), appUser);
 
@@ -84,16 +85,16 @@ public class System
         friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.FREE_TIME, startHour, endHour));
         appUser.getFriends().put(friend2.getUsername(), friend2);
 
-        persistData(context);
+        persistData();
     }
 
     /**
      * System's login method.
+     *
      * @param username Username of the user that wishes to log in
      * @param password Password of the user that wishes to log in
-     * @param applicationContext Current application context
      */
-    public void login(String username, String password, final Context applicationContext)
+    public void login(String username, String password, final BasicCompletionListener completionListener)
     {
         JSONObject params = new JSONObject();
 
@@ -112,8 +113,16 @@ public class System
                     try
                     {
                         appUser = AppUser.userFromJSONObject(eitherJSONObjectOrJSONArray.jsonObject);
-                        persistData(applicationContext);
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EHSystemNotification.SYSTEM_DID_LOGIN));
+                        persistData();
+
+                        new Handler(Looper.getMainLooper()).post(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                completionListener.onSuccess();
+                            }
+                        });
                     }
                     catch (JSONException | ParseException e)
                     {
@@ -122,11 +131,16 @@ public class System
                 }
 
                 @Override
-                public void onFailure(ConnectionManagerCompoundError error)
+                public void onFailure(final ConnectionManagerCompoundError error)
                 {
-                    Intent intent = new Intent(EHSystemNotification.SYSTEM_COULD_NOT_LOGIN_WITH_ERROR);
-                    intent.putExtra("error", error.error);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            completionListener.onFailure(error.error);
+                        }
+                    });
                 }
             });
         }
@@ -138,9 +152,10 @@ public class System
 
     /**
      * Logs out current app user
+     *
      * @param context Current application context
      */
-    public void logout (Context context)
+    public void logout(Context context)
     {
         appUser = null;
         deletePersistenceData(context);
@@ -148,7 +163,8 @@ public class System
 
     /**
      * Searches users with keyword id
-     * @param id Keyword that searches for users
+     *
+     * @param id       Keyword that searches for users
      * @param listener Listener of the event
      */
     public void searchUsers(String id, final CompletionListener<List<User>> listener)
@@ -157,21 +173,28 @@ public class System
 
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler()
         {
-
             @Override
             public void onSuccess(JSONResponse eitherJSONObjectOrJSONArray)
             {
                 try
                 {
                     JSONArray array = eitherJSONObjectOrJSONArray.jsonArray;
-                    ArrayList<User> users = new ArrayList<User>();
+                    final ArrayList<User> users = new ArrayList<User>();
                     for (int i = 0; i < array.length(); i++)
                     {
                         JSONObject jsonUser = array.getJSONObject(i);
                         users.add(User.fromJSONObject(jsonUser));
                     }
 
-                    listener.onSuccess(users);
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            listener.onSuccess(users);
+                        }
+                    });
+
                 }
                 catch (Exception e)
                 {
@@ -180,11 +203,17 @@ public class System
             }
 
             @Override
-            public void onFailure(ConnectionManagerCompoundError error)
+            public void onFailure(final ConnectionManagerCompoundError error)
             {
-                Intent intent = new Intent(EHSystemNotification.SYSTEM_COULD_NOT_LOGIN_WITH_ERROR);
-                intent.putExtra("error", error.error);
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        listener.onFailure(error.error);
+                    }
+                });
             }
         });
     }
@@ -193,14 +222,14 @@ public class System
 
     /**
      * Persists all app's system data in path
-     * @param context Current context
+     *
      * @return true if correctly persisted or false otherwise
      */
-    public boolean persistData(Context context)
+    public boolean persistData()
     {
         try
         {
-            FileOutputStream fos = context.openFileOutput(AppUser.FILE_NAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = EHApplication.getAppContext().openFileOutput(AppUser.FILE_NAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(appUser);
             os.close();
@@ -216,6 +245,7 @@ public class System
 
     /**
      * Loads data from persistence
+     *
      * @return true if data successfuly loaded, false otherwise
      */
     private boolean loadDataFromPersistence()
@@ -238,6 +268,7 @@ public class System
 
     /**
      * Deletes persistence contents
+     *
      * @param context
      */
     private void deletePersistenceData(Context context)
@@ -251,6 +282,7 @@ public class System
 
     /**
      * System's appUser getter
+     *
      * @return
      */
     public AppUser getAppUser()
@@ -267,15 +299,9 @@ public class System
      */
     public class EHSystemNotification
     {
-        public static final String SYSTEM_DID_LOGIN = "SYSTEM_DID_LOGIN", SYSTEM_COULD_NOT_LOGIN_WITH_ERROR = "SYSTEM_COULD_NOT_LOGIN_WITH_ERROR";
-        public static final String SYSTEM_DID_RECEIVE_APPUSER_UPDATE= "SYSTEM_DID_RECEIVE_APPUSER_UPDATE";
+        public static final String SYSTEM_DID_RECEIVE_APPUSER_UPDATE = "SYSTEM_DID_RECEIVE_APPUSER_UPDATE";
 
         public static final String SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES";
         public static final String SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES = "SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES";
-        public static final String SYSTEM_DID_ADD_FRIEND = "SYSTEM_DID_ADD_FRIEND";
-        public static final String SYSTEM_DID_SEND_FRIEND_REQUEST = "SYSTEM_DID_SEND_FRIEND_REQUEST", SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST = "SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST";
-
-        public static final String SYSTEM_DID_ACCEPT_FRIEND_REQUEST = "SYSTEM_DID_ACCEPT_FRIEND_REQUEST";
-        public static final String SYSTEM_DID_DELETE_FRIEND = "SYSTEM_DID_DELETE_FRIEND";
     }
 }

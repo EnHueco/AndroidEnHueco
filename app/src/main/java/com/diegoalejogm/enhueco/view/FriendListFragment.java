@@ -73,17 +73,6 @@ public class FriendListFragment extends ListFragment
                 refresh();
             }
         }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND);
-                refresh();
-            }
-        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_DELETE_FRIEND));
-
     }
 
     @Override

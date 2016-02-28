@@ -1,10 +1,8 @@
 package com.diegoalejogm.enhueco.model.managers;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
-import com.diegoalejogm.enhueco.model.EHApplication;
-import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.main.EHSynchronizable;
+import com.diegoalejogm.enhueco.model.main.Event;
 import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.model.managers.connection.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
@@ -175,9 +173,7 @@ public class SynchronizationManager
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(System.EHSystemNotification.SYSTEM_DID_FAIL_TO_SEND_FRIEND_REQUEST));
             }
-
         });
     }
 }

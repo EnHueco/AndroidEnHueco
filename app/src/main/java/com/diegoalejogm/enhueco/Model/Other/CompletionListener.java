@@ -3,8 +3,8 @@ package com.diegoalejogm.enhueco.model.other;
 /**
  * Created by Diego on 10/11/15.
  */
-public interface CompletionListener<T>
+public interface CompletionListener<R>
 {
-    void onSuccess(T result);
-    void onFailure();
+    void onSuccess(R result);
+    void onFailure(Exception error);
 }

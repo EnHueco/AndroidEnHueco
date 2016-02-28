@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.diegoalejogm.enhueco.model.main.*;
 import com.diegoalejogm.enhueco.model.main.System;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.CompletionListener;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -125,9 +126,9 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                             }
 
                             @Override
-                            public void onFailure()
+                            public void onFailure(Exception error)
                             {
-
+                                //TODO: Show error
                             }
                         });
                     }
@@ -167,7 +168,22 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                 @Override
                 public void onClick(View v)
                 {
-                    System.getInstance().getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString());
+
+                    System.getInstance().getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
+                    {
+                        @Override
+                        public void onSuccess()
+                        {
+                            //TODO
+                        }
+
+                        @Override
+                        public void onFailure(Exception error)
+                        {
+                            //TODO
+                        }
+                    });
+
                     addFriendButton.setVisibility(View.INVISIBLE);
                 }
             });

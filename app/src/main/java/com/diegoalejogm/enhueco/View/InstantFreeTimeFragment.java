@@ -11,10 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import com.diegoalejogm.enhueco.model.other.BasicOperationCompletionListener;
+import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.model.main.Event;
 import com.diegoalejogm.enhueco.model.main.System;
-import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
 
 import java.text.DateFormat;
@@ -130,7 +130,7 @@ public class InstantFreeTimeFragment extends DialogFragment
             public void onClick(View v)
             {
                 Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTime);
-                System.getInstance().getAppUser().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicOperationCompletionListener()
+                System.getInstance().getAppUser().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
                 {
                     @Override
                     public void onSuccess()
@@ -139,7 +139,7 @@ public class InstantFreeTimeFragment extends DialogFragment
                     }
 
                     @Override
-                    public void onFailure()
+                    public void onFailure(Exception error)
                     {
 
                     }
