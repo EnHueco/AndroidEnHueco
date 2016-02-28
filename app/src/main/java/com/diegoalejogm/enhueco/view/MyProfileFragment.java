@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.main.System;
-import com.diegoalejogm.enhueco.model.main.User;
+import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.Utilities;
 import com.diegoalejogm.enhueco.R;
@@ -117,6 +117,7 @@ public class MyProfileFragment extends Fragment
                 @Override
                 public void onError()
                 {
+                    // TODO
                 }
             });
         }

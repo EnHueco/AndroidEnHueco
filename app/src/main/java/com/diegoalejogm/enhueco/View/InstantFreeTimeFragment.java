@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import com.diegoalejogm.enhueco.R;
-import com.diegoalejogm.enhueco.model.main.Event;
-import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.model.Event;
+import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
 

@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.model.managers.connection;
+package com.diegoalejogm.enhueco.model.logicManagers.connection;
 
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 

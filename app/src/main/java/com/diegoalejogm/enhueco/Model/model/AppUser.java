@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.model.main;
+package com.diegoalejogm.enhueco.model.model;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,9 +9,9 @@ import android.provider.CalendarContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.diegoalejogm.enhueco.model.EHApplication;
-import com.diegoalejogm.enhueco.model.managers.ProximityManager;
-import com.diegoalejogm.enhueco.model.managers.SynchronizationManager;
-import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.logicManagers.ProximityManager;
+import com.diegoalejogm.enhueco.model.logicManagers.SynchronizationManager;
+import com.diegoalejogm.enhueco.model.logicManagers.connection.*;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;

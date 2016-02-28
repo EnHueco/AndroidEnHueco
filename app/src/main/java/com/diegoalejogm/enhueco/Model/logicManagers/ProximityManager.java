@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco.model.managers;
+package com.diegoalejogm.enhueco.model.logicManagers;
 
 import android.app.*;
 import android.content.BroadcastReceiver;
@@ -12,10 +12,10 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import com.diegoalejogm.enhueco.model.EHApplication;
-import com.diegoalejogm.enhueco.model.main.Event;
-import com.diegoalejogm.enhueco.model.main.System;
-import com.diegoalejogm.enhueco.model.main.User;
-import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.model.Event;
+import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.User;
+import com.diegoalejogm.enhueco.model.logicManagers.connection.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.model.structures.Tuple;

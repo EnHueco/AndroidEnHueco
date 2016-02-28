@@ -1,10 +1,10 @@
-package com.diegoalejogm.enhueco.model.managers;
+package com.diegoalejogm.enhueco.model.logicManagers;
 
 import android.os.AsyncTask;
-import com.diegoalejogm.enhueco.model.main.EHSynchronizable;
-import com.diegoalejogm.enhueco.model.main.Event;
-import com.diegoalejogm.enhueco.model.main.System;
-import com.diegoalejogm.enhueco.model.managers.connection.*;
+import com.diegoalejogm.enhueco.model.model.EHSynchronizable;
+import com.diegoalejogm.enhueco.model.model.Event;
+import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.logicManagers.connection.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.google.common.base.Optional;

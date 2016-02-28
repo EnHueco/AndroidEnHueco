@@ -20,9 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
-import com.diegoalejogm.enhueco.model.main.*;
+import com.diegoalejogm.enhueco.model.model.*;
 import com.diegoalejogm.enhueco.R;
-import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.model.System;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 

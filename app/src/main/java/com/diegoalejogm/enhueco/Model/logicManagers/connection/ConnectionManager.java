@@ -1,9 +1,9 @@
-package com.diegoalejogm.enhueco.model.managers.connection;
+package com.diegoalejogm.enhueco.model.logicManagers.connection;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.*;
 import com.diegoalejogm.enhueco.model.*;
-import com.diegoalejogm.enhueco.model.main.System;
+import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
