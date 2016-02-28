@@ -5,10 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.model.*;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.logicManagers.FriendsManager;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
+import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
-import com.diegoalejogm.enhueco.R;
 import com.squareup.picasso.Picasso;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -64,7 +65,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
 
         // Broadcast managers
-        IntentFilter filterSearch = new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
+        IntentFilter filterSearch = new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, filterSearch);
 
         // Adapter
@@ -79,7 +80,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
     private void fetchFriendRequests()
     {
-        System.getInstance().getAppUser().fetchFriendRequests();
+        FriendsManager.fetchFriendRequests();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
@@ -89,7 +90,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
         public void onReceive(Context context, Intent intent)
         {
             // Get extra data included in the Intent
-            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES))
+            if (intent.getAction().equals(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES))
             {
                 ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
                 FriendRequestsActivity.this.updateRequests(users);
@@ -151,12 +152,12 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 @Override
                 public void onClick(View v)
                 {
-                    System.getInstance().getAppUser().acceptFriendRequestFromUserWithUsername(user.getUsername(), new BasicCompletionListener()
+                    FriendsManager.acceptFriendRequestFromUserWithUsername(user.getUsername(), new BasicCompletionListener()
                     {
                         @Override
                         public void onSuccess()
                         {
-                            System.getInstance().getAppUser().fetchFriendRequests();
+                            FriendsManager.fetchFriendRequests();
                         }
 
                         @Override

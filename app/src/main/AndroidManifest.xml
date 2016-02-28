@@ -18,15 +18,15 @@
         android:theme="@style/AppTheme.NoActionBar" >
 
         <service
-                android:name=".model.logicManagers.ProximityManager$ProximityManagerReportingService"
+                android:name=".model.logicManagers.ProximityUpdatesManager$ProximityManagerReportingService"
                 android:exported="false"/>
 
         <receiver
-                android:name=".model.logicManagers.ProximityManager$ProximityManagerReportingServiceAlarmReceiver"
+                android:name=".model.logicManagers.ProximityUpdatesManager$ProximityManagerReportingServiceAlarmReceiver"
                 android:process=":remote" >
         </receiver>
 
-        <receiver android:name=".model.logicManagers.ProximityManager$ProximityManagerReportingBootReceiver"
+        <receiver android:name=".model.logicManagers.ProximityUpdatesManager$ProximityManagerReportingBootReceiver"
                   android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

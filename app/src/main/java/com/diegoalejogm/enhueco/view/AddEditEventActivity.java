@@ -14,12 +14,13 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
+import com.diegoalejogm.enhueco.model.logicManagers.PersistenceManager;
 import com.diegoalejogm.enhueco.model.model.*;
 import com.diegoalejogm.enhueco.model.logicManagers.genericManagers.SynchronizationManager;
 import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Optional;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -217,7 +218,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         boolean canAddEvents = true;
 
 
-        DaySchedule[] weekDaysSchedule = System.getInstance().getAppUser().getSchedule().getWeekDays();
+        DaySchedule[] weekDaysSchedule = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays();
         for (int i = 0; i < selectedWeekDays.length; i++)
         {
             if (!selectedWeekDays[i]) continue;
@@ -264,7 +265,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 SynchronizationManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second);
             }
 
-            System.getInstance().persistData();
+            PersistenceManager.persistData();
 
             finish();
         }

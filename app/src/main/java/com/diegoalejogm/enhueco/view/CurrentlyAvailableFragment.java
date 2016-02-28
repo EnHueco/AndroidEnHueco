@@ -22,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.logicManagers.FriendsInformationManager;
+import com.diegoalejogm.enhueco.model.logicManagers.UserStateManager;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.Event;
-import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.structures.Tuple;
@@ -66,7 +68,7 @@ public class CurrentlyAvailableFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        currentlyAvailableFriends = System.getInstance().getAppUser().getCurrentlyAvailableFriends();
+        currentlyAvailableFriends = UserStateManager.getCurrentlyAvailableFriends();
         adapter = new CurrentlyFreeArrayAdapter(getActivity(), 0, currentlyAvailableFriends);
         setListAdapter(adapter);
 
@@ -75,10 +77,10 @@ public class CurrentlyAvailableFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
+                Log.v(LOG, EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
                 refresh();
             }
-        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
+        }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
     }
 
 
@@ -132,7 +134,7 @@ public class CurrentlyAvailableFragment extends ListFragment
             colorAnimation.start();
 
             refresh();
-            System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            FriendsInformationManager.fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
 
@@ -141,7 +143,7 @@ public class CurrentlyAvailableFragment extends ListFragment
     private void refresh()
     {
         currentlyAvailableFriends.clear();
-        currentlyAvailableFriends.addAll(System.getInstance().getAppUser().getCurrentlyAvailableFriends());
+        currentlyAvailableFriends.addAll(UserStateManager.getCurrentlyAvailableFriends());
         adapter.notifyDataSetChanged();
     }
 

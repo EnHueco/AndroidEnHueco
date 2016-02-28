@@ -10,8 +10,9 @@ import android.view.View;
 
 import android.widget.Button;
 import android.widget.SearchView;
+import com.diegoalejogm.enhueco.model.logicManagers.ScheduleManager;
 import com.diegoalejogm.enhueco.model.model.*;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.R;
 import com.wefika.flowlayout.FlowLayout;
 
@@ -42,9 +43,9 @@ public class CommonFreeTimePeriodsActivity extends AppCompatActivity implements 
         searchView = (SearchView) findViewById(R.id.searchView);
         selectedFriendsFlowLayout = (FlowLayout) findViewById(R.id.selectedFriendsFlowLayout);
 
-        addFriendToSelectedFriendsAndReloadData(System.getInstance().getAppUser());
+        addFriendToSelectedFriendsAndReloadData(EnHueco.getInstance().getAppUser());
 
-        for (User user: System.getInstance().getAppUser().getFriends().values())
+        for (User user: EnHueco.getInstance().getAppUser().getFriends().values())
         {
             if (user.getID().equals(getIntent().getStringExtra("initialFriendID")))
             {
@@ -84,7 +85,7 @@ public class CommonFreeTimePeriodsActivity extends AppCompatActivity implements 
 
     public void prepareInfoAndReloadScheduleData ()
     {
-        Schedule commonFreeTimePeriodsSchedule = System.getInstance().getAppUser().getCommonFreeTimePeriodsScheduleForUsers(selectedFriends.toArray(new User[0]));
+        Schedule commonFreeTimePeriodsSchedule = ScheduleManager.getCommonFreeTimePeriodsScheduleForUsers(selectedFriends.toArray(new User[0]));
         scheduleFragment.setSchedule(commonFreeTimePeriodsSchedule);
         scheduleFragment.reloadData();
     }

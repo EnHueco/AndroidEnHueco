@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.Utilities;
@@ -29,7 +29,7 @@ public class FriendDetailActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        for (User user : System.getInstance().getAppUser().getFriends().values())
+        for (User user : EnHueco.getInstance().getAppUser().getFriends().values())
         {
             if (user.getID().equals(getIntent().getStringExtra("friendID")))
             {

@@ -3,7 +3,7 @@ package com.diegoalejogm.enhueco.view;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -37,7 +37,7 @@ public class StartActivity extends AppCompatActivity
         }
 
         Intent intent;
-        boolean loggedIn = System.getInstance().getAppUser() != null;
+        boolean loggedIn = EnHueco.getInstance().getAppUser() != null;
 
         if (loggedIn) intent = new Intent(this, MainTabbedActivity.class);
         else intent = new Intent(this, LoginActivity.class);

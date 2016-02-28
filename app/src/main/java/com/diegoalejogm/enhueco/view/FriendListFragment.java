@@ -18,8 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.diegoalejogm.enhueco.model.logicManagers.FriendsInformationManager;
 import com.diegoalejogm.enhueco.model.model.Event;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
@@ -60,7 +61,7 @@ public class FriendListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+        filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
 
@@ -69,10 +70,10 @@ public class FriendListFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                Log.v(LOG, System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
+                Log.v(LOG, EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
                 refresh();
             }
-        }, new IntentFilter(System.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
+        }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
     }
 
     @Override
@@ -119,7 +120,7 @@ public class FriendListFragment extends ListFragment
     public void refresh()
     {
         filteredFriends.clear();
-        filteredFriends.addAll(new ArrayList<>(System.getInstance().getAppUser().getFriends().values()));
+        filteredFriends.addAll(new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values()));
         friendArrayAdapter.notifyDataSetChanged();
     }
 
@@ -158,7 +159,7 @@ public class FriendListFragment extends ListFragment
             colorAnimation.start();
 
             refresh();
-            System.getInstance().getAppUser().fetchUpdatesForFriendsAndFriendSchedules();
+            FriendsInformationManager.fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
 

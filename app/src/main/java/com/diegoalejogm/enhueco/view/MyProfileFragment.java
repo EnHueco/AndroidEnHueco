@@ -13,7 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.logicManagers.AppUserInformationManager;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.Utilities;
@@ -38,7 +39,7 @@ public class MyProfileFragment extends Fragment
         public void onReceive(Context context, Intent intent)
         {
             // Get extra data included in the Intent
-            if (intent.getAction().equals(System.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE))
+            if (intent.getAction().equals(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE))
             {
                 ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
                 MyProfileFragment.this.refresh();
@@ -63,14 +64,14 @@ public class MyProfileFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
-        System.getInstance().getAppUser().fetchUpdatesForAppUserAndSchedule();
+        AppUserInformationManager.fetchUpdatesForAppUserAndSchedule();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        User user = System.getInstance().getAppUser();
+        User user = EnHueco.getInstance().getAppUser();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
@@ -96,7 +97,7 @@ public class MyProfileFragment extends Fragment
 
     public void updateProfileImage ()
     {
-        User user = System.getInstance().getAppUser();
+        User user = EnHueco.getInstance().getAppUser();
 
         if (user.getImageURL().isPresent() && !user.getImageURL().get().isEmpty())
         {
@@ -152,7 +153,7 @@ public class MyProfileFragment extends Fragment
             }
             */
 
-            System.getInstance().getAppUser().fetchUpdatesForAppUserAndSchedule();
+            AppUserInformationManager.fetchUpdatesForAppUserAndSchedule();
         }
     }
 }

@@ -20,9 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import com.diegoalejogm.enhueco.model.logicManagers.AccountManager;
+import com.diegoalejogm.enhueco.model.logicManagers.FriendsManager;
 import com.diegoalejogm.enhueco.model.model.*;
 import com.diegoalejogm.enhueco.R;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -147,7 +149,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void logOut(MenuItem item)
     {
 
-        System.getInstance().logout(getApplicationContext());
+        AccountManager.logout();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -207,7 +209,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             Log.d("MainActivity", "Scanned");
             try
             {
-                User friend = System.getInstance().getAppUser().addFriendFromStringEncodedFriendRepresentation(result.getContents());
+                User friend = FriendsManager.addFriendFromStringEncodedFriendRepresentation(result.getContents());
                 FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
                 fr.refresh();
                 Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();
@@ -310,7 +312,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void onProfileViewScheduleButtonPressed(View view)
     {
         Intent intent = new Intent(this, ScheduleActivity.class);
-        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, System.getInstance().getAppUser().getSchedule());
+        intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, EnHueco.getInstance().getAppUser().getSchedule());
         startActivity(intent);
     }
 

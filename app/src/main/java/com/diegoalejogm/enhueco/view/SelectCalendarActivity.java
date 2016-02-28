@@ -18,8 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.logicManagers.ScheduleManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class SelectCalendarActivity extends AppCompatActivity implements ListVie
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
         DeviceCalendar calendar = calendars.get(position);
-        System.getInstance().getAppUser().importFromCalendarWithID(calendar.ID, false);
+        ScheduleManager.importFromCalendarWithID(calendar.ID, false);
 
         finish();
     }

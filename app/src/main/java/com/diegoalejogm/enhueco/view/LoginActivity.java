@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.diegoalejogm.enhueco.R;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.logicManagers.AccountManager;
+import com.diegoalejogm.enhueco.model.logicManagers.PersistenceManager;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 
 public class LoginActivity extends AppCompatActivity
@@ -40,13 +42,13 @@ public class LoginActivity extends AppCompatActivity
         {
             Intent intent = new Intent(this, MainTabbedActivity.class);
             startActivity(intent);
-            System.getInstance().createTestAppUser();
+            EnHueco.getInstance().createTestAppUser();
             finish();
         }
         // Actual login
         else
         {
-            System.getInstance().login(loginString, passwordString, new BasicCompletionListener()
+            AccountManager.login(loginString, passwordString, new BasicCompletionListener()
             {
                 @Override
                 public void onSuccess()
@@ -58,7 +60,7 @@ public class LoginActivity extends AppCompatActivity
 
                     Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
                     startActivity(intent);
-                    System.getInstance().persistData();
+                    PersistenceManager.persistData();
                     LoginActivity.this.finish();
                 }
 

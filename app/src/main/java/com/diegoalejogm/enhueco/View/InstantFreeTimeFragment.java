@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import com.diegoalejogm.enhueco.R;
+import com.diegoalejogm.enhueco.model.logicManagers.UserStateManager;
 import com.diegoalejogm.enhueco.model.model.Event;
-import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
 
@@ -130,7 +130,7 @@ public class InstantFreeTimeFragment extends DialogFragment
             public void onClick(View v)
             {
                 Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTime);
-                System.getInstance().getAppUser().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
+                UserStateManager.postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
                 {
                     @Override
                     public void onSuccess()

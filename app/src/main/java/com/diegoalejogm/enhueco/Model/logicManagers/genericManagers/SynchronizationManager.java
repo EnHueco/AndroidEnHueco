@@ -2,8 +2,8 @@ package com.diegoalejogm.enhueco.model.logicManagers.genericManagers;
 
 import android.os.AsyncTask;
 import com.diegoalejogm.enhueco.model.model.EHSynchronizable;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.Event;
-import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
@@ -154,7 +154,7 @@ public class SynchronizationManager
         JSONObject eventJSON = event.toJSONObject();
         try
         {
-            eventJSON.put("user", System.getInstance().getAppUser().getUsername());
+            eventJSON.put("user", EnHueco.getInstance().getAppUser().getUsername());
         }
         catch (JSONException e)
         {

@@ -14,7 +14,7 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.diegoalejogm.enhueco.model.model.Event;
 import com.diegoalejogm.enhueco.model.model.Schedule;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.R;
 
 import java.util.*;
@@ -24,7 +24,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
     public static final String SCHEDULE_EXTRA = "Schedule";
     private static final String LOG = "ScheduleActivity";
     private WeekView mWeekView;
-    private Schedule schedule = System.getInstance().getAppUser().getSchedule();
+    private Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
     private FloatingActionButton fab;
 
     @Nullable
@@ -48,7 +48,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         fab = (FloatingActionButton) view.findViewById(R.id.addEventButton);
-        if (schedule != System.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+        if (schedule != EnHueco.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
 
         mWeekView = (WeekView) view.findViewById(R.id.weekView);
 
@@ -104,7 +104,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
 
 //        Calendar temp = Calendar.getInstance(/*TimeZone.getTimeZone("UTC"))*/);
 //        Calendar temp2 = (Calendar) temp.clone(); temp2.add(Calendar.HOUR_OF_DAY, 2);
-//        System.getInstance().getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
+//        EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
 
         int id = 0;
         // Iterate through month
@@ -112,7 +112,7 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
         {
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
-            Collection<Event> currentWeekDayEvents = System.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
+            Collection<Event> currentWeekDayEvents = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
 
             for (Event currentEvent: currentWeekDayEvents)
             {
@@ -163,6 +163,6 @@ public class ScheduleFragment extends Fragment implements WeekView.EventLongPres
     {
         this.schedule = schedule;
 
-        if (schedule != System.getInstance().getAppUser().getSchedule() && fab != null) fab.setVisibility(View.GONE);
+        if (schedule != EnHueco.getInstance().getAppUser().getSchedule() && fab != null) fab.setVisibility(View.GONE);
     }
 }

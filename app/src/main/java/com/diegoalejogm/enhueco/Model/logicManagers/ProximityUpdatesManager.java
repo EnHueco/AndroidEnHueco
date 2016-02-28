@@ -12,8 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import com.diegoalejogm.enhueco.model.EHApplication;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.model.model.Event;
-import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.model.User;
 import com.diegoalejogm.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
@@ -37,27 +37,27 @@ import java.util.*;
 /**
  * Created by Diego on 11/9/15.
  */
-public class ProximityManager implements Serializable
+public class ProximityUpdatesManager implements Serializable
 {
     // Values for persistence
     public static final String FILE_NAME = "proximityManager";
 
-    private static ProximityManager sharedManager;
+    private static ProximityUpdatesManager sharedManager;
 
     /** The interval used to report location (and get location from the app user's friends) when app user is available (i.e. in an app user's free time) */
     private static final int REPORTING_INTERVAL = 1000 * 60 * 5; //5 Minutes
 
     public static final int MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS = 1000*60*80; //80 minutes
 
-    private ProximityManager () {}
+    private ProximityUpdatesManager() {}
 
     private UndirectedGraph<String, DefaultEdge> wifiAccessPointsBSSIDSGraph = new SimpleGraph<>(DefaultEdge.class);
 
-    public static ProximityManager getSharedManager()
+    public static ProximityUpdatesManager getSharedManager()
     {
         if (sharedManager == null && (sharedManager = loadFromPersistence().orNull()) == null)
         {
-            sharedManager = new ProximityManager();
+            sharedManager = new ProximityUpdatesManager();
         }
         return sharedManager;
     }
@@ -83,7 +83,7 @@ public class ProximityManager implements Serializable
         {
             if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
             {
-                ProximityManager.getSharedManager().scheduleReportingDuringCurrentOrNextFreeTimePeriods();
+                ProximityUpdatesManager.getSharedManager().scheduleReportingDuringCurrentOrNextFreeTimePeriods();
             }
         }
     }
@@ -106,10 +106,10 @@ public class ProximityManager implements Serializable
         @Override
         protected void onHandleIntent(Intent intent)
         {
-            Log.d("ProximityManager", "----------------------- Reporting !");
+            Log.d("ProximityUpdatesManager", "----------------------- Reporting !");
 
             //Report new visible access points and access point with best signal. On server's response update user's friend's BSSIDs.
-            ProximityManager.getSharedManager().reportVisibleBestSignalAccessPointAndNewAccessPointsIfNecessary();
+            ProximityUpdatesManager.getSharedManager().reportVisibleBestSignalAccessPointAndNewAccessPointsIfNecessary();
 
             boolean shouldRescheduleAlarm = true;
 
@@ -245,7 +245,7 @@ public class ProximityManager implements Serializable
 
     private void scheduleReportingDuringCurrentOrNextFreeTimePeriods()
     {
-        Tuple<Optional<Event>, Optional<Event>> currentAndNextFreeTimePeriods = System.getInstance().getAppUser().getCurrentAndNextFreeTimePeriods();
+        Tuple<Optional<Event>, Optional<Event>> currentAndNextFreeTimePeriods = EnHueco.getInstance().getAppUser().getCurrentAndNextFreeTimePeriods();
 
         Optional<Event> currentFreeTimePeriod = currentAndNextFreeTimePeriods.first,
                         nextFreeTimePeriod = currentAndNextFreeTimePeriods.second;
@@ -349,7 +349,7 @@ public class ProximityManager implements Serializable
                     {
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
 
-                        System.getInstance().getAppUser().getFriends().get(friendJSON.getString("login")).setCurrentBSSID(Optional.of(friendJSON.getJSONObject("location").getString("BSSID").toUpperCase()));
+                        EnHueco.getInstance().getAppUser().getFriends().get(friendJSON.getString("login")).setCurrentBSSID(Optional.of(friendJSON.getJSONObject("location").getString("BSSID").toUpperCase()));
                     }
                 }
                 catch (JSONException e)
@@ -359,7 +359,7 @@ public class ProximityManager implements Serializable
 
                 //Notify app user
 
-                Collection<User> friendsToNotifyToUser = System.getInstance().getAppUser().getFriendsCurrentlyNearbyAndEligibleForNotification();
+                Collection<User> friendsToNotifyToUser = UserStateManager.getFriendsCurrentlyNearbyAndEligibleForNotification();
 
                 Date currentDate = new Date();
 
@@ -453,13 +453,13 @@ public class ProximityManager implements Serializable
         return false;
     }
 
-    private static Optional<ProximityManager> loadFromPersistence()
+    private static Optional<ProximityUpdatesManager> loadFromPersistence()
     {
         try
         {
             FileInputStream fis = EHApplication.getAppContext().openFileInput(FILE_NAME);
             ObjectInputStream is = new ObjectInputStream(fis);
-            ProximityManager proximityManager = (ProximityManager) is.readObject();
+            ProximityUpdatesManager proximityManager = (ProximityUpdatesManager) is.readObject();
             is.close();
             fis.close();
             return Optional.of(proximityManager);

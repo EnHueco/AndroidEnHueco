@@ -1,6 +1,6 @@
 package com.diegoalejogm.enhueco.model.model;
 
-import com.diegoalejogm.enhueco.model.logicManagers.ProximityManager;
+import com.diegoalejogm.enhueco.model.logicManagers.ProximityUpdatesManager;
 import com.diegoalejogm.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
@@ -197,8 +197,8 @@ public class User extends EHSynchronizable implements Serializable
      */
     public void refreshIsNearby ()
     {
-        AppUser appUser = System.getInstance().getAppUser();
-        isNearby = currentBSSID.isPresent() && appUser.getCurrentBSSID().isPresent() && ProximityManager.getSharedManager().accessPointsAreNear(currentBSSID.get(), appUser.getCurrentBSSID().get());
+        AppUser appUser = EnHueco.getInstance().getAppUser();
+        isNearby = currentBSSID.isPresent() && appUser.getCurrentBSSID().isPresent() && ProximityUpdatesManager.getSharedManager().accessPointsAreNear(currentBSSID.get(), appUser.getCurrentBSSID().get());
     }
 
     /**

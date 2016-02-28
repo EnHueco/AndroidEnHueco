@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.diegoalejogm.enhueco.model.model.*;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.R;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -27,7 +27,7 @@ public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
         void onCommonFreeTimePeriodsSearchFriendToAddFragmentNewFriendSelected(User user);
     }
 
-    private List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+    private List<User> filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
 
     private CommonFreeTimePeriodsSearchFriendToAddFragmentListener listener;
     private CommonFreeTimePeriodsFriendsSearchResultsArrayAdapter selectedFriendsArrayAdapter;
@@ -54,11 +54,11 @@ public class CommonFreeTimePeriodsSearchFriendToAddFragment extends ListFragment
     {
         if (searchText.equals(""))
         {
-            filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+            filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
         }
         else
         {
-            filteredFriends = Lists.newArrayList(Collections2.filter(System.getInstance().getAppUser().getFriends().values(), new Predicate<User>()
+            filteredFriends = Lists.newArrayList(Collections2.filter(EnHueco.getInstance().getAppUser().getFriends().values(), new Predicate<User>()
             {
                 @Override
                 public boolean apply(User user)

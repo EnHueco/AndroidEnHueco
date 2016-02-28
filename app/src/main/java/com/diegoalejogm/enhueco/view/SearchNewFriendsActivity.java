@@ -13,8 +13,9 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.diegoalejogm.enhueco.model.logicManagers.FriendsManager;
 import com.diegoalejogm.enhueco.model.model.*;
-import com.diegoalejogm.enhueco.model.model.System;
+import com.diegoalejogm.enhueco.model.model.EnHueco;
 import com.diegoalejogm.enhueco.R;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.CompletionListener;
@@ -32,7 +33,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
     private Timer mTimer;
     private SearchFriendArrayAdapter adapter;
 
-    List<User> filteredFriends = new ArrayList<>(System.getInstance().getAppUser().getFriends().values());
+    List<User> filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -116,7 +117,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     @Override
                     public void run()
                     {
-                        if(!newText.isEmpty()) System.getInstance().searchUsers(newText, new CompletionListener<List<User>>()
+                        if(!newText.isEmpty()) FriendsManager.searchUsers(newText, new CompletionListener<List<User>>()
                         {
                             @Override
                             public void onSuccess(List<User> friends)
@@ -169,7 +170,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                 public void onClick(View v)
                 {
 
-                    System.getInstance().getAppUser().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
+                    FriendsManager.sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
                     {
                         @Override
                         public void onSuccess()
