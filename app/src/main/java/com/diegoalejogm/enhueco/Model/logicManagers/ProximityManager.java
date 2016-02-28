@@ -15,7 +15,7 @@ import com.diegoalejogm.enhueco.model.EHApplication;
 import com.diegoalejogm.enhueco.model.model.Event;
 import com.diegoalejogm.enhueco.model.model.System;
 import com.diegoalejogm.enhueco.model.model.User;
-import com.diegoalejogm.enhueco.model.logicManagers.connection.*;
+import com.diegoalejogm.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
 import com.diegoalejogm.enhueco.model.other.JSONResponse;
 import com.diegoalejogm.enhueco.model.structures.Tuple;

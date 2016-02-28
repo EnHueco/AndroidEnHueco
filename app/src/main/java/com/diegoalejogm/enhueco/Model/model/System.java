@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import com.diegoalejogm.enhueco.model.EHApplication;
-import com.diegoalejogm.enhueco.model.logicManagers.connection.*;
+import com.diegoalejogm.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.diegoalejogm.enhueco.model.other.BasicCompletionListener;
 import com.diegoalejogm.enhueco.model.other.CompletionListener;
 import com.diegoalejogm.enhueco.model.other.EHURLS;
