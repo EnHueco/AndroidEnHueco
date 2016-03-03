@@ -2,7 +2,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context="com.diegoalejogm.enhueco.view.CommonFreeTimePeriodsActivity"
+              tools:context="com.enhueco.view.CommonFreeTimePeriodsActivity"
               android:weightSum="1000"
               android:orientation="vertical">
 

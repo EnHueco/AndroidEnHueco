@@ -4,7 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 xmlns:app="http://schemas.android.com/apk/res/android"
-                tools:context="com.diegoalejogm.enhueco.view.FriendDetailActivity"
+                tools:context="com.enhueco.view.FriendDetailActivity"
 		>
 
 	<android.support.design.widget.AppBarLayout
@@ -40,7 +40,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:paddingTop="98dp"
-					tools:context="com.diegoalejogm.enhueco.view.FriendDetailActivity"
+					tools:context="com.enhueco.view.FriendDetailActivity"
 			>
 
 		<RelativeLayout

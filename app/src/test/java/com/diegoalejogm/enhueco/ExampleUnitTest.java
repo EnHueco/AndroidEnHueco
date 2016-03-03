@@ -1,4 +1,4 @@
-package com.diegoalejogm.enhueco;
+package com.enhueco;
 
 import org.junit.Test;
 

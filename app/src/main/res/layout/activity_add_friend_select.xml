@@ -7,7 +7,7 @@
 		android:layout_height="match_parent"
 		android:weightSum="100"
 		android:orientation="vertical"
-		tools:context="com.diegoalejogm.enhueco.view.AddFriendSelectActivity">
+		tools:context="com.enhueco.view.AddFriendSelectActivity">
 
 	<android.support.design.widget.AppBarLayout
 			android:id="@+id/appbar"
