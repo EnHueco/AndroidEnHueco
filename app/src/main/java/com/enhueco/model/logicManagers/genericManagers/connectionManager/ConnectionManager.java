@@ -19,18 +19,7 @@ public class ConnectionManager
 
     public static void sendAsyncRequest(final ConnectionManagerObjectRequest request, final ConnectionManagerCompletionHandler<JSONObject> completionHandler)
     {
-        int method;
-
-        if (request.method.equals(HTTPMethod.GET))
-        {
-            method = Request.Method.GET;
-        }
-        else
-        {
-            method = Request.Method.POST;
-        }
-
-        JsonRequest jsonRequest = new JsonObjectRequest(method, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONObject>()
+        JsonRequest jsonRequest = new JsonObjectRequest(request.method.volleyValue, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -65,18 +54,7 @@ public class ConnectionManager
 
     public static void sendAsyncRequest(final ConnectionManagerArrayRequest request, final ConnectionManagerCompletionHandler<JSONArray> completionHandler)
     {
-        int method;
-
-        if (request.method.equals(HTTPMethod.GET))
-        {
-            method = Request.Method.GET;
-        }
-        else
-        {
-            method = Request.Method.POST;
-        }
-
-        JsonRequest jsonRequest = new JsonArrayRequest(method, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONArray>()
+        JsonRequest jsonRequest = new JsonArrayRequest(request.method.volleyValue, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONArray>()
         {
             @Override
             public void onResponse(JSONArray response)

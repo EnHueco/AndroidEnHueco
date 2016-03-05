@@ -1,6 +1,10 @@
 package com.enhueco.model.logicManagers.privacyManager;
 
+import android.os.Handler;
+import android.os.Looper;
+import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.EHURLS;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,17 +18,45 @@ public abstract class PrivacyManager
     /**
      * Turns a setting off (e.g. If called as "turnPrivacySettingOff(PrivacySetting.ShowEventsNames)", nobody will be able to see the names of the user's events.
      */
-    public static void turnOffSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, BasicCompletionListener completionListener)
+    public static void turnOffSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
     {
         JSONObject params = new JSONObject();
 
         try
         {
-            params.put(setting.getServerJSONParameterName(), true);
+            params.put(setting.getServerJSONParameterName(), false);
         }
         catch (JSONException e) { e.printStackTrace(); return; }
 
-        //ConnectionManagerObjectRequest incomingRequestsRequest = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.GET, params, false);
+        ConnectionManagerObjectRequest incomingRequestsRequest = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
+        ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONObject>()
+        {
+            @Override
+            public void onSuccess(JSONObject jsonResponse)
+            {
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onSuccess();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onSuccess();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -35,8 +67,44 @@ public abstract class PrivacyManager
      *
      *                      If policy is Optional.absent the setting is applied to everyone
      */
-    public static void turnOnSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, BasicCompletionListener completionListener)
+    public static void turnOnSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
     {
+        JSONObject params = new JSONObject();
 
+        try
+        {
+            params.put(setting.getServerJSONParameterName(), true);
+        }
+        catch (JSONException e) { e.printStackTrace(); return; }
+
+        ConnectionManagerObjectRequest incomingRequestsRequest = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
+        ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONObject>()
+        {
+            @Override
+            public void onSuccess(JSONObject jsonResponse)
+            {
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onSuccess();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(ConnectionManagerCompoundError error)
+            {
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onSuccess();
+                    }
+                });
+            }
+        });
     }
 }

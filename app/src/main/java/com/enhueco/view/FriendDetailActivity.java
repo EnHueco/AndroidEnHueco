@@ -142,7 +142,7 @@ public class FriendDetailActivity extends AppCompatActivity
                 @Override
                 public void onSuccess()
                 {
-                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 1, 120));
+                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 0.1f, 120));
                 }
 
                 @Override
