@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
-import com.enhueco.model.logicManagers.PersistenceManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.other.BasicCompletionListener;
 
@@ -27,6 +26,13 @@ public class LoginActivity extends AppCompatActivity
 
         loginProgressDialog = new ProgressDialog(this);
         loginProgressDialog.setMessage("Ingresando...");
+
+        if (EnHueco.getInstance().getAppUser() != null) {
+
+            Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
+        }
     }
 
     public void logIn(View view)
@@ -60,7 +66,6 @@ public class LoginActivity extends AppCompatActivity
 
                     Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
                     startActivity(intent);
-                    PersistenceManager.persistData();
                     LoginActivity.this.finish();
                 }
 

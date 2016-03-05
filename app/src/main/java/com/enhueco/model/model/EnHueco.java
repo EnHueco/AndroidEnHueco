@@ -19,7 +19,7 @@ public class EnHueco
     /**
      * Singleton attribute and only object of the class
      */
-    private static EnHueco instance = new EnHueco();
+    private static EnHueco instance;
 
     /**
      * App's app user
