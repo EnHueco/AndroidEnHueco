@@ -1,7 +1,11 @@
-package com.enhueco.model.logicManagers;
+package com.enhueco.model.logicManagers.UserStateManager;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.LocalBroadcastManager;
+import com.enhueco.model.EHApplication;
+import com.enhueco.model.logicManagers.ProximityUpdatesManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
@@ -81,7 +85,13 @@ public class UserStateManager
      */
     public void postInstantFreeTimePeriod(Event newFreeTimePeriod, final BasicCompletionListener listener)
     {
-        //TODO :
+        //TODO : Temporary for testing
+
+        EnHueco.getInstance().getAppUser().getSchedule().setInstantFreeTimePeriod(Optional.of(newFreeTimePeriod));
+
+        ///////////////////////////////
+
+        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(UserStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
 
         new Handler(Looper.getMainLooper()).post(new Runnable()
         {
