@@ -119,7 +119,7 @@ public class ProximityUpdatesManager implements Serializable
         }
     }
 
-    public static List<ScanResult> scanVisibleWifiAccessPoints ()
+    public List<ScanResult> scanVisibleWifiAccessPoints ()
     {
         WifiManager wifiManager = (WifiManager) EHApplication.getAppContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -132,7 +132,7 @@ public class ProximityUpdatesManager implements Serializable
         return wifiManager.getScanResults();
     }
 
-    public static Optional<ScanResult> getVisibleWifiAccessPointWithBestSignal ()
+    public Optional<ScanResult> getVisibleWifiAccessPointWithBestSignal ()
     {
         List<ScanResult> visibleAccessPoints = scanVisibleWifiAccessPoints();
 
@@ -356,7 +356,7 @@ public class ProximityUpdatesManager implements Serializable
 
                 //Notify app user
 
-                Collection<User> friendsToNotifyToUser = UserStateManager.getFriendsCurrentlyNearbyAndEligibleForNotification();
+                Collection<User> friendsToNotifyToUser = UserStateManager.getSharedManager().getFriendsCurrentlyNearbyAndEligibleForNotification();
 
                 Date currentDate = new Date();
 

@@ -27,14 +27,26 @@ import java.util.List;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class FriendsManager
+public class FriendsManager
 {
+    private static FriendsManager instance;
+
+    public static FriendsManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new FriendsManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Fetches updates for both outgoing and incoming friend requests on the server and notifies the result via Notification Center.
      * Notifications
      * -EHSystemNotification.SystemDidReceiveFriendRequestUpdates in case of success
      */
-    public static void fetchFriendRequests()
+    public void fetchFriendRequests()
     {
         ConnectionManagerArrayRequest incomingRequestsRequest = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.<String>absent());
         ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONArray>()
@@ -74,7 +86,7 @@ public abstract class FriendsManager
      * - EHSystemNotification.SystemDidSendFriendRequest in case of success
      * - EHSystemNotification.SystemDidFailToSendFriendRequest in case of failure
      */
-    public static void sendFriendRequestToUserRequestWithUsername(String username, final BasicCompletionListener listener)
+    public void sendFriendRequestToUserRequestWithUsername(String username, final BasicCompletionListener listener)
     {
         ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + "/" + username + "/", HTTPMethod.POST, Optional.<String>absent());
 
@@ -116,7 +128,7 @@ public abstract class FriendsManager
      * @param encodedUser Encoded friend QR string representation.
      * @return user New friend.
      */
-    public static User addFriendFromStringEncodedFriendRepresentation(String encodedUser)
+    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser)
     {
         User newFriend = null;
 
@@ -169,7 +181,7 @@ public abstract class FriendsManager
      * @param username Username of the user who's friend request will be accepted.
      */
 
-    public static void acceptFriendRequestFromUserWithUsername(String username, final BasicCompletionListener listener)
+    public void acceptFriendRequestFromUserWithUsername(String username, final BasicCompletionListener listener)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + username + "/";
 
@@ -221,7 +233,7 @@ public abstract class FriendsManager
      * @param id       Keyword that searches for users
      * @param listener Listener of the event
      */
-    public static void searchUsers(String id, final CompletionListener<List<User>> listener)
+    public void searchUsers(String id, final CompletionListener<List<User>> listener)
     {
         ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<String >absent());
 

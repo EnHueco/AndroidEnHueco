@@ -80,7 +80,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
 
     private void fetchFriendRequests()
     {
-        FriendsManager.fetchFriendRequests();
+        FriendsManager.getSharedManager().fetchFriendRequests();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver()
@@ -152,12 +152,12 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                 @Override
                 public void onClick(View v)
                 {
-                    FriendsManager.acceptFriendRequestFromUserWithUsername(user.getUsername(), new BasicCompletionListener()
+                    FriendsManager.getSharedManager().acceptFriendRequestFromUserWithUsername(user.getUsername(), new BasicCompletionListener()
                     {
                         @Override
                         public void onSuccess()
                         {
-                            FriendsManager.fetchFriendRequests();
+                            FriendsManager.getSharedManager().fetchFriendRequests();
                         }
 
                         @Override

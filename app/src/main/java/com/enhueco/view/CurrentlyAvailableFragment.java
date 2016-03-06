@@ -29,6 +29,7 @@ import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
+import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -68,7 +69,15 @@ public class CurrentlyAvailableFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        currentlyAvailableFriends = UserStateManager.getCurrentlyAvailableFriends();
+        currentlyAvailableFriends = UserStateManager.getSharedManager().getCurrentlyAvailableFriends();
+
+        Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+
+        if (instantFreeTimePeriod.isPresent())
+        {
+            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), instantFreeTimePeriod.get()));
+        }
+
         adapter = new CurrentlyFreeArrayAdapter(getActivity(), 0, currentlyAvailableFriends);
         setListAdapter(adapter);
 
@@ -134,16 +143,23 @@ public class CurrentlyAvailableFragment extends ListFragment
             colorAnimation.start();
 
             refresh();
-            FriendsInformationManager.fetchUpdatesForFriendsAndFriendSchedules();
+            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
-
-
 
     private void refresh()
     {
         currentlyAvailableFriends.clear();
-        currentlyAvailableFriends.addAll(UserStateManager.getCurrentlyAvailableFriends());
+
+        currentlyAvailableFriends = UserStateManager.getSharedManager().getCurrentlyAvailableFriends();
+
+        Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+
+        if (instantFreeTimePeriod.isPresent())
+        {
+            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), instantFreeTimePeriod.get()));
+        }
+
         adapter.notifyDataSetChanged();
     }
 

@@ -18,7 +18,7 @@ public abstract class PrivacyManager
     /**
      * Turns a setting off (e.g. If called as "turnPrivacySettingOff(PrivacySetting.ShowEventsNames)", nobody will be able to see the names of the user's events.
      */
-    public static void turnOffSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
+    public void turnOffSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
     {
         JSONObject params = new JSONObject();
 
@@ -67,7 +67,7 @@ public abstract class PrivacyManager
      *
      *                      If policy is Optional.absent the setting is applied to everyone
      */
-    public static void turnOnSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
+    public void turnOnSetting(PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
     {
         JSONObject params = new JSONObject();
 

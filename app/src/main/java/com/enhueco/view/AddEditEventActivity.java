@@ -265,7 +265,7 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 SynchronizationManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second);
             }
 
-            PersistenceManager.persistData();
+            PersistenceManager.getSharedManager().persistData();
 
             finish();
         }

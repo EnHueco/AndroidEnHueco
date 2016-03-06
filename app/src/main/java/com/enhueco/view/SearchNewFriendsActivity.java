@@ -117,7 +117,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     @Override
                     public void run()
                     {
-                        if(!newText.isEmpty()) FriendsManager.searchUsers(newText, new CompletionListener<List<User>>()
+                        if(!newText.isEmpty()) FriendsManager.getSharedManager().searchUsers(newText, new CompletionListener<List<User>>()
                         {
                             @Override
                             public void onSuccess(List<User> friends)
@@ -170,7 +170,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                 public void onClick(View v)
                 {
 
-                    FriendsManager.sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
+                    FriendsManager.getSharedManager().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
                     {
                         @Override
                         public void onSuccess()

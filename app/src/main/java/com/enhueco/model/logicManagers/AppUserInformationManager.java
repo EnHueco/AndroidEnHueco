@@ -14,14 +14,26 @@ import java.util.Date;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class AppUserInformationManager
+public class AppUserInformationManager
 {
+    private static AppUserInformationManager instance;
+
+    public static AppUserInformationManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new AppUserInformationManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Checks for and downloads any updates from the server including
      * Session Status, Friend list, Friends Schedule, User's Info
      * -EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE in case of success
      */
-    public static void fetchUpdatesForAppUserAndSchedule()
+    public void fetchUpdatesForAppUserAndSchedule()
     {
         try
         {

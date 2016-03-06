@@ -47,7 +47,7 @@ public class EnHueco
         if (instance == null)
         {
             instance = new EnHueco();
-            PersistenceManager.loadDataFromPersistence();
+            PersistenceManager.getSharedManager().loadDataFromPersistence();
         }
 
         return instance;
@@ -76,7 +76,7 @@ public class EnHueco
         friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.FREE_TIME, startHour, endHour));
         appUser.getFriends().put(friend2.getUsername(), friend2);
 
-        PersistenceManager.persistData();
+        PersistenceManager.getSharedManager().persistData();
     }
 
     //////////////////////////////////

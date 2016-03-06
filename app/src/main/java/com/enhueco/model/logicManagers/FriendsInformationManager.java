@@ -20,15 +20,27 @@ import java.util.HashMap;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class FriendsInformationManager
+public class FriendsInformationManager
 {
+    private static FriendsInformationManager instance;
+
+    public static FriendsInformationManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new FriendsInformationManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Friends sync information from the server and generates request to updated if needed via Notification Center.
      * <p>
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    public static void fetchUpdatesForFriendsAndFriendSchedules()
+    public void fetchUpdatesForFriendsAndFriendSchedules()
     {
 
         String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;

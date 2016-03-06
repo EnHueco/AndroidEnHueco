@@ -64,7 +64,7 @@ public class MyProfileFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
-        AppUserInformationManager.fetchUpdatesForAppUserAndSchedule();
+        AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule();
     }
 
     @Override
@@ -153,7 +153,7 @@ public class MyProfileFragment extends Fragment
             }
             */
 
-            AppUserInformationManager.fetchUpdatesForAppUserAndSchedule();
+            AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule();
         }
     }
 }

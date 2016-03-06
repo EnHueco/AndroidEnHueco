@@ -19,7 +19,7 @@ public class Tuple<A, B>
     /**
      * Creates a new tuple with the elements given as arguments
      * @param first First element to be added to the tuple
-     * @param second Seconde element to be added to the tuple
+     * @param second Second element to be added to the tuple
      */
     public Tuple(A first, B second)
     {

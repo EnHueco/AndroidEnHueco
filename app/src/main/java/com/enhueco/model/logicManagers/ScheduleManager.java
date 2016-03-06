@@ -14,15 +14,27 @@ import java.util.*;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class ScheduleManager
+public class ScheduleManager
 {
+    private static ScheduleManager instance;
+
+    public static ScheduleManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new ScheduleManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Returns a schedule with the common free time periods of
      * the users provided.
      *
      * @return schedule A schedule with the common free time periods of all users.
      */
-    public static Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
+    public Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
     {
         AppUser appUser = EnHueco.getInstance().getAppUser();
 
@@ -83,7 +95,7 @@ public abstract class ScheduleManager
      * @param calendarID                            ID of calendar to be imported
      * @param generateFreeTimePeriodsBetweenClasses Determines if free time periods will be generated.
      */
-    public static void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
+    public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
     {
         Collection<Event> importedEvents = new ArrayList<>();
 

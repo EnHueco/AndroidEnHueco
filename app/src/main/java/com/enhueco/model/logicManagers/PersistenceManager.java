@@ -10,14 +10,26 @@ import java.io.*;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class PersistenceManager
+public class PersistenceManager
 {
+    private static PersistenceManager instance;
+
+    public static PersistenceManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new PersistenceManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Persists all app's system data in path
      *
      * @return true if correctly persisted or false otherwise
      */
-    public static boolean persistData()
+    public boolean persistData()
     {
         try
         {
@@ -40,7 +52,7 @@ public abstract class PersistenceManager
      *
      * @return true if data successfuly loaded, false otherwise
      */
-    public static boolean loadDataFromPersistence()
+    public boolean loadDataFromPersistence()
     {
         try
         {

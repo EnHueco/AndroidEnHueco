@@ -16,15 +16,27 @@ import java.text.ParseException;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class AccountManager
+public class AccountManager
 {
+    private static AccountManager instance;
+
+    public static AccountManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new AccountManager();
+        }
+
+        return instance;
+    }
+
     /**
      * EnHueco's login method.
      *
      * @param username Username of the user that wishes to log in
      * @param password Password of the user that wishes to log in
      */
-    public static void login(String username, String password, final BasicCompletionListener completionListener)
+    public void login(String username, String password, final BasicCompletionListener completionListener)
     {
         JSONObject params = new JSONObject();
 
@@ -43,7 +55,7 @@ public abstract class AccountManager
                     try
                     {
                         EnHueco.getInstance().setAppUser(AppUser.userFromJSONObject(response));
-                        PersistenceManager.persistData();
+                        PersistenceManager.getSharedManager().persistData();
 
                         new Handler(Looper.getMainLooper()).post(new Runnable()
                         {
@@ -83,9 +95,9 @@ public abstract class AccountManager
     /**
      * Logs out current app user
      */
-    public static void logout()
+    public void logout()
     {
         EnHueco.getInstance().setAppUser(null);
-        PersistenceManager.deletePersistenceData();
+        PersistenceManager.getSharedManager().deletePersistenceData();
     }
 }

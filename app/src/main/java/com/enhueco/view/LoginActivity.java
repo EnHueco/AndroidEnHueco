@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity
         // Actual login
         else
         {
-            AccountManager.login(loginString, passwordString, new BasicCompletionListener()
+            AccountManager.getSharedManager().login(loginString, passwordString, new BasicCompletionListener()
             {
                 @Override
                 public void onSuccess()

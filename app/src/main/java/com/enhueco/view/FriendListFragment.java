@@ -159,7 +159,7 @@ public class FriendListFragment extends ListFragment
             colorAnimation.start();
 
             refresh();
-            FriendsInformationManager.fetchUpdatesForFriendsAndFriendSchedules();
+            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules();
         }
     }
 

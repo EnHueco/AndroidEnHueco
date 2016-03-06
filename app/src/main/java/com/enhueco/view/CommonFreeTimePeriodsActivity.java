@@ -85,7 +85,7 @@ public class CommonFreeTimePeriodsActivity extends AppCompatActivity implements 
 
     public void prepareInfoAndReloadScheduleData ()
     {
-        Schedule commonFreeTimePeriodsSchedule = ScheduleManager.getCommonFreeTimePeriodsScheduleForUsers(selectedFriends.toArray(new User[0]));
+        Schedule commonFreeTimePeriodsSchedule = ScheduleManager.getSharedManager().getCommonFreeTimePeriodsScheduleForUsers(selectedFriends.toArray(new User[0]));
         scheduleFragment.setSchedule(commonFreeTimePeriodsSchedule);
         scheduleFragment.reloadData();
     }

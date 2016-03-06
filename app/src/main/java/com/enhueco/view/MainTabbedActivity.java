@@ -149,7 +149,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void logOut(MenuItem item)
     {
 
-        AccountManager.logout();
+        AccountManager.getSharedManager().logout();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -209,7 +209,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             Log.d("MainActivity", "Scanned");
             try
             {
-                User friend = FriendsManager.addFriendFromStringEncodedFriendRepresentation(result.getContents());
+                User friend = FriendsManager.getSharedManager().addFriendFromStringEncodedFriendRepresentation(result.getContents());
                 FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
                 fr.refresh();
                 Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();

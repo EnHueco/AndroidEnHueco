@@ -1,13 +1,12 @@
 package com.enhueco.model.model;
 
+import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Created by Diego on 10/11/15.
@@ -22,6 +21,16 @@ public class Schedule extends EHSynchronizable implements Serializable
      * Array of day schedules for each weekday
      */
     private DaySchedule[] weekDays;
+
+    /**
+     * Timer responsible for setting instantFreeTimePeriod to Optional.absent() when necessary.
+     */
+    private Timer instantFreeTimePeriodDestroyTimer;
+
+    /**
+     * Current instant free time period for the day. Self-destroys when the period is over (i.e. currentTime > endHour)
+     */
+    private Optional<Event> instantFreeTimePeriod;
 
     /**
      * Array of indexed weekday names
@@ -92,5 +101,29 @@ public class Schedule extends EHSynchronizable implements Serializable
     public DaySchedule[] getWeekDays()
     {
         return weekDays;
+    }
+
+    public Optional<Event> getInstantFreeTimePeriod()
+    {
+        return instantFreeTimePeriod;
+    }
+
+    public void setInstantFreeTimePeriod(Optional<Event> instantFreeTimePeriod)
+    {
+        this.instantFreeTimePeriod = instantFreeTimePeriod;
+
+        if (instantFreeTimePeriod.isPresent())
+        {
+            instantFreeTimePeriodDestroyTimer = new Timer();
+
+            TimerTask deleteEvent = new TimerTask () {
+                @Override
+                public void run () {
+                    Schedule.this.setInstantFreeTimePeriod(Optional.<Event>absent());
+                }
+            };
+
+            instantFreeTimePeriodDestroyTimer.schedule(deleteEvent, instantFreeTimePeriod.get().getEndHourInDate(new Date()));
+        }
     }
 }

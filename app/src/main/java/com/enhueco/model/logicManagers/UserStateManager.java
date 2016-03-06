@@ -19,13 +19,25 @@ import java.util.List;
 /**
  * Created by Diego on 2/28/16.
  */
-public abstract class UserStateManager
+public class UserStateManager
 {
+    private static UserStateManager instance;
+
+    public static UserStateManager getSharedManager()
+    {
+        if (instance == null)
+        {
+            instance = new UserStateManager();
+        }
+
+        return instance;
+    }
+
     /**
      * Returns friends who are currently nearby and for who the app user has not been notified for
      * a time longer than ProximityUpdatesManager.MINIMUM_TIME_INTERVAL_BETWEEN_NOTIFICATIONS
      */
-    public static Collection<User> getFriendsCurrentlyNearbyAndEligibleForNotification()
+    public Collection<User> getFriendsCurrentlyNearbyAndEligibleForNotification()
     {
         return Collections2.filter(EnHueco.getInstance().getAppUser().getFriends().values(), new Predicate<User>()
         {
@@ -44,7 +56,7 @@ public abstract class UserStateManager
      *
      * @return Friends with their current free time period
      */
-    public static List<Tuple<User, Event>> getCurrentlyAvailableFriends()
+    public List<Tuple<User, Event>> getCurrentlyAvailableFriends()
     {
         List<Tuple<User, Event>> friendsAndFreeTimePeriods = new ArrayList<>();
 
@@ -54,7 +66,7 @@ public abstract class UserStateManager
 
             if (currentFreeTimePeriod.isPresent())
             {
-                friendsAndFreeTimePeriods.add(new Tuple<User, Event>(friend, currentFreeTimePeriod.get()));
+                friendsAndFreeTimePeriods.add(new Tuple<>(friend, currentFreeTimePeriod.get()));
             }
         }
 
@@ -67,7 +79,7 @@ public abstract class UserStateManager
      *
      * @param newFreeTimePeriod Event that represents the free time period to be posted
      */
-    public static void postInstantFreeTimePeriod(Event newFreeTimePeriod, final BasicCompletionListener listener)
+    public void postInstantFreeTimePeriod(Event newFreeTimePeriod, final BasicCompletionListener listener)
     {
         //TODO :
 
