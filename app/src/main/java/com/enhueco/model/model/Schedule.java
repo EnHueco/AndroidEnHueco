@@ -30,7 +30,7 @@ public class Schedule extends EHSynchronizable implements Serializable
     /**
      * Current instant free time period for the day. Self-destroys when the period is over (i.e. currentTime > endHour)
      */
-    private Optional<Event> instantFreeTimePeriod;
+    private Optional<Event> instantFreeTimePeriod = Optional.absent();
 
     /**
      * Array of indexed weekday names

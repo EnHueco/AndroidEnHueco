@@ -65,6 +65,7 @@ public class PersistenceManager
         }
         catch (ClassNotFoundException | IOException e)
         {
+            deletePersistenceData();
             e.printStackTrace();
         }
         return false;
