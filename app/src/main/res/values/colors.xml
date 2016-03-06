@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#00A286</color>
     <color name="colorPrimaryDark">#00A286</color>
-    <color name="colorAccent">#ffc107</color>
+    <color name="colorAccent">#ffae40</color>
     <color name="defaultToolbarColor">#00A286</color>
     <color name="secondary_text_default_material_light">#727272</color>
     <color name="primary_text_material_light">#ffffff</color>
