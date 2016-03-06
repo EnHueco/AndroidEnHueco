@@ -74,7 +74,7 @@ public class PersistenceManager
     /**
      * Deletes persistence contents
      */
-    static void deletePersistenceData()
+    public void deletePersistenceData()
     {
         EHApplication.getAppContext().deleteFile(AppUser.FILE_NAME);
     }

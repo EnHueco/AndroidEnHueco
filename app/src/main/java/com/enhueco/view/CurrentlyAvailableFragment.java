@@ -13,7 +13,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.FriendsInformationManager;
-import com.enhueco.model.logicManagers.UserStateManager;
+import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
+import com.enhueco.model.logicManagers.UserStateManager.UserStateManagerNotification;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
@@ -35,6 +35,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class CurrentlyAvailableFragment extends ListFragment
 
     private OnFragmentInteractionListener mListener;
 
-    List<Tuple<User, Event>> currentlyAvailableFriends;
+    final List<Tuple<User, Event>> currentlyAvailableFriends = new ArrayList<>();
     CurrentlyFreeArrayAdapter adapter;
 
     private static final String LOG = "CurrAvailableFragment";
@@ -69,7 +70,8 @@ public class CurrentlyAvailableFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        currentlyAvailableFriends = UserStateManager.getSharedManager().getCurrentlyAvailableFriends();
+        currentlyAvailableFriends.clear();
+        currentlyAvailableFriends.addAll(UserStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
         Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 
@@ -86,10 +88,18 @@ public class CurrentlyAvailableFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                Log.v(LOG, EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
                 refresh();
             }
         }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                refresh();
+            }
+        }, new IntentFilter(UserStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
     }
 
 
@@ -150,8 +160,7 @@ public class CurrentlyAvailableFragment extends ListFragment
     private void refresh()
     {
         currentlyAvailableFriends.clear();
-
-        currentlyAvailableFriends = UserStateManager.getSharedManager().getCurrentlyAvailableFriends();
+        currentlyAvailableFriends.addAll(UserStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
         Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 

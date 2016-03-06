@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import com.enhueco.model.EHApplication;
+import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;

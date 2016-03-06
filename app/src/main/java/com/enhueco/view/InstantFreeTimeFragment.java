@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import com.enhueco.R;
-import com.enhueco.model.logicManagers.UserStateManager;
+import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
@@ -129,13 +129,17 @@ public class InstantFreeTimeFragment extends DialogFragment
             @Override
             public void onClick(View v)
             {
-                Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTime);
+
+                Calendar endTimeInUTC = (Calendar) endTime.clone();
+                endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTimeInUTC);
                 UserStateManager.getSharedManager().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
                 {
                     @Override
                     public void onSuccess()
                     {
-                        //TODO
+                        dismiss();
                     }
 
                     @Override

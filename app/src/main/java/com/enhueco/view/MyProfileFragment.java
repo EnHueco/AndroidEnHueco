@@ -107,6 +107,8 @@ public class MyProfileFragment extends Fragment
                 @Override
                 public void onSuccess()
                 {
+                    if (backgroundImageView.getDrawable() == null) { return; }
+
                     backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 0.1f, 120));
 
                     if (((MainTabbedActivity) getActivity()).getTabLayout().getSelectedTabPosition() == 2)  //This fragment is visible (TODO: Find a more elegant way to do this)

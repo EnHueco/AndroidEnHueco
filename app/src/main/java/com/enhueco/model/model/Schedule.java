@@ -114,12 +114,17 @@ public class Schedule extends EHSynchronizable implements Serializable
 
         if (instantFreeTimePeriod.isPresent())
         {
+            if (instantFreeTimePeriodDestroyTimer != null)
+            {
+                instantFreeTimePeriodDestroyTimer.cancel();
+            }
+
             instantFreeTimePeriodDestroyTimer = new Timer();
 
             TimerTask deleteEvent = new TimerTask () {
                 @Override
                 public void run () {
-                    Schedule.this.setInstantFreeTimePeriod(Optional.<Event>absent());
+                    setInstantFreeTimePeriod(Optional.<Event>absent());
                 }
             };
 

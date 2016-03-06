@@ -13,7 +13,7 @@
 			android:id="@+id/action_turn_invisible"
 			android:icon="@drawable/ic_invisible"
 			android:title="@string/action_turn_ivisible"
-			app:showAsAction="ifRoom"
+			app:showAsAction="always"
 			android:onClick="onTurnInvisibleButtonPressed"/>
 
 	<item
@@ -21,7 +21,7 @@
 			android:icon="@drawable/ic_im_available"
 			android:title="@string/action_im_available"
 			android:onClick="onImAvailableButtonPressed"
-			app:showAsAction="ifRoom"/>
+			app:showAsAction="always"/>
 
 	<item
 			android:id="@+id/action_requests"
