@@ -9,14 +9,16 @@
 		>
 
 	<ImageView
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
+			android:background="@drawable/esteban"
+			android:layout_gravity="center_horizontal"
+			android:maxWidth="157px"
+			android:maxHeight="157px"
 			android:id="@+id/profileImageImageView"
 			android:scaleType="centerCrop"
 			android:layout_margin="0dp"
 	        android:layout_weight="1"
-
-			/>
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
 
 	<LinearLayout
 			android:layout_width="fill_parent"
@@ -34,8 +36,20 @@
 				android:layout_height="wrap_content"
 				android:textSize="18sp"
 				android:text="Diego Alejandro Gómez Mosquera"
+				android:textColor="#ffffff"
 				android:maxLines="2"
-				android:id="@+id/fullNameTextView"/>
+				android:id="@+id/fullNameTextView"
+				android:layout_gravity="center_horizontal"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="14sp"
+			android:text="da.gomez11"
+			android:textColor="#ffffff"
+			android:id="@+id/usernameTextView"
+			android:layout_marginBottom="100dp"
+			android:layout_gravity="center_horizontal"/>
 
 		<Button
 			android:layout_width="270px"
@@ -59,7 +73,7 @@
 			android:background="@drawable/rounded_button"
 			android:textColor="#ffffff"
 			android:textAllCaps="false"
-			android:layout_marginBottom="30dp" />
+			android:layout_marginBottom="70dp" />
 	</LinearLayout>
 
 </LinearLayout>
