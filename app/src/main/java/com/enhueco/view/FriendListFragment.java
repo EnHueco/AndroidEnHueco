@@ -13,16 +13,15 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.enhueco.model.logicManagers.FriendsInformationManager;
-import com.enhueco.model.model.Event;
-import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.User;
 import com.enhueco.R;
+import com.enhueco.model.logicManagers.FriendsInformationManager;
+import com.enhueco.model.model.EnHueco;
+import com.enhueco.model.model.Event;
+import com.enhueco.model.model.User;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
@@ -46,7 +45,7 @@ public class FriendListFragment extends ListFragment
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
 
-    private List<User> filteredFriends;
+    private final List<User> filteredFriends = new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -61,7 +60,8 @@ public class FriendListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
+        filteredFriends.clear();
+        filteredFriends.addAll(EnHueco.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
 
@@ -70,7 +70,6 @@ public class FriendListFragment extends ListFragment
             @Override
             public void onReceive(Context context, Intent intent)
             {
-                Log.v(LOG, EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES);
                 refresh();
             }
         }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));

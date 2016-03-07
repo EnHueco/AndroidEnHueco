@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,12 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.enhueco.R;
 import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
-import com.enhueco.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyProfileFragment extends Fragment
+public class ProfileFragment extends Fragment
 {
     private ImageView imageImageView;
     private ImageView backgroundImageView;
@@ -42,14 +44,14 @@ public class MyProfileFragment extends Fragment
             if (intent.getAction().equals(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE))
             {
                 ArrayList<User> users = (ArrayList<User>) intent.getSerializableExtra(FriendRequestsActivity.EXTRA_REQUESTS);
-                MyProfileFragment.this.refresh();
+                ProfileFragment.this.refresh();
             }
 
 //            Log.d("receiver", "Got message: " + message);
         }
     };
 
-    public MyProfileFragment()
+    public ProfileFragment()
     {
         // Required empty public constructor
     }
@@ -101,15 +103,19 @@ public class MyProfileFragment extends Fragment
 
         if (user.getImageURL().isPresent() && !user.getImageURL().get().isEmpty())
         {
-            Picasso.with(getContext()).load(EHURLS.BASE + user.getImageURL().get()).into(imageImageView);
-            Picasso.with(getContext()).load(EHURLS.BASE + user.getImageURL().get()).into(backgroundImageView, new Callback()
+            Picasso.with(getContext()).load(EHURLS.BASE + user.getImageURL().get()).into(imageImageView, new Callback()
             {
                 @Override
                 public void onSuccess()
                 {
-                    if (backgroundImageView.getDrawable() == null) { return; }
-
-                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 0.1f, 120));
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) imageImageView.getDrawable()).getBitmap(), 0.1f, 20));
+                        }
+                    });
 
                     if (((MainTabbedActivity) getActivity()).getTabLayout().getSelectedTabPosition() == 2)  //This fragment is visible (TODO: Find a more elegant way to do this)
                     {
@@ -120,7 +126,7 @@ public class MyProfileFragment extends Fragment
                 @Override
                 public void onError()
                 {
-                    // TODO
+
                 }
             });
         }

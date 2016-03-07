@@ -3,16 +3,18 @@ package com.enhueco.view;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.enhueco.R;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
-import com.enhueco.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -136,18 +138,25 @@ public class FriendDetailActivity extends AppCompatActivity
     {
         if (friend.getImageURL().isPresent() && !friend.getImageURL().get().isEmpty())
         {
-            Picasso.with(this).load(EHURLS.BASE + friend.getImageURL().get()).into(imageImageView);
-            Picasso.with(this).load(EHURLS.BASE + friend.getImageURL().get()).into(backgroundImageView, new Callback()
+            Picasso.with(this).load(EHURLS.BASE + friend.getImageURL().get()).into(imageImageView, new Callback()
             {
                 @Override
                 public void onSuccess()
                 {
-                    backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) backgroundImageView.getDrawable()).getBitmap(), 0.1f, 120));
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            backgroundImageView.setImageBitmap(Utilities.fastblur(((BitmapDrawable) imageImageView.getDrawable()).getBitmap(), 0.1f, 20));
+                        }
+                    });
                 }
 
                 @Override
                 public void onError()
                 {
+
                 }
             });
         }

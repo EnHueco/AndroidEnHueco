@@ -375,7 +375,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
                 case 1:
                     return new FriendListFragment();
                 case 2:
-                    return new MyProfileFragment();
+                    return new ProfileFragment();
             }
             return null;
 
