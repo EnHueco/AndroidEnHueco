@@ -1,18 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               tools:context="com.diegoalejogm.enhueco.View.FriendDetailActivity"
               android:orientation="vertical"
+	          android:background="@drawable/esteban"
 		>
 
 	<ImageView
 			android:layout_width="fill_parent"
-			android:layout_height="0dp"
+			android:layout_height="wrap_content"
 			android:id="@+id/profileImageImageView"
 			android:scaleType="centerCrop"
 			android:layout_margin="0dp"
 	        android:layout_weight="1"
+
 			/>
 
 	<LinearLayout
@@ -34,12 +37,29 @@
 				android:maxLines="2"
 				android:id="@+id/fullNameTextView"/>
 
-		<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textSize="14sp"
-				android:text="da.gomez11"
-				android:id="@+id/usernameTextView"/>
+		<Button
+			android:layout_width="270px"
+			android:layout_height="wrap_content"
+			android:id="@+id/editSchedule"
+			android:text="Editar Horario"
+			android:padding="10dp"
+			android:layout_gravity="center"
+			android:background="@drawable/rounded_button"
+			android:textColor="#ffffff"
+			android:textAllCaps="false"
+			android:layout_marginBottom="10dp" />
+
+		<Button
+			android:layout_width="270px"
+			android:layout_height="wrap_content"
+			android:id="@+id/myQR"
+			android:text="Mi QR"
+			android:padding="10dp"
+			android:layout_gravity="center"
+			android:background="@drawable/rounded_button"
+			android:textColor="#ffffff"
+			android:textAllCaps="false"
+			android:layout_marginBottom="30dp" />
 	</LinearLayout>
 
 </LinearLayout>
