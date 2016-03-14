@@ -5,9 +5,9 @@
 
 This repository contains the Android mobile version of the platform. It allows Android users to connect to the system and use it either with data or offline. 
 
-**Check out the iOS version of EnHueco [here](https://github.com/diegoalejogm/iOSEnHueco).**
+**Check out the iOS version of EnHueco [here](https://github.com/EnHueco/iOSEnHueco).**
 
-**Check out the Web API (backend) of EnHueco [here](https://github.com/diegoalejogm/APIEnHueco).**
+**Check out the Web API (backend) of EnHueco [here](https://github.com/EnHueco/APIEnHueco).**
 ### What can I do in it?
   - Add and remove friends.
   - Check who has free time now and soon.
@@ -18,10 +18,6 @@ This repository contains the Android mobile version of the platform. It allows A
   - Use it online and offline.
   - Check common free time with groups of friends/workmates.
   - _And more features coming soon..._
-
-
-### Installation
-Currently EnHueco is in beta, so it cannot be downloaded through any app store. Nevertheless you are welcome to download it and try it out in your own devices.
 
 ### Version
 0.1
