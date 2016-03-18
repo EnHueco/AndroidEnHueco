@@ -41,6 +41,8 @@ public class FriendsManager
         return instance;
     }
 
+    private FriendsManager() {}
+
     /**
      * Fetches updates for both outgoing and incoming friend requests on the server and notifies the result via Notification Center.
      * Notifications

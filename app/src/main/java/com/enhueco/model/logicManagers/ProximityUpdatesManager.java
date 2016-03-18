@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import com.enhueco.model.EHApplication;
-import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
+import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
@@ -357,7 +357,7 @@ public class ProximityUpdatesManager implements Serializable
 
                 //Notify app user
 
-                Collection<User> friendsToNotifyToUser = UserStateManager.getSharedManager().getFriendsCurrentlyNearbyAndEligibleForNotification();
+                Collection<User> friendsToNotifyToUser = CurrentStateManager.getSharedManager().getFriendsCurrentlyNearbyAndEligibleForNotification();
 
                 Date currentDate = new Date();
 

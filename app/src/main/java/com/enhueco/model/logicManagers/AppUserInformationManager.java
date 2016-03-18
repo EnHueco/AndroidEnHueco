@@ -6,6 +6,7 @@ import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.*;
 import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONObject;
 
@@ -27,6 +28,8 @@ public class AppUserInformationManager
 
         return instance;
     }
+
+    private AppUserInformationManager () {}
 
     /**
      * Checks for and downloads any updates from the server including
@@ -52,7 +55,7 @@ public class AppUserInformationManager
                         appUser.setPhoneNumber(user.getPhoneNumber());
 
                         String scheduleUpdatedOnString = response.getString("schedule_updated_on");
-                        Date scheduleUpdatedOn = EHSynchronizable.dateFromServerString(scheduleUpdatedOnString);
+                        Date scheduleUpdatedOn = Utilities.getDateFromServerString(scheduleUpdatedOnString);
 
                         Schedule schedule = Schedule.fromJSON(scheduleUpdatedOn, response.getJSONArray("gap_set"));
                         appUser.setSchedule(schedule);

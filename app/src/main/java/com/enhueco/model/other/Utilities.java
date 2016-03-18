@@ -3,11 +3,11 @@ package com.enhueco.model.other;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -18,13 +18,34 @@ public class Utilities
 {
     /**
      * Transforms server encoded string date into a Java Date object
-     * @param date Server encoded string date
+     * @param stringDate Server encoded string date
      * @return new Date containing input values
      * @throws ParseException In case the string is not correctly encoded
      */
-    public static Date dateFromServerFormattedString (String date) throws ParseException
+    public static Date getDateFromServerString(String stringDate)
     {
-        return new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(date);
+        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try
+        {
+            return df1.parse(stringDate);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Transforms a date into a string formatted for the server
+     * @param date Server encoded string date
+     */
+    public static String getServerFormattedStringFromDate(Date date)
+    {
+        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return df1.format(date);
     }
 
     /**

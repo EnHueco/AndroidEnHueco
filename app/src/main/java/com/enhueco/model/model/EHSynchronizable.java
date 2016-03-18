@@ -1,11 +1,7 @@
 package com.enhueco.model.model;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by Diego on 10/11/15.
@@ -27,25 +23,6 @@ public class EHSynchronizable implements Serializable
     {
         this.ID = ID;
         this.updatedOn = lastUpdatedOn;
-    }
-
-    //////////////////////////////////
-    //      Main Functionality      //
-    //////////////////////////////////
-
-    public static Date dateFromServerString(String lastUpdated_on)
-    {
-        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try
-        {
-            return df1.parse(lastUpdated_on);
-        }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     //////////////////////////////////

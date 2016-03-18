@@ -22,8 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.FriendsInformationManager;
-import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
-import com.enhueco.model.logicManagers.UserStateManager.UserStateManagerNotification;
+import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
+import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManagerNotification;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
@@ -71,7 +71,7 @@ public class CurrentlyAvailableFragment extends ListFragment
         super.onCreate(savedInstanceState);
 
         currentlyAvailableFriends.clear();
-        currentlyAvailableFriends.addAll(UserStateManager.getSharedManager().getCurrentlyAvailableFriends());
+        currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
         Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 
@@ -99,7 +99,7 @@ public class CurrentlyAvailableFragment extends ListFragment
             {
                 refresh();
             }
-        }, new IntentFilter(UserStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
+        }, new IntentFilter(CurrentStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
     }
 
 
@@ -160,7 +160,7 @@ public class CurrentlyAvailableFragment extends ListFragment
     private void refresh()
     {
         currentlyAvailableFriends.clear();
-        currentlyAvailableFriends.addAll(UserStateManager.getSharedManager().getCurrentlyAvailableFriends());
+        currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
         Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 

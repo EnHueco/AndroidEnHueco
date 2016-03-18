@@ -5,10 +5,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.AppUser;
-import com.enhueco.model.model.EHSynchronizable;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +33,8 @@ public class FriendsInformationManager
 
         return instance;
     }
+
+    private FriendsInformationManager() {}
 
     /**
      * Friends sync information from the server and generates request to updated if needed via Notification Center.
@@ -64,8 +66,8 @@ public class FriendsInformationManager
 
                         String friendJSONID = friendJSON.getString("login");
                         friendsInServer.put(friendJSONID, true);
-                        Date serverFriendupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("updated_on"));
-                        Date serverFriendScheduleupdatedOn = EHSynchronizable.dateFromServerString(friendJSON.getString("schedule_updated_on"));
+                        Date serverFriendupdatedOn = Utilities.getDateFromServerString(friendJSON.getString("updated_on"));
+                        Date serverFriendScheduleupdatedOn = Utilities.getDateFromServerString(friendJSON.getString("schedule_updated_on"));
 
                         // TODO: Use hash to search user
                         User friendFound = null;

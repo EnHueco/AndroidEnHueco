@@ -11,8 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.enhueco.R;
-import com.enhueco.model.logicManagers.UserStateManager.UserStateManager;
+import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
@@ -24,10 +27,11 @@ import java.util.TimeZone;
 
 public class InstantFreeTimeFragment extends DialogFragment
 {
-    private EditText nameEditText;
-    private EditText locationEditText;
+    @Bind(R.id.freeTimeName) EditText nameEditText;
+    @Bind(R.id.freeTimeLocation) EditText locationEditText;
+    @Bind(R.id.endTimeTextClock) TextView endTimeTextView;
+
     private Calendar endTime;
-    private TextView endTimeTextView;
 
     public InstantFreeTimeFragment()
     {
@@ -53,10 +57,10 @@ public class InstantFreeTimeFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_instant_free_time, container, false);
+        super.onCreate(savedInstanceState);
 
-        nameEditText = (EditText) view.findViewById(R.id.freeTimeName);
-        locationEditText = (EditText) view.findViewById(R.id.freeTimeLocation);
+        View view = inflater.inflate(R.layout.fragment_instant_free_time, container, false);
+        ButterKnife.bind(this, view);
 
         Button cancelButton = (Button) view.findViewById(R.id.cancelButton);
 
@@ -69,8 +73,6 @@ public class InstantFreeTimeFragment extends DialogFragment
             }
         });
 
-        endTimeTextView = (TextView) view.findViewById(R.id.endTimeTextClock);
-
         DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
         dateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -81,76 +83,69 @@ public class InstantFreeTimeFragment extends DialogFragment
 
         endTimeTextView.setText(dateFormat.format(calendar.getTime()));
 
-        endTimeTextView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Calendar mcurrentTime = Calendar.getInstance();
-                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mcurrentTime.get(Calendar.MINUTE);
-
-                TimePickerDialog mTimePicker = new TimePickerDialog(InstantFreeTimeFragment.this.getContext(), new TimePickerDialog.OnTimeSetListener()
-                {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
-                    {
-                        DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
-                        dateFormat.setTimeZone(TimeZone.getDefault());
-
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-                        calendar.set(Calendar.MINUTE, selectedMinute);
-
-                        if (calendar.after(Calendar.getInstance()))
-                        {
-                            endTime = calendar;
-                            endTimeTextView.setText(dateFormat.format(calendar.getTime()));
-                        }
-                        else
-                        {
-                            new AlertDialog.Builder(InstantFreeTimeFragment.this.getContext())
-                                    .setTitle("Advertencia")
-                                    .setMessage("¡La hora a la que se acaba tu hueco no puede ser anterior a la hora actual!")
-                                    .setPositiveButton("Tienes razón", null)
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
-                        }
-                    }
-                }, hour, minute, false);
-
-                mTimePicker.setTitle("Selecciona hora de finalización");
-                mTimePicker.show();
-            }
-        });
-
-        view.findViewById(R.id.postButton).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-
-                Calendar endTimeInUTC = (Calendar) endTime.clone();
-                endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-                Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTimeInUTC);
-                UserStateManager.getSharedManager().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
-                {
-                    @Override
-                    public void onSuccess()
-                    {
-                        dismiss();
-                    }
-
-                    @Override
-                    public void onFailure(Exception error)
-                    {
-
-                    }
-                });
-            }
-        });
-
         return view;
+    }
+
+    @OnClick(R.id.endTimeTextClock)
+    public void onEndTimeTextViewClick (View textView)
+    {
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+
+        TimePickerDialog mTimePicker = new TimePickerDialog(InstantFreeTimeFragment.this.getContext(), new TimePickerDialog.OnTimeSetListener()
+        {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
+            {
+                DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+                dateFormat.setTimeZone(TimeZone.getDefault());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                calendar.set(Calendar.MINUTE, selectedMinute);
+
+                if (calendar.after(Calendar.getInstance()))
+                {
+                    endTime = calendar;
+                    endTimeTextView.setText(dateFormat.format(calendar.getTime()));
+                }
+                else
+                {
+                    new AlertDialog.Builder(InstantFreeTimeFragment.this.getContext())
+                            .setTitle("Advertencia")
+                            .setMessage("¡La hora a la que se acaba tu hueco no puede ser anterior a la hora actual!")
+                            .setPositiveButton("Tienes razón", null)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            }
+        }, hour, minute, false);
+
+        mTimePicker.setTitle("Selecciona hora de finalización");
+        mTimePicker.show();
+    }
+
+    @OnClick(R.id.postButton)
+    public void post (View button)
+    {
+        Calendar endTimeInUTC = (Calendar) endTime.clone();
+        endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTimeInUTC);
+        CurrentStateManager.getSharedManager().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                dismiss();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+
+            }
+        });
     }
 }

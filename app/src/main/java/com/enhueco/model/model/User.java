@@ -1,6 +1,7 @@
 package com.enhueco.model.model;
 
 import com.enhueco.model.logicManagers.ProximityUpdatesManager;
+import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
@@ -129,7 +130,7 @@ public class User extends EHSynchronizable implements Serializable
 
         if (object.has("schedule_updated_on") && object.has("gap_set"))
         {
-            extractedValues.put("scheduleUpdatedOn", EHSynchronizable.dateFromServerString(object.getString("schedule_updated_on")));
+            extractedValues.put("scheduleUpdatedOn", Utilities.getDateFromServerString(object.getString("schedule_updated_on")));
             extractedValues.put("schedule", object.getJSONArray("gap_set"));
             extractedValues.put("containsSchedule", true);
         }
@@ -152,7 +153,7 @@ public class User extends EHSynchronizable implements Serializable
         HashMap<String, Object> values = extractJSONObjectUserValues(object);
 
         String updatedOnString = (String) values.get("updatedOn");
-        Date updatedOn = EHSynchronizable.dateFromServerString(updatedOnString);
+        Date updatedOn = Utilities.getDateFromServerString(updatedOnString);
 
         // if JSONObject updatedOn date is newer
         boolean userIsNotUpdated = false;

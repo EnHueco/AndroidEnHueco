@@ -24,6 +24,8 @@ public class PersistenceManager
         return instance;
     }
 
+    private PersistenceManager() {}
+
     /**
      * Persists all app's system data in path
      *

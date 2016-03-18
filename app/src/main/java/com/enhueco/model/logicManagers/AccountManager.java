@@ -30,6 +30,8 @@ public class AccountManager
         return instance;
     }
 
+    private AccountManager () {}
+
     /**
      * EnHueco's login method.
      *
