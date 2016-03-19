@@ -51,15 +51,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
      */
     private MainPagerAdapter mainPagerAdapter;
 
-    @Bind(R.id.appbar) private AppBarLayout appBarLayout;
+    @Bind(R.id.appbar) AppBarLayout appBarLayout;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @Bind(R.id.container) private ViewPager viewPager;
+    @Bind(R.id.container) ViewPager viewPager;
 
     private ArrayList<Integer> hiddenMenuItems;
-    @Bind(R.id.tabs) private TabLayout tabLayout;
+    @Bind(R.id.tabs) TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

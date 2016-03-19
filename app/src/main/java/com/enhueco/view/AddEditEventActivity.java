@@ -109,7 +109,7 @@ public class AddEditEventActivity extends AppCompatActivity
                 + " " + ampm);
     }
 
-    @OnClick(R.id.startTimeEditText) private void onStartTimeTextTap (View sender)
+    @OnClick(R.id.startTimeEditText) void onStartTimeTextTap (View sender)
     {
         TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
         {
@@ -125,7 +125,7 @@ public class AddEditEventActivity extends AppCompatActivity
         startTimePicker.show();
     }
 
-    @OnClick(R.id.endTimeEditText) private void onEndTimeTextTap (View sender)
+    @OnClick(R.id.endTimeEditText) void onEndTimeTextTap (View sender)
     {
         TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
         {
@@ -141,7 +141,7 @@ public class AddEditEventActivity extends AppCompatActivity
         endTimePicker.show();
     }
 
-    @OnClick(R.id.weekDaysEditText) private void onWeekDaysEditTextTap(View sender)
+    @OnClick(R.id.weekDaysEditText) void onWeekDaysEditTextTap(View sender)
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 

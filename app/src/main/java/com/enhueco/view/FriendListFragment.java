@@ -229,7 +229,10 @@ public class FriendListFragment extends ListFragment
             ImageView iv = (ImageView) view.findViewById(R.id.friendIcon);
             Transformation transformation = new RoundedTransformationBuilder().oval(true).build();
 
-            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+            if (user.getImageURL().isPresent())
+            {
+                Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+            }
 
             TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);
             tv1.setText(user.toString());

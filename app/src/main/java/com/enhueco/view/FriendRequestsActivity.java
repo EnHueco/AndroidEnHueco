@@ -140,7 +140,11 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
             TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
 
             ImageView iv = (ImageView) view.findViewById(R.id.requestIcon);
-            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().into(iv);
+
+            if (user.getImageURL().isPresent())
+            {
+                Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().into(iv);
+            }
 
             FancyButton fb = (FancyButton) view.findViewById(R.id.btn_acceptFriendship);
 

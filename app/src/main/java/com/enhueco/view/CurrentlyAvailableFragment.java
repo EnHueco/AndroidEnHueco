@@ -61,9 +61,7 @@ public class CurrentlyAvailableFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CurrentlyAvailableFragment()
-    {
-    }
+    public CurrentlyAvailableFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -102,6 +100,14 @@ public class CurrentlyAvailableFragment extends ListFragment
         }, new IntentFilter(CurrentStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        registerForContextMenu(view);
+
+        return view;
+    }
 
     @Override
     public void onAttach(Activity activity)
@@ -242,7 +248,10 @@ public class CurrentlyAvailableFragment extends ListFragment
             ImageView iv = (ImageView) view.findViewById(R.id.friendIcon);
             Transformation transformation = new RoundedTransformationBuilder().oval(true).build();
 
-            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+            if (user.getImageURL().isPresent())
+            {
+                Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+            }
 
             TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);
             tv1.setText(user.toString());
