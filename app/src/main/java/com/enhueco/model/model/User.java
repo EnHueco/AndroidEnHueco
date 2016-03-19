@@ -57,6 +57,11 @@ public class User extends EHSynchronizable implements Serializable
     private boolean isNearby;
 
     /**
+     User visibility state
+     */
+    private boolean invisible = false;
+
+    /**
      * Current Beacon SSID to which user was connected
      */
     private Optional<String> currentBSSID;
@@ -406,4 +411,13 @@ public class User extends EHSynchronizable implements Serializable
         return firstNames + " " + lastNames;
     }
 
+    public boolean isInvisible()
+    {
+        return invisible;
+    }
+
+    public void setInvisible(boolean invisible)
+    {
+        this.invisible = invisible;
+    }
 }

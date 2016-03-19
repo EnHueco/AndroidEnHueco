@@ -3,6 +3,9 @@ package com.enhueco.view;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -22,17 +25,20 @@ import android.widget.ListAdapter;
 import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
 import com.enhueco.model.logicManagers.FriendsManager;
-import com.enhueco.model.model.*;
-import com.enhueco.R;
+import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.model.EnHueco;
+import com.enhueco.model.model.User;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, CurrentlyAvailableFragment.OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
@@ -57,6 +63,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
      * The {@link ViewPager} that will host the section contents.
      */
     @Bind(R.id.container) ViewPager viewPager;
+
+    private Menu optionsMenu;
 
     private ArrayList<Integer> hiddenMenuItems;
     @Bind(R.id.tabs) TabLayout tabLayout;
@@ -92,6 +100,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         getSupportActionBar().setTitle("En Hueco");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_tabbed, menu);
+
+        optionsMenu = menu;
 
         menu.findItem(R.id.action_search).setVisible(false);
 
@@ -327,6 +337,108 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     public void onTurnInvisibleButtonPressed(MenuItem item)
     {
+        if (EnHueco.getInstance().getAppUser().isInvisible())
+        {
+            turnVisible();
+        }
+        else
+        {
+            turnInvisible();
+        }
+    }
+
+    private void turnInvisible ()
+    {
+        AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(this);
+        LayoutInflater factory = LayoutInflater.from(this);
+
+        List<DialogOption> data = new ArrayList<>();
+        data.add(new DialogOption("1:20 horas", null));
+        data.add(new DialogOption("3 horas", null ));
+        data.add(new DialogOption("Resto del día", null));
+        ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
+
+        addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                switch (which)
+                {
+                    case 0:
+                        _turnInvisibleForInterval(80 * 60);
+                        break;
+                    case 1:
+                        _turnInvisibleForInterval(3 * 60 * 60);
+                        break;
+                    case 2:
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        calendar.set(Calendar.HOUR_OF_DAY, 0);
+                        calendar.set(Calendar.MINUTE, 0);
+                        calendar.set(Calendar.SECOND, 0);
+                        calendar.set(Calendar.MILLISECOND, 0);
+                        int secondsUntilTomorrow = (int) ((calendar.getTimeInMillis()-System.currentTimeMillis())/1000);
+
+                        _turnInvisibleForInterval(secondsUntilTomorrow);
+                        break;
+                }
+                dialog.dismiss();
+            }
+        });
+
+        addFriendMethodDialog.show();
+    }
+
+    private void turnVisible ()
+    {
+        PrivacyManager.getSharedManager().turnVisible(new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
+
+                if (drawable != null)
+                {
+                    drawable.mutate();
+                    drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                    drawable.setAlpha(1);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+
+            }
+        });
+    }
+
+    private void _turnInvisibleForInterval(int seconds)
+    {
+        PrivacyManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
+
+                if (drawable != null)
+                {
+                    drawable.mutate();
+                    drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
+                    drawable.setAlpha(1);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+
+            }
+        });
     }
 
     public void onImAvailableButtonPressed(MenuItem item)
