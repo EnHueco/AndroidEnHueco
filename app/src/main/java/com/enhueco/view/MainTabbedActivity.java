@@ -20,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.enhueco.model.logicManagers.AccountManager;
 import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.model.*;
@@ -49,21 +51,23 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
      */
     private MainPagerAdapter mainPagerAdapter;
 
-    private AppBarLayout appBarLayout;
+    @Bind(R.id.appbar) private AppBarLayout appBarLayout;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager viewPager;
+    @Bind(R.id.container) private ViewPager viewPager;
 
     private ArrayList<Integer> hiddenMenuItems;
-    private TabLayout tabLayout;
+    @Bind(R.id.tabs) private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tabbed);
+        ButterKnife.bind(this);
+
         hiddenMenuItems = new ArrayList<>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -74,12 +78,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(mainPagerAdapter);
-
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(this);

@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.enhueco.model.logicManagers.PersistenceManager;
 import com.enhueco.model.model.*;
 import com.enhueco.model.logicManagers.SynchronizationManager;
@@ -25,14 +28,17 @@ import com.enhueco.model.model.EnHueco;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class AddEditEventActivity extends AppCompatActivity implements View.OnClickListener
+public class AddEditEventActivity extends AppCompatActivity
 {
 
     private static final String LOG = "AddEditEventActivity";
     RadioGroup eventType;
-    RadioButton freeTimeEventTypeRadioButton;
-    EditText eventNameText, eventLocationText;
-    EditText startTimeText, endTimeText, weekDaysText;
+    @Bind(R.id.freeTimeEventTypeRadioButton) RadioButton freeTimeEventTypeRadioButton;
+    @Bind(R.id.eventNameTextEdit) EditText eventNameText;
+    @Bind(R.id.eventLocationTextEdit) EditText eventLocationText;
+    @Bind(R.id.startTimeEditText) EditText startTimeText;
+    @Bind(R.id.endTimeEditText) EditText endTimeText;
+    @Bind(R.id.weekDaysEditText) EditText weekDaysText;
     Calendar startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
@@ -46,17 +52,12 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_event);
+        ButterKnife.bind(this);
 
         eventToEdit = Optional.fromNullable((Event) getIntent().getSerializableExtra("eventToEdit"));
 
         // Get views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        startTimeText = (EditText) findViewById(R.id.startTimeEditText);
-        endTimeText = (EditText) findViewById(R.id.endTimeEditText);
-        freeTimeEventTypeRadioButton = (RadioButton) findViewById(R.id.freeTimeEventTypeRadioButton);
-        weekDaysText = (EditText) findViewById(R.id.weekDaysEditText);
-        eventNameText = (EditText) findViewById(R.id.eventNameTextEdit);
-        eventLocationText = (EditText) findViewById(R.id.eventLocationTextEdit);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Evento");
@@ -68,13 +69,8 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
         selectedWeekDays = new boolean[7];
         weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
 
-        startTimeText.setOnClickListener(this);
         updateTextEdit(startTimeText, startTime);
-
-        endTimeText.setOnClickListener(this);
         updateTextEdit(endTimeText, endTime);
-
-        weekDaysText.setOnClickListener(this);
 
         if (eventToEdit.isPresent())
         {
@@ -113,66 +109,61 @@ public class AddEditEventActivity extends AppCompatActivity implements View.OnCl
                 + " " + ampm);
     }
 
-    @Override
-    public void onClick(View v)
+    @OnClick(R.id.startTimeEditText) private void onStartTimeTextTap (View sender)
     {
-        if (v == startTimeText)
+        TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
         {
-            TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute)
             {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-                {
-                    updateCalendar(startTime, hourOfDay, minute);
-                    updateTextEdit(startTimeText, startTime);
+                updateCalendar(startTime, hourOfDay, minute);
+                updateTextEdit(startTimeText, startTime);
 
-                }
-            }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false);
+            }
+        }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false);
 
-            startTimePicker.show();
-        }
+        startTimePicker.show();
+    }
 
-        else if (v == endTimeText)
+    @OnClick(R.id.endTimeEditText) private void onEndTimeTextTap (View sender)
+    {
+        TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
         {
-            TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute)
             {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+                updateCalendar(endTime, hourOfDay, minute);
+                updateTextEdit(endTimeText, endTime);
+
+            }
+        }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false);
+
+        endTimePicker.show();
+    }
+
+    @OnClick(R.id.weekDaysEditText) private void onWeekDaysEditTextTap(View sender)
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Días del evento")
+                .setMultiChoiceItems(R.array.weekDay_array, selectedWeekDays, new DialogInterface.OnMultiChoiceClickListener()
                 {
-                    updateCalendar(endTime, hourOfDay, minute);
-                    updateTextEdit(endTimeText, endTime);
-
-                }
-            }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false);
-
-            endTimePicker.show();
-        }
-
-        else if (v == weekDaysText)
-        {
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-            alertDialogBuilder.setTitle("Días del evento")
-                    .setMultiChoiceItems(R.array.weekDay_array, selectedWeekDays, new DialogInterface.OnMultiChoiceClickListener()
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked)
-                        {
-                            selectedWeekDays[which] = isChecked;
-                        }
-                    })
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                        selectedWeekDays[which] = isChecked;
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            updateWeekDays();
-                        }
-                    });
+                        updateWeekDays();
+                    }
+                });
 
-            alertDialogBuilder.show();
-        }
+        alertDialogBuilder.show();
     }
 
     private void updateWeekDays()
