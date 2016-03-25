@@ -11,10 +11,10 @@ import android.util.Log;
 import android.view.View;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.enhueco.R;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
-import com.enhueco.model.model.Schedule;
-import com.enhueco.R;
+import com.enhueco.model.model.User;
 
 import java.util.*;
 
@@ -24,7 +24,8 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     private static final String LOG = "ScheduleActivity";
     private FloatingActionButton fab;
     private WeekView mWeekView;
-    private Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
+
+    private User user = EnHueco.getInstance().getAppUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,10 +33,19 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
+        for (User user : EnHueco.getInstance().getAppUser().getFriends().values())
+        {
+            if (user.getID().equals(getIntent().getStringExtra("friendID")))
+            {
+                this.user = user;
+                break;
+            }
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.addEventButton);
-        if (schedule != EnHueco.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
+        if (user != EnHueco.getInstance().getAppUser()) fab.setVisibility(View.GONE);
 
         mWeekView = (WeekView) findViewById(R.id.weekView);
 
@@ -119,7 +129,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
 
-            Collection<Event> currentWeekDayEvents = schedule.getWeekDays()[newEventWeekday].getEvents();
+            Collection<Event> currentWeekDayEvents = user.getSchedule().getWeekDays()[newEventWeekday].getEvents();
 
             for (Event currentEvent: currentWeekDayEvents)
             {
@@ -151,7 +161,6 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
             globalCalendar.add(Calendar.DATE, 1);
         }
 
-
         return events;
     }
 
@@ -165,12 +174,5 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     {
         Intent intent = new Intent(this, AddEditEventActivity.class);
         startActivity(intent);
-    }
-
-    public void setSchedule(Schedule schedule)
-    {
-        this.schedule = schedule;
-
-        if (schedule != EnHueco.getInstance().getAppUser().getSchedule()) fab.setVisibility(View.GONE);
     }
 }

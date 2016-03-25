@@ -98,4 +98,7 @@
     <string name="pref_title_groups">Grupos</string>
     <string name="action_turn_ivisible">Invisible</string>
     <string name="action_im_available">Estoy en Hueco</string>
+    <string name="action_call">Llamar</string>
+    <string name="action_whatsapp">WhatsApp</string>
+    <string name="action_options">Opciones</string>
 </resources>

@@ -1,30 +1,47 @@
 package com.enhueco.view;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.enhueco.R;
+import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FriendDetailActivity extends AppCompatActivity
 {
     private User friend;
 
-    private ImageView imageImageView;
-    private ImageView backgroundImageView;
-
+    @Bind(R.id.imageImageView)
+    ImageView imageImageView;
+    @Bind(R.id.backgroundImageImageView)
+    ImageView backgroundImageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -41,10 +58,11 @@ public class FriendDetailActivity extends AppCompatActivity
         }
 
         setContentView(R.layout.activity_friend_detail);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(friend.getID());
+        getSupportActionBar().setTitle(friend.getFirstNames());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView firstNamesTextView = (TextView) findViewById(R.id.firstNamesTextView);
@@ -52,9 +70,6 @@ public class FriendDetailActivity extends AppCompatActivity
 
         TextView lastNamesTextView = (TextView) findViewById(R.id.lastNamesTextView);
         lastNamesTextView.setText(friend.getLastNames());
-
-        imageImageView = (ImageView) findViewById(R.id.imageImageView);
-        backgroundImageView = (ImageView) findViewById(R.id.backgroundImageImageView);
 
         /*FancyButton whatsappFB = (FancyButton) findViewById(R.id.fancyBtnWhatsapp);
         FancyButton callFB = (FancyButton) findViewById(R.id.fancyBtnCall);
@@ -134,7 +149,16 @@ public class FriendDetailActivity extends AppCompatActivity
         updateProfileImage();
     }
 
-    public void updateProfileImage ()
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getSupportActionBar().setTitle("En Hueco");
+        getMenuInflater().inflate(R.menu.menu_friend_detail, menu);
+
+        return true;
+    }
+
+    public void updateProfileImage()
     {
         if (friend.getImageURL().isPresent() && !friend.getImageURL().get().isEmpty())
         {
@@ -171,8 +195,62 @@ public class FriendDetailActivity extends AppCompatActivity
 
     public void onViewScheduleButtonPressed(View view)
     {
-        Intent intent = new Intent(this, CommonFreeTimePeriodsActivity.class);
-        intent.putExtra("initialFriendID", friend.getID());
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        intent.putExtra("userID", friend.getID());
         startActivity(intent);
+    }
+
+    public void onCallButtonPressed(MenuItem item)
+    {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + friend.getPhoneNumber()));
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED)
+        {
+            startActivity(callIntent);
+        }
+    }
+
+    public void onWhatsAppButtonPressed(MenuItem item)
+    {
+        if (friend.getPhoneNumber() == null) return;
+
+        Uri uri = Uri.parse("smsto:" + friend.getPhoneNumber());
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.setPackage("com.whatsapp");
+        startActivity(Intent.createChooser(i, ""));
+    }
+
+    public void onOptionsButtonPressed(MenuItem item)
+    {
+        AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(this);
+
+        List<DialogOption> data = new ArrayList<>();
+        data.add(new DialogOption("Eliminar amigo", null));
+        ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
+
+        addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(final DialogInterface dialog, int which)
+            {
+                FriendsManager.getSharedManager().deleteFriend(friend, new BasicCompletionListener()
+                {
+                    @Override
+                    public void onSuccess()
+                    {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Exception error)
+                    {
+
+                    }
+                });
+            }
+        });
+
+        addFriendMethodDialog.show();
     }
 }

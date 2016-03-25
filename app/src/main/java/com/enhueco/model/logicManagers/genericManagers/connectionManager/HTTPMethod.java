@@ -8,7 +8,12 @@ import com.android.volley.Request;
 
 public enum HTTPMethod
 {
-    GET(Request.Method.GET), POST(Request.Method.POST), PUT(Request.Method.PUT), PATCH(Request.Method.PATCH), HEAD(Request.Method.HEAD);
+    GET(Request.Method.GET),
+    POST(Request.Method.POST),
+    PUT(Request.Method.PUT),
+    PATCH(Request.Method.PATCH),
+    HEAD(Request.Method.HEAD),
+    DELETE(Request.Method.DELETE);
 
     /** Value that corresponds for Volley */
     public final int volleyValue;

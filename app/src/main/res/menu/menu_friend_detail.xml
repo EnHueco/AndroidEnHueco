@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.enhueco.view.FriendDetailActivity">
+
+	<item
+			android:id="@+id/action_call"
+			android:title="@string/action_call"
+			app:showAsAction="collapseActionView"
+			android:onClick="onCallButtonPressed"/>
+
+	<item
+			android:id="@+id/action_whatsapp"
+			android:title="@string/action_whatsapp"
+			app:showAsAction="collapseActionView"
+			android:onClick="onWhatsAppButtonPressed"/>
+
+	<item
+			android:id="@+id/action_options"
+			android:title="@string/action_options"
+			app:showAsAction="collapseActionView"
+			android:onClick="onOptionsButtonPressed"/>
+</menu>

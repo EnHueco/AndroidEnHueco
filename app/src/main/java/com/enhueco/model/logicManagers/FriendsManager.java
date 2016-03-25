@@ -228,6 +228,45 @@ public class FriendsManager
             }
         });
     }
+    
+    public void deleteFriend (final User friend, final BasicCompletionListener completionListener)
+    {
+        String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + friend.getUsername() + "/";
+
+        ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.DELETE, Optional.<String>absent());
+
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
+        {
+            @Override
+            public void onSuccess(JSONObject friendship)
+            {
+                EnHueco.getInstance().getAppUser().getFriends().remove(friend.getUsername());
+                PersistenceManager.getSharedManager().persistData();
+
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onSuccess();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(final ConnectionManagerCompoundError error)
+            {
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        completionListener.onFailure(error.error);
+                    }
+                });
+            }
+        });
+    }
 
     /**
      * Searches users with keyword id
