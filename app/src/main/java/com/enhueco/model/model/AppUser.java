@@ -1,5 +1,8 @@
 package com.enhueco.model.model;
 
+import android.util.Log;
+import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
+import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +13,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class AppUser extends User implements Serializable
 {
@@ -59,7 +63,17 @@ public class AppUser extends User implements Serializable
 
     public static AppUser userFromJSONObject(JSONObject object) throws JSONException, ParseException
     {
-        User user = User.fromJSONObject(object.getJSONObject("user"));
+        // Create User
+        JSONObject userJSON = object.getJSONObject("user");
+        User user = User.fromJSONObject(userJSON);
+
+        // Persist privacy settings
+        HashMap<PrivacySetting, Object> settings = new HashMap<>();
+        settings.put(PrivacySetting.SHOW_EVENT_LOCATIONS, userJSON.getBoolean(PrivacySetting.SHOW_EVENT_LOCATIONS.getServerJSONParameterName()));
+        settings.put(PrivacySetting.SHOW_EVENT_NAMES, userJSON.getBoolean(PrivacySetting.SHOW_EVENT_NAMES.getServerJSONParameterName()));
+        settings.put(PrivacySetting.PHONE_NUMBER, userJSON.getString(PrivacySetting.PHONE_NUMBER.getServerJSONParameterName()));
+        PrivacyManager.getSharedManager().persistPrivacySettings(settings);
+
         String token = object.getString("value");
         return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getUpdatedOn());
     }

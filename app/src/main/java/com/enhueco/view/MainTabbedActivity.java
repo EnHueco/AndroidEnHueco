@@ -234,6 +234,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     public void addFriend(MenuItem item)
     {
+        MainTabbedActivity.this.searchFriends();
+
+/*
         AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(
                 this);
         LayoutInflater factory = LayoutInflater.from(this);
@@ -250,7 +253,11 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
+                MainTabbedActivity.this.searchFriends();
+
+
                 switch (which)
+
                 {
                     case 0:
                         MainTabbedActivity.this.searchFriends();
@@ -266,7 +273,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             }
         });
 
-        addFriendMethodDialog.show();
+        addFriendMethodDialog.show();*/
     }
 
     private void searchFriends()

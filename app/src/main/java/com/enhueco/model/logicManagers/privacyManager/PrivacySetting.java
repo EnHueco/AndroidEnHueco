@@ -7,7 +7,7 @@ package com.enhueco.model.logicManagers.privacyManager;
  */
 public enum PrivacySetting
 {
-    SHOW_EVENT_NAMES("show_event_names"), SHOW_EVENT_LOCATIONS("show_event_location"), SHOW_USER_IS_NEARBY("show_user_is_nearby");
+    SHOW_EVENT_NAMES("shares_event_names"), SHOW_EVENT_LOCATIONS("shares_event_locations"), SHOW_USER_IS_NEARBY("shares_user_nearby"), PHONE_NUMBER("phoneNumber");
 
     private final String serverJSONParameterName;
 

@@ -15,77 +15,59 @@
 	        android:onClick="profileImagePressed"
 			/>
 
-		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-						xmlns:fancy="http://schemas.android.com/apk/res-auto"
-						xmlns:tools="http://schemas.android.com/tools"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent"
-						tools:context="com.enhueco.View.MainTabbedActivity"
-						android:layout_marginTop="120dp"
-				>
-
-		<RelativeLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:paddingTop="20dp"
-				>
-
-			<de.hdodenhof.circleimageview.CircleImageView
-					xmlns:app="http://schemas.android.com/apk/res-auto"
-					android:layout_width="190dp"
-					android:layout_height="190dp"
-					android:scaleType="centerCrop"
-					android:layout_margin="0dp"
-					android:id="@+id/imageImageView"
-					android:layout_centerHorizontal="true"/>
+	<de.hdodenhof.circleimageview.CircleImageView
+			xmlns:app="http://schemas.android.com/apk/res-auto"
+			android:layout_width="190dp"
+			android:layout_height="190dp"
+			android:scaleType="centerCrop"
+			android:id="@+id/imageImageView"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="35dp"
+			/>
 
 			<TextView
 					android:layout_marginTop="8dp"
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textSize="18sp"
 					android:text="Pepito Alberto"
 					android:layout_below="@id/imageImageView"
 					android:textColor="#FFFFFF"
 					android:gravity="center"
+					android:layout_centerHorizontal="true"
 					android:maxLines="2"
 					android:id="@+id/firstNamesTextView"/>
 
 			<TextView
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textSize="18sp"
 					android:gravity="center_horizontal"
 					android:text="Pérez Uribe"
 					android:textColor="#FFFFFF"
 					android:layout_below="@+id/firstNamesTextView"
-					android:id="@+id/lastNamesTextView"/>
-		</RelativeLayout>
-
-		<RelativeLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="bottom"
-				android:paddingTop="30dp"
-				android:paddingBottom="20dp"
-				android:layout_alignParentBottom="true">
-
-			<mehdi.sakout.fancybuttons.FancyButton
-					android:id="@+id/editScheduleButton"
-					android:layout_width="160dp"
-					android:layout_height="48dp"
 					android:layout_centerHorizontal="true"
-					android:paddingLeft="20dp"
-					android:paddingRight="20dp"
-					fancy:fb_defaultColor="#AABBBBBB"
-					fancy:fb_iconPosition="left"
-					fancy:fb_radius="30dp"
-					fancy:fb_text="Editar Horario"
-					fancy:fb_textColor="#FFFFFF"
-					android:onClick="onProfileViewScheduleButtonPressed"
-					/>
+					android:id="@+id/lastNamesTextView"/>
 
+	<mehdi.sakout.fancybuttons.FancyButton
+			android:id="@+id/editScheduleButton"
+			android:layout_width="160dp"
+			android:layout_height="48dp"
+			android:layout_centerHorizontal="true"
+			android:paddingLeft="20dp"
+			android:paddingRight="20dp"
+			android:layout_marginTop="50dp"
+			fancy:fb_defaultColor="#AABBBBBB"
+			fancy:fb_iconPosition="left"
+			fancy:fb_radius="30dp"
+			fancy:fb_text="Editar Horario"
+			fancy:fb_textColor="#FFFFFF"
+			android:onClick="onProfileViewScheduleButtonPressed"
+			android:layout_alignTop="@id/lastNamesTextView"
+			/>
+
+
+<!--
 			<mehdi.sakout.fancybuttons.FancyButton
 					android:id="@+id/myQRButton"
 					android:layout_marginTop="8dp"
@@ -102,9 +84,6 @@
 					fancy:fb_textColor="#FFFFFF"
 					android:onClick="onViewMyQRButtonPressed"
 					/>
-
-		</RelativeLayout>
-
-	</RelativeLayout>
+-->
 
 </RelativeLayout>
