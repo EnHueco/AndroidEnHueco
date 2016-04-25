@@ -18,7 +18,7 @@
 
 	<item
 			android:id="@+id/action_im_available"
-			android:icon="@drawable/ic_im_avagit ilable"
+			android:icon="@drawable/ic_im_available"
 			android:title="@string/action_im_available"
 			android:onClick="onImAvailableButtonPressed"
 			app:showAsAction="always"/>
