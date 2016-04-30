@@ -32,6 +32,7 @@ import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.Utilities;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -57,17 +58,20 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
      */
     private MainPagerAdapter mainPagerAdapter;
 
-    @Bind(R.id.appbar) AppBarLayout appBarLayout;
+    @Bind(R.id.appbar)
+    AppBarLayout appBarLayout;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @Bind(R.id.container) ViewPager viewPager;
+    @Bind(R.id.container)
+    ViewPager viewPager;
 
     private Menu optionsMenu;
 
     private ArrayList<Integer> hiddenMenuItems;
-    @Bind(R.id.tabs) TabLayout tabLayout;
+    @Bind(R.id.tabs)
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -186,13 +190,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
 
-        if(resultCode == Activity.RESULT_CANCELED)
+        if (resultCode == Activity.RESULT_CANCELED)
         {
             // Request cancelled
         }
         // Image Selection
-        else if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
-            if (data == null) {
+        else if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK)
+        {
+            if (data == null)
+            {
                 //Display an error
                 return;
             }
@@ -208,7 +214,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         }
 
         // QR Code Scan Cancelled
-        else if(result.getContents() == null) {
+        else if (result.getContents() == null)
+        {
             Log.d("MainActivity", "Cancelled scan");
             Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
         }
@@ -332,7 +339,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         startActivity(intent);
     }
 
-    public void onViewMyQRButtonPressed (View view)
+    public void onViewMyQRButtonPressed(View view)
     {
         showQRCode();
     }
@@ -354,51 +361,33 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         }
     }
 
-    private void turnInvisible ()
+    private void turnInvisible()
     {
-        AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(this);
-        LayoutInflater factory = LayoutInflater.from(this);
-
-        List<DialogOption> data = new ArrayList<>();
-        data.add(new DialogOption("1:20 horas", null));
-        data.add(new DialogOption("3 horas", null ));
-        data.add(new DialogOption("Resto del día", null));
-        ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
-
-        addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        int selectedOption = -1;
+        CharSequence[] items = {"1:20 horas", "3 horas", "Resto del día"};
+        final int[] selectedItemTime = {90, 180, Utilities.getSecondsUntilTomorrow()};
+        alertDialog.setTitle("Duración").setSingleChoiceItems(items, 0, null).setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-                switch (which)
-                {
-                    case 0:
-                        _turnInvisibleForInterval(80 * 60);
-                        break;
-                    case 1:
-                        _turnInvisibleForInterval(3 * 60 * 60);
-                        break;
-                    case 2:
-
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.DAY_OF_MONTH, 1);
-                        calendar.set(Calendar.HOUR_OF_DAY, 0);
-                        calendar.set(Calendar.MINUTE, 0);
-                        calendar.set(Calendar.SECOND, 0);
-                        calendar.set(Calendar.MILLISECOND, 0);
-                        int secondsUntilTomorrow = (int) ((calendar.getTimeInMillis()-System.currentTimeMillis())/1000);
-
-                        _turnInvisibleForInterval(secondsUntilTomorrow);
-                        break;
-                }
+                int position = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
+                        _turnInvisibleForInterval(selectedItemTime[position]);
+                dialog.dismiss();
+            }
+        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
                 dialog.dismiss();
             }
         });
-
-        addFriendMethodDialog.show();
+        alertDialog.show();
     }
 
-    private void turnVisible ()
+    private void turnVisible()
     {
         PrivacyManager.getSharedManager().turnVisible(new BasicCompletionListener()
         {
@@ -418,9 +407,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             @Override
             public void onFailure(Exception error)
             {
-
+                error.printStackTrace();
             }
         });
+    }
+
+    // TODO: Change profile image
+    public void profileImagePressed(View view)
+    {
+
     }
 
     private void _turnInvisibleForInterval(int seconds)
@@ -461,7 +456,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     private static final int PICK_PHOTO_FOR_AVATAR = 0;
 
-    public void pickImage() {
+    public void pickImage()
+    {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
@@ -475,6 +471,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     {
 
         final String[] tabNames = {"En Hueco", "Amigos", "Mi perfil"};
+
         public MainPagerAdapter(FragmentManager fm)
         {
             super(fm);
@@ -507,6 +504,9 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         }
 
         @Override
-        public CharSequence getPageTitle(int position) { return tabNames[position]; }
+        public CharSequence getPageTitle(int position)
+        {
+            return tabNames[position];
+        }
     }
 }

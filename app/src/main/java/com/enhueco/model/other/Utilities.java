@@ -48,6 +48,17 @@ public class Utilities
         return df1.format(date);
     }
 
+    public static int getSecondsUntilTomorrow()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        int secondsUntilTomorrow = (int) ((calendar.getTimeInMillis()-System.currentTimeMillis())/1000);
+        return secondsUntilTomorrow;
+    }
     /**
      * Creates a new calendar with the specified weekday, hour and minute
      * @param weekday Weekday desired to be added to the date. 0 is Sunday
