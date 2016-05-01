@@ -57,11 +57,7 @@ public class AppUserInformationManager
                     try
                     {
                         AppUser appUser = EnHueco.getInstance().getAppUser();
-
-                        User user = User.fromJSONObject(response);
-                        appUser.setImageURL(user.getImageURL());
-                        appUser.setPhoneNumber(user.getPhoneNumber());
-                        PrivacyManager.getSharedManager().persistPhoneNumber(user.getPhoneNumber());
+                        appUser.updateWithJSON(response);
 
                         String scheduleUpdatedOnString = response.getString("schedule_updated_on");
                         Date scheduleUpdatedOn = Utilities.getDateFromServerString(scheduleUpdatedOnString);

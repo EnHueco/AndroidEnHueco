@@ -61,11 +61,13 @@ public class AppUser extends User implements Serializable
         this.token = token;
     }
 
-    public static AppUser userFromJSONObject(JSONObject object) throws JSONException, ParseException
+    public AppUser(JSONObject object) throws JSONException, ParseException
     {
         // Create User
+        super(object.getJSONObject("user"));
+        token = object.getString("value");
+
         JSONObject userJSON = object.getJSONObject("user");
-        User user = User.fromJSONObject(userJSON);
 
         // Persist privacy settings
         HashMap<PrivacySetting, Object> settings = new HashMap<>();
@@ -73,12 +75,20 @@ public class AppUser extends User implements Serializable
         settings.put(PrivacySetting.SHOW_EVENT_NAMES, userJSON.getBoolean(PrivacySetting.SHOW_EVENT_NAMES.getServerJSONParameterName()));
         settings.put(PrivacySetting.PHONE_NUMBER, userJSON.getString(PrivacySetting.PHONE_NUMBER.getServerJSONParameterName()));
         PrivacyManager.getSharedManager().persistPrivacySettings(settings);
-
-        String token = object.getString("value");
-        return new AppUser(user.getUsername(), token, user.getFirstNames(), user.getLastNames(), user.getPhoneNumber(), user.getImageURL(), user.getID(), user.getUpdatedOn());
     }
 
 
+    public void updateWithJSON(JSONObject object)  throws JSONException
+    {
+        super.updateWithJSON(object);
+
+        HashMap<PrivacySetting, Object> settings = new HashMap<>();
+        settings.put(PrivacySetting.SHOW_EVENT_LOCATIONS, object.getBoolean(PrivacySetting.SHOW_EVENT_LOCATIONS.getServerJSONParameterName()));
+        settings.put(PrivacySetting.SHOW_EVENT_NAMES, object.getBoolean(PrivacySetting.SHOW_EVENT_NAMES.getServerJSONParameterName()));
+        settings.put(PrivacySetting.PHONE_NUMBER, object.getString(PrivacySetting.PHONE_NUMBER.getServerJSONParameterName()));
+        PrivacyManager.getSharedManager().persistPrivacySettings(settings);
+
+    }
     //////////////////////////////////
     //      Main Functionality      //
     //////////////////////////////////

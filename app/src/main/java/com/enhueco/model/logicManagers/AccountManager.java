@@ -56,8 +56,10 @@ public class AccountManager
                 {
                     try
                     {
-                        EnHueco.getInstance().setAppUser(AppUser.userFromJSONObject(response));
+                        EnHueco.getInstance().setAppUser(new AppUser(response));
                         PersistenceManager.getSharedManager().persistData();
+
+                        AppUser user = EnHueco.getInstance().getAppUser();
 
                         new Handler(Looper.getMainLooper()).post(new Runnable()
                         {

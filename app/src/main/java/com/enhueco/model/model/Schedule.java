@@ -28,10 +28,6 @@ public class Schedule extends EHSynchronizable implements Serializable
      */
     //private Timer instantFreeTimePeriodDestroyTimer;
 
-    /**
-     * Current's day immediate event . Self-destroys when the period is over (i.e. currentTime > endHour)
-     */
-    private Optional<ImmediateEvent> instantFreeTimePeriod = Optional.absent();
 
     /**
      * Array of indexed weekday names
@@ -102,36 +98,6 @@ public class Schedule extends EHSynchronizable implements Serializable
     public DaySchedule[] getWeekDays()
     {
         return weekDays;
-    }
-
-    public Optional<ImmediateEvent> getInstantFreeTimePeriod()
-    {
-        return instantFreeTimePeriod;
-    }
-
-    public void setInstantFreeTimePeriod(Optional<ImmediateEvent> instantFreeTimePeriod)
-    {
-        this.instantFreeTimePeriod = instantFreeTimePeriod;
-/*
-        if (instantFreeTimePeriod.isPresent())
-        {
-            if (instantFreeTimePeriodDestroyTimer != null)
-            {
-                instantFreeTimePeriodDestroyTimer.cancel();
-            }
-
-            instantFreeTimePeriodDestroyTimer = new Timer();
-
-            TimerTask deleteEvent = new TimerTask () {
-                @Override
-                public void run () {
-                    setInstantFreeTimePeriod(Optional.<ImmediateEvent>absent());
-                }
-            };
-
-            instantFreeTimePeriodDestroyTimer.schedule(deleteEvent, instantFreeTimePeriod.get().getEndHourInDate(new Date()));
-        }
-        */
     }
 
 }

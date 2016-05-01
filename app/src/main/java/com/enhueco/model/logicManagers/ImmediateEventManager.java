@@ -54,7 +54,7 @@ public class ImmediateEventManager
                     Log.v("IMMEDIATE EVENT MANAGER", jsonResponse.toString());
 
                     ImmediateEvent event = new ImmediateEvent(jsonResponse);
-                    EnHueco.getInstance().getAppUser().getSchedule().setInstantFreeTimePeriod(Optional.of(event));
+                    EnHueco.getInstance().getAppUser().setInstantFreeTimePeriod(Optional.of(event));
 
                     if (PersistenceManager.getSharedManager().persistData())
                     {
@@ -126,7 +126,7 @@ public class ImmediateEventManager
 
     private void deleteImmediateEvent(final BasicCompletionListener completionListener)
     {
-        Optional<ImmediateEvent> event = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
         if (event.isPresent())
         {
             Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));

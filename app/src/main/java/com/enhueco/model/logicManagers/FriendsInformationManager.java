@@ -153,7 +153,7 @@ public class FriendsInformationManager
 
                         else
                         {
-                            User newFriend = User.fromJSONObject(friendJSON);
+                            User newFriend = new User(friendJSON);
                             appUser.getFriends().put(newFriend.getUsername(), newFriend);
                         }
                     }

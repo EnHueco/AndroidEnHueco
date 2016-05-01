@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * A fragment representing a list of Items.
@@ -73,7 +74,7 @@ public class CurrentlyAvailableFragment extends ListFragment
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
-        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
 
         if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
@@ -170,9 +171,11 @@ public class CurrentlyAvailableFragment extends ListFragment
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
-        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
 
-        if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
+            if (instantFreeTimePeriod.isPresent() &&
+                instantFreeTimePeriod.get().getEndHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0 &&
+                instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
             currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
         }
@@ -194,6 +197,12 @@ public class CurrentlyAvailableFragment extends ListFragment
 
         if (null != mListener)
         {
+            Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
+            boolean instantFreeTimeActive = instantFreeTimePeriod.isPresent() &&
+                    instantFreeTimePeriod.get().getEndHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0 &&
+                    instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT);
+
+            if(instantFreeTimeActive && position == 0) return;
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
             intent.putExtra("friendID", currentlyAvailableFriends.get(position).first.getID());
             startActivity(intent);

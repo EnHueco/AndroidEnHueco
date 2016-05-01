@@ -21,6 +21,7 @@ public class ConnectionManager
 
     public static void sendAsyncRequest(final ConnectionManagerObjectRequest request, final ConnectionManagerCompletionHandler<JSONObject> completionHandler)
     {
+        Log.v("CONNECTION MANAGER", "SENDING REQUEST: " + request.toString());
         JsonRequest jsonRequest = new JsonObjectRequest(request.method.volleyValue, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONObject>()
         {
             @Override
@@ -46,8 +47,12 @@ public class ConnectionManager
                 error.printStackTrace();
                 try
                 {
-                    String responseBody = new String(error.networkResponse.data, "utf-8" );
-                    Log.e("CONNECTION MANAGER", responseBody);
+                    if(error.networkResponse != null)
+                    {
+                        error.printStackTrace();
+                        String responseBody = new String(error.networkResponse.data, "utf-8" );
+                        Log.e("CONNECTION MANAGER", responseBody);
+                    }
                 }
                 catch (UnsupportedEncodingException e)
                 {
