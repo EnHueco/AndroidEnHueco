@@ -1,6 +1,5 @@
 package com.enhueco.view;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,32 +16,19 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListAdapter;
-import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
-import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.logicManagers.ImmediateEventManager;
-import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.User;
-import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 public class MainTabbedActivity extends AppCompatActivity implements FriendListFragment.OnFragmentInteractionListener, CurrentlyAvailableFragment.OnFragmentInteractionListener, TabLayout.OnTabSelectedListener
 {
@@ -170,16 +156,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         finish();
     }
 
-    public void showQRCode(MenuItem item)
-    {
-        showQRCode();
-    }
-
-    public void showQRCode()
-    {
-        startActivity(new Intent(MainTabbedActivity.this, ShowQRActivity.class));
-    }
-
     @Override
     protected void onResume()
     {
@@ -189,117 +165,18 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-
-        if (resultCode == Activity.RESULT_CANCELED)
-        {
-            // Request cancelled
-        }
-        // Image Selection
-        else if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK)
-        {
-            if (data == null)
-            {
-                //Display an error
-                return;
-            }
-            try
-            {
-                InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(data.getData());
-            }
-            catch (FileNotFoundException e)
-            {
-                e.printStackTrace();
-            }
-            //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
-        }
-
-        // QR Code Scan Cancelled
-        else if (result.getContents() == null)
-        {
-            Log.d("MainActivity", "Cancelled scan");
-            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-        }
-        // QR Code Scan Succeed
-        else
-        {
-            Log.d("MainActivity", "Scanned");
-            try
-            {
-                User friend = FriendsManager.getSharedManager().addFriendFromStringEncodedFriendRepresentation(result.getContents());
-                FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
-                fr.refresh();
-                Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void addFriend(MenuItem item)
     {
-        MainTabbedActivity.this.searchFriends();
-
-/*
-        AlertDialog.Builder addFriendMethodDialog = new AlertDialog.Builder(
-                this);
-        LayoutInflater factory = LayoutInflater.from(this);
-        final View view = factory.inflate(R.layout.item_currently_available, null);
-
-        List<DialogOption> data = new ArrayList<DialogOption>();
-        data.add(new DialogOption("Buscar amigo", null));
-        data.add(new DialogOption("Escanear código de amigo", null ));
-        data.add(new DialogOption("Mostrar mi código", null));
-        ListAdapter la = new DialogOption.DialogOptionArrayAdapter(this, 0, data);
-
-        addFriendMethodDialog.setSingleChoiceItems(la, -1, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                MainTabbedActivity.this.searchFriends();
-
-
-                switch (which)
-
-                {
-                    case 0:
-                        MainTabbedActivity.this.searchFriends();
-                        break;
-                    case 1:
-                        MainTabbedActivity.this.scanQR();
-                        break;
-                    case 2:
-                        MainTabbedActivity.this.showQRCode();
-                        break;
-                }
-                dialog.dismiss();
-            }
-        });
-
-        addFriendMethodDialog.show();*/
-    }
-
-    private void searchFriends()
-    {
         Intent intent = new Intent(this, SearchNewFriendsActivity.class);
         startActivity(intent);
-    }
-
-    private void scanQR()
-    {
-        new IntentIntegrator(this).setCaptureActivity(CaptureQRActivityAnyOrientation.class).setBeepEnabled(true).setOrientationLocked(false).initiateScan();
     }
 
     @Override
     public void onFragmentInteraction(String id)
     {
-
     }
 
     @Override
@@ -310,7 +187,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     @Override
     public void onTabReselected(TabLayout.Tab tab)
     {
-
     }
 
     public void showRequests(MenuItem item)
@@ -339,11 +215,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         Intent intent = new Intent(this, ScheduleActivity.class);
         intent.putExtra(ScheduleActivity.SCHEDULE_EXTRA, EnHueco.getInstance().getAppUser().getSchedule());
         startActivity(intent);
-    }
-
-    public void onViewMyQRButtonPressed(View view)
-    {
-        showQRCode();
     }
 
     public void onSettingsButtonPressed(MenuItem item)
