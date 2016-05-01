@@ -94,11 +94,16 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="pref_title_privacy">Privacidad</string>
+    <string name="pref_title_event_privacy">Privacidad de eventos</string>
     <string name="pref_title_groups">Grupos</string>
     <string name="action_turn_ivisible">Invisible</string>
     <string name="action_im_available">Estoy en Hueco</string>
     <string name="action_call">Llamar</string>
     <string name="action_whatsapp">WhatsApp</string>
     <string name="action_options">Opciones</string>
+    <string name="pref_title_phone_number">Mi número de telefono</string>
+    <string name="pref_key_phone_number">phoneNumber</string>
+    <string name="pref_key_event_privacy">eventPrivacy</string>
+    <string name="pref_key_shares_events_names">sharesEventNames</string>
+    <string name="pref_key_shares_events_location">sharesEventLocation</string>
 </resources>

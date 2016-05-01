@@ -1,5 +1,6 @@
 package com.enhueco.model.logicManagers.genericManagers.connectionManager;
 
+import android.util.Log;
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -10,6 +11,7 @@ import com.enhueco.model.model.EnHueco;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +26,16 @@ public class ConnectionManager
             @Override
             public void onResponse(JSONObject response)
             {
-                completionHandler.onSuccess(response);
+                try
+                {
+                    completionHandler.onSuccess(response);
+                }
+                catch (Exception e)
+                {
+                    completionHandler.onFailure(new ConnectionManagerCompoundError(e, request));
+                    e.printStackTrace();
+                }
+
             }
         }, new Response.ErrorListener()
         {
@@ -33,6 +44,16 @@ public class ConnectionManager
             {
                 completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
                 error.printStackTrace();
+                try
+                {
+                    String responseBody = new String(error.networkResponse.data, "utf-8" );
+                    Log.e("CONNECTION MANAGER", responseBody);
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                    e.printStackTrace();
+                }
+
             }
         })
         {
@@ -59,7 +80,15 @@ public class ConnectionManager
             @Override
             public void onResponse(JSONArray response)
             {
-                completionHandler.onSuccess(response);
+                try
+                {
+                    completionHandler.onSuccess(response);
+                }
+                catch (Exception e)
+                {
+                    completionHandler.onFailure(new ConnectionManagerCompoundError(e, request));
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener()
         {

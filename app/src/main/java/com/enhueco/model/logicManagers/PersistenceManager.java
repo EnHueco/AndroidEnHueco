@@ -1,6 +1,9 @@
 package com.enhueco.model.logicManagers;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
@@ -78,6 +81,11 @@ public class PersistenceManager
      */
     public void deletePersistenceData()
     {
+        // Delete all persisted data
         EHApplication.getAppContext().deleteFile(AppUser.FILE_NAME);
+
+        // Delete shared preferences
+        PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext()).edit().clear().commit();
+
     }
 }

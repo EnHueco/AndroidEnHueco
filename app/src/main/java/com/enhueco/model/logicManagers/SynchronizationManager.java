@@ -97,7 +97,14 @@ public class SynchronizationManager
             @Override
             public void onSuccess(JSONObject jsonResponse)
             {
-                completionHandler.onSuccess(jsonResponse);
+                try
+                {
+                    completionHandler.onSuccess(jsonResponse);
+                }
+                catch (Exception e)
+                {
+                    completionHandler.onFailure(new ConnectionManagerCompoundError(e, request));
+                }
             }
 
             @Override

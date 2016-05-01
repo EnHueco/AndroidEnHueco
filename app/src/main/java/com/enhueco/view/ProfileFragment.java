@@ -164,4 +164,6 @@ public class ProfileFragment extends Fragment
             AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule();
         }
     }
+
+
 }

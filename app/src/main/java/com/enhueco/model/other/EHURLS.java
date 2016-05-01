@@ -49,4 +49,10 @@ public class EHURLS
      * URL segment for user's events purposes
      */
     public static final String EVENTS_SEGMENT = "/gaps/";
+
+    /**
+     * URL segment for immediate event purposes
+     */
+    public static final String IMMEDIATE_EVENTS_SEGMENT = "/events/immediate/";
+
 }

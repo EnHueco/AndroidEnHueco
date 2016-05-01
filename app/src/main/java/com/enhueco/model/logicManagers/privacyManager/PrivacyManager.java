@@ -1,7 +1,12 @@
 package com.enhueco.model.logicManagers.privacyManager;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
+import com.enhueco.R;
+import com.enhueco.model.EHApplication;
+import com.enhueco.model.logicManagers.PersistenceManager;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
@@ -11,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -61,14 +68,14 @@ public class PrivacyManager
             }
 
             @Override
-            public void onFailure(ConnectionManagerCompoundError error)
+            public void onFailure(final ConnectionManagerCompoundError error)
             {
                 new Handler(Looper.getMainLooper()).post(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        completionListener.onSuccess();
+                        completionListener.onFailure(error.error);
                     }
                 });
             }
@@ -124,97 +131,40 @@ public class PrivacyManager
         });
     }
 
-    /**
-     * Makes the user invisible to everyone else for the time provided
-     * @param seconds Seconds that the invisibility should last
-     */
-    public void turnInvisibleForTimeInterval (int seconds, final BasicCompletionListener completionListener)
+    public void turnSetting(Boolean on, PrivacySetting setting, Optional<PrivacyPolicy> privacyPolicy, final BasicCompletionListener completionListener)
     {
-        JSONObject params = new JSONObject();
-
-        try
-        {
-            JSONObject instantEvent = new JSONObject();
-            instantEvent.put("type", "INVISIBILITY");
-
-            Calendar expiryCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            expiryCalendar.add(Calendar.SECOND, seconds);
-
-            instantEvent.put("valid_until", Utilities.getServerFormattedStringFromDate(expiryCalendar.getTime()));
-
-            params.put("immediate_event", instantEvent);
-        }
-        catch (JSONException e) { e.printStackTrace(); return; }
-
-        ConnectionManagerObjectRequest incomingRequestsRequest = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
-        ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONObject>()
-        {
-            @Override
-            public void onSuccess(JSONObject jsonResponse)
-            {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(ConnectionManagerCompoundError error)
-            {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
-            }
-        });
+        if(on) turnOnSetting(setting, privacyPolicy, completionListener);
+        else turnOffSetting(setting, privacyPolicy, completionListener);
     }
 
-    public void turnVisible (final BasicCompletionListener completionListener)
+    public void persistPrivacySettings(HashMap<PrivacySetting, Object> settings)
     {
-        JSONObject params = new JSONObject();
-
-        try
-        {
-            params.put("immediate_event", "");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext());
+        for ( Map.Entry<PrivacySetting, Object> entry : settings.entrySet() ) {
+            PrivacySetting key = entry.getKey();
+            Object value = entry.getValue();
+            if(key.equals(PrivacySetting.SHOW_EVENT_LOCATIONS))
+            {
+                preferences.edit().putBoolean(sharesEventsLocationKey, (Boolean) value).commit();
+            }
+            else if(key.equals(PrivacySetting.SHOW_EVENT_NAMES))
+            {
+                preferences.edit().putBoolean(sharesEventsNameKey, (Boolean) value).commit();
+            }
+            else if(key.equals(PrivacySetting.PHONE_NUMBER))
+            {
+                preferences.edit().putString(phoneNumberKey, (String) value).commit();
+            }
         }
-        catch (JSONException e) { e.printStackTrace(); return; }
-
-        ConnectionManagerObjectRequest incomingRequestsRequest = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
-        ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONObject>()
-        {
-            @Override
-            public void onSuccess(JSONObject jsonResponse)
-            {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(ConnectionManagerCompoundError error)
-            {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
-            }
-        });
     }
+
+    public void persistPhoneNumber(String phoneNumber)
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext());
+        preferences.edit().putString(phoneNumberKey, phoneNumber).commit();
+    }
+
+    public static String phoneNumberKey = EHApplication.getAppContext().getResources().getString(R.string.pref_key_phone_number);
+    public static String sharesEventsLocationKey = EHApplication.getAppContext().getResources().getString(R.string.pref_key_shares_events_location);
+    public static String sharesEventsNameKey = EHApplication.getAppContext().getResources().getString(R.string.pref_key_shares_events_names);
 }

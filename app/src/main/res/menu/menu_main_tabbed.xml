@@ -35,13 +35,16 @@
 			android:title="@string/addFriend"
 			android:orderInCategory="101"
 			app:showAsAction="ifRoom"
-			android:onClick="addFriend"/>
+			android:onClick="addFriend"
+			android:icon="@android:drawable/ic_menu_add"
+			/>
 
 	<item
 			android:id="@+id/action_search"
 			android:title="@string/search"
 			android:orderInCategory="102"
 			app:showAsAction="ifRoom"
+	        android:icon="@android:drawable/ic_menu_search"
 			/>
 
 	<item
@@ -49,6 +52,7 @@
 			android:title="@string/settings"
 			android:orderInCategory="103"
 			app:showAsAction="ifRoom"
+			android:icon="@android:drawable/ic_menu_preferences"
 			android:onClick="onSettingsButtonPressed"/>
 
 </menu>
