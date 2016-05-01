@@ -28,9 +28,11 @@ import butterknife.ButterKnife;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
 import com.enhueco.model.logicManagers.FriendsManager;
+import com.enhueco.model.logicManagers.ImmediateEventManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
+import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -389,7 +391,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     private void turnVisible()
     {
-        PrivacyManager.getSharedManager().turnVisible(new BasicCompletionListener()
+        ImmediateEventManager.getSharedManager().turnVisible(new BasicCompletionListener()
         {
             @Override
             public void onSuccess()
@@ -420,27 +422,27 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     private void _turnInvisibleForInterval(int seconds)
     {
-        PrivacyManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
+        ImmediateEventManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
+    {
+        @Override
+        public void onSuccess()
         {
-            @Override
-            public void onSuccess()
+            Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
+
+            if (drawable != null)
             {
-                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
-
-                if (drawable != null)
-                {
-                    drawable.mutate();
-                    drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
-                    drawable.setAlpha(1);
-                }
+                drawable.mutate();
+                drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
+                drawable.setAlpha(1);
             }
+        }
 
-            @Override
-            public void onFailure(Exception error)
-            {
-
-            }
-        });
+        @Override
+        public void onFailure(Exception error)
+        {
+            
+        }
+    });
     }
 
     public void onImAvailableButtonPressed(MenuItem item)

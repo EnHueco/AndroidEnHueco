@@ -27,6 +27,8 @@ import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManagerNo
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
+import com.enhueco.model.model.immediateEvent.ImmediateEvent;
+import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
@@ -71,11 +73,11 @@ public class CurrentlyAvailableFragment extends ListFragment
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
-        Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 
-        if (instantFreeTimePeriod.isPresent())
+        if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
-            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), instantFreeTimePeriod.get()));
+            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
         }
 
         adapter = new CurrentlyFreeArrayAdapter(getActivity(), 0, currentlyAvailableFriends);
@@ -168,11 +170,11 @@ public class CurrentlyAvailableFragment extends ListFragment
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
-        Optional<Event> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getSchedule().getInstantFreeTimePeriod();
 
-        if (instantFreeTimePeriod.isPresent())
+        if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
-            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), instantFreeTimePeriod.get()));
+            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
         }
 
         adapter.notifyDataSetChanged();

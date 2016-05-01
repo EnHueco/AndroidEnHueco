@@ -16,7 +16,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
+import com.enhueco.model.logicManagers.ImmediateEventManager;
 import com.enhueco.model.model.Event;
+import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.google.common.base.Optional;
 
@@ -132,8 +134,9 @@ public class InstantFreeTimeFragment extends DialogFragment
         Calendar endTimeInUTC = (Calendar) endTime.clone();
         endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Event newFreeTimePeriod = new Event(Event.EventType.FREE_TIME, Optional.of(nameEditText.getText().toString()), Optional.of(locationEditText.getText().toString()), Calendar.getInstance(), endTimeInUTC);
-        CurrentStateManager.getSharedManager().postInstantFreeTimePeriod(newFreeTimePeriod, new BasicCompletionListener()
+        InstantFreeTimeEvent freeTimeEvent = new InstantFreeTimeEvent(nameEditText.getText().toString(), endTimeInUTC, locationEditText.getText().toString());
+
+        ImmediateEventManager.getSharedManager().createInstantFreeTimeEvent(freeTimeEvent, new BasicCompletionListener()
         {
             @Override
             public void onSuccess()
@@ -144,7 +147,7 @@ public class InstantFreeTimeFragment extends DialogFragment
             @Override
             public void onFailure(Exception error)
             {
-
+                error.printStackTrace();
             }
         });
     }

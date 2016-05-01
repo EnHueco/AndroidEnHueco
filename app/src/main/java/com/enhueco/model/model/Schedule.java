@@ -1,5 +1,6 @@
 package com.enhueco.model.model;
 
+import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.google.common.base.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,12 +26,12 @@ public class Schedule extends EHSynchronizable implements Serializable
     /**
      * Timer responsible for setting instantFreeTimePeriod to Optional.absent() when necessary.
      */
-    private Timer instantFreeTimePeriodDestroyTimer;
+    //private Timer instantFreeTimePeriodDestroyTimer;
 
     /**
-     * Current instant free time period for the day. Self-destroys when the period is over (i.e. currentTime > endHour)
+     * Current's day immediate event . Self-destroys when the period is over (i.e. currentTime > endHour)
      */
-    private Optional<Event> instantFreeTimePeriod = Optional.absent();
+    private Optional<ImmediateEvent> instantFreeTimePeriod = Optional.absent();
 
     /**
      * Array of indexed weekday names
@@ -103,15 +104,15 @@ public class Schedule extends EHSynchronizable implements Serializable
         return weekDays;
     }
 
-    public Optional<Event> getInstantFreeTimePeriod()
+    public Optional<ImmediateEvent> getInstantFreeTimePeriod()
     {
         return instantFreeTimePeriod;
     }
 
-    public void setInstantFreeTimePeriod(Optional<Event> instantFreeTimePeriod)
+    public void setInstantFreeTimePeriod(Optional<ImmediateEvent> instantFreeTimePeriod)
     {
         this.instantFreeTimePeriod = instantFreeTimePeriod;
-
+/*
         if (instantFreeTimePeriod.isPresent())
         {
             if (instantFreeTimePeriodDestroyTimer != null)
@@ -124,11 +125,13 @@ public class Schedule extends EHSynchronizable implements Serializable
             TimerTask deleteEvent = new TimerTask () {
                 @Override
                 public void run () {
-                    setInstantFreeTimePeriod(Optional.<Event>absent());
+                    setInstantFreeTimePeriod(Optional.<ImmediateEvent>absent());
                 }
             };
 
             instantFreeTimePeriodDestroyTimer.schedule(deleteEvent, instantFreeTimePeriod.get().getEndHourInDate(new Date()));
         }
+        */
     }
+
 }

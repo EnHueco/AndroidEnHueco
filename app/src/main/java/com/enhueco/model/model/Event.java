@@ -1,5 +1,7 @@
 package com.enhueco.model.model;
 
+import com.enhueco.model.model.immediateEvent.ImmediateEvent;
+import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
@@ -94,6 +96,15 @@ public class Event implements Serializable, Comparable<Event>
         this.endHour = startCalendar;
     }
 
+
+    public Event(ImmediateEvent iEvent)
+    {
+        this.type = EventType.FREE_TIME;
+        this.name = Optional.of(iEvent.getName());
+        this.location = Optional.of(iEvent.getLocation());
+        this.endHour = iEvent.getEndHour();
+        this.startHour = iEvent.getEndHour();
+    }
     /**
      * Creates new Event from a JSONObject representation
      * @param object JSONObject representation
