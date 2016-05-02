@@ -216,8 +216,8 @@ public class User extends EHSynchronizable implements Serializable
         {
             instantFreeTimePeriod = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
         }
-
     }
+
 
     //////////////////////////////////
     //      Main Functionality      //
@@ -472,4 +472,5 @@ public class User extends EHSynchronizable implements Serializable
         }
         */
     }
+
 }

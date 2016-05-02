@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 public class AppUser extends User implements Serializable
 {
+
     public class UserStringEncodingSeparationCharacters
     {
         // Values for QR encoding
@@ -76,7 +77,6 @@ public class AppUser extends User implements Serializable
         settings.put(PrivacySetting.PHONE_NUMBER, userJSON.getString(PrivacySetting.PHONE_NUMBER.getServerJSONParameterName()));
         PrivacyManager.getSharedManager().persistPrivacySettings(settings);
     }
-
 
     public void updateWithJSON(JSONObject object)  throws JSONException
     {

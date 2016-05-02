@@ -8,10 +8,12 @@ import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
 import com.enhueco.model.model.*;
+import com.enhueco.model.model.intents.AppUserIntent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -21,7 +23,7 @@ import java.util.Map;
 /**
  * Created by Diego on 2/28/16.
  */
-public class AppUserInformationManager
+public class AppUserInformationManager extends EHManager
 {
     private static AppUserInformationManager instance;
 
@@ -59,7 +61,7 @@ public class AppUserInformationManager
                         AppUser appUser = EnHueco.getInstance().getAppUser();
                         appUser.updateWithJSON(response);
 
-                        if(PersistenceManager.getSharedManager().persistData())
+                        if (PersistenceManager.getSharedManager().persistData())
                         {
                             Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
                             LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
@@ -83,39 +85,34 @@ public class AppUserInformationManager
         }
     }
 
-
-    public void pushPhoneNumber(final String phoneNumber)
+    public void updateAppUser(final AppUserIntent userIntent, final BasicCompletionListener completionListener)
     {
         try
         {
-            JSONObject params = new JSONObject();
-
-            params.put("phoneNumber", phoneNumber);
+            JSONObject params = userIntent.toJSON();
 
             ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
             {
                 @Override
-                public void onSuccess(JSONObject response)
+                public void onSuccess(JSONObject response) throws JSONException
                 {
-                    Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
-                    EnHueco.getInstance().getAppUser().setPhoneNumber(phoneNumber);
+                    EnHueco.getInstance().getAppUser().updateWithJSON(response);
                     PersistenceManager.getSharedManager().persistData();
+
+                    completionListener.onSuccess();
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-                    String oldNumber = EnHueco.getInstance().getAppUser().getPhoneNumber();
-                    PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext()).edit().putString(PrivacyManager.phoneNumberKey, oldNumber);
-                    error.error.printStackTrace();
+                    generateError(error.error, completionListener);
                 }
             });
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            generateError(e, completionListener);
         }
     }
 }

@@ -28,7 +28,6 @@ import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
-import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;

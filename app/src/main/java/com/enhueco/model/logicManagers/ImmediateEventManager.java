@@ -19,13 +19,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 /**
  * Created by Diego on 5/1/16.
  */
-public class ImmediateEventManager
+public class ImmediateEventManager extends EHManager
 {
     private static ImmediateEventManager instance;
 
@@ -71,7 +70,7 @@ public class ImmediateEventManager
                     }
                     else
                     {
-                        onFailure(new ConnectionManagerCompoundError(new Exception("Persistence failed"), request));
+                        generateError(new Exception("Persistence failed"), completionListener);
                     }
                 }
 
@@ -79,30 +78,14 @@ public class ImmediateEventManager
                 @Override
                 public void onFailure(final ConnectionManagerCompoundError error)
                 {
-                    error.error.printStackTrace();
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            completionListener.onFailure(error.error);
-                        }
-                    });
+                   generateError(error.error, completionListener);
                 }
             });
         }
 
         catch (final JSONException e)
         {
-            e.printStackTrace();
-            new Handler(Looper.getMainLooper()).post(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    completionListener.onFailure(e);
-                }
-            });
+            generateError(e, completionListener);
         }
 
     }

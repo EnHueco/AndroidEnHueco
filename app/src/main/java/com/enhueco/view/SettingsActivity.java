@@ -30,6 +30,7 @@ import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyPolicy;
 import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
+import com.enhueco.model.model.intents.AppUserIntent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
 import com.enhueco.view.dialog.EHProgressDialog;
@@ -80,7 +81,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         if(key.equals(PrivacyManager.phoneNumberKey))
         {
             final String number = sharedPreferences.getString(key,"");
-            AppUserInformationManager.getSharedManager().pushPhoneNumber(number);
+            AppUserIntent intent = new AppUserIntent();
+            intent.setPhoneNumber(number);
+            AppUserInformationManager.getSharedManager().updateAppUser(intent, new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+                    dialog.dismiss();
+                    Utilities.showErrorToast(SettingsActivity.this);
+                }
+            });
         }
         else if(key.equals(PrivacyManager.sharesEventsLocationKey) || key.equals(PrivacyManager.sharesEventsNameKey))
         {

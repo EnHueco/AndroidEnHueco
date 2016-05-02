@@ -2,6 +2,7 @@ package com.enhueco.model.logicManagers;
 
 import android.os.Handler;
 import android.os.Looper;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.CompletionListener;
 
 /**
@@ -10,7 +11,7 @@ import com.enhueco.model.other.CompletionListener;
 public class EHManager
 {
 
-    public void generateError(final Exception e, final CompletionListener completionListener)
+    public void generateError(final Exception e, final BasicCompletionListener completionListener)
     {
         e.printStackTrace();
         new Handler(Looper.getMainLooper()).post(new Runnable()

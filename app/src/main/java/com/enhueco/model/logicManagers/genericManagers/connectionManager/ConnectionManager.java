@@ -30,6 +30,7 @@ public class ConnectionManager
                 try
                 {
                     completionHandler.onSuccess(response);
+                    Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
                 }
                 catch (Exception e)
                 {
