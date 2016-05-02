@@ -12,11 +12,12 @@ import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.view.dialog.EHProgressDialog;
 
 public class LoginActivity extends AppCompatActivity
 {
 
-    ProgressDialog loginProgressDialog;
+    EHProgressDialog loginProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,7 +25,7 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginProgressDialog = new ProgressDialog(this);
+        loginProgressDialog = new EHProgressDialog(this);
         loginProgressDialog.setMessage("Ingresando...");
 
         if (EnHueco.getInstance().getAppUser() != null) {

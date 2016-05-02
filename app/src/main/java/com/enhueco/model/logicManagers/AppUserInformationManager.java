@@ -59,14 +59,11 @@ public class AppUserInformationManager
                         AppUser appUser = EnHueco.getInstance().getAppUser();
                         appUser.updateWithJSON(response);
 
-                        String scheduleUpdatedOnString = response.getString("schedule_updated_on");
-                        Date scheduleUpdatedOn = Utilities.getDateFromServerString(scheduleUpdatedOnString);
-
-                        Schedule schedule = Schedule.fromJSON(scheduleUpdatedOn, response.getJSONArray("gap_set"));
-                        appUser.setSchedule(schedule);
-
-                        Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                        if(PersistenceManager.getSharedManager().persistData())
+                        {
+                            Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
+                            LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                        }
                     }
                     catch (Exception e)
                     {
