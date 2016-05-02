@@ -14,5 +14,6 @@ public class EHProgressDialog extends ProgressDialog
         super(context);
         setCancelable(false);
         setCanceledOnTouchOutside(false);
+        setMessage("Actualizando...");
     }
 }

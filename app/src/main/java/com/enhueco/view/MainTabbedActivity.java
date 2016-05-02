@@ -33,8 +33,10 @@ import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
+import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
+import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -353,7 +355,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     public void onTurnInvisibleButtonPressed(MenuItem item)
     {
-        if (EnHueco.getInstance().getAppUser().isInvisible())
+        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
+        if (event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.INVISIBILITY))
         {
             turnVisible();
         }
@@ -369,6 +372,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         int selectedOption = -1;
         CharSequence[] items = {"1:20 horas", "3 horas", "Resto del día"};
         final int[] selectedItemTime = {90, 180, Utilities.getSecondsUntilTomorrow()};
+
+
         alertDialog.setTitle("Duración").setSingleChoiceItems(items, 0, null).setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
         {
             @Override
@@ -389,8 +394,39 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         alertDialog.show();
     }
 
+    private void _turnInvisibleForInterval(int seconds)
+    {
+        final EHProgressDialog dialog = new EHProgressDialog(this);
+        dialog.show();
+        ImmediateEventManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
+
+                if (drawable != null)
+                {
+                    drawable.mutate();
+                    drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
+                    drawable.setAlpha(1);
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+                Utilities.showErrorToast(getApplicationContext());
+                dialog.dismiss();
+            }
+        });
+    }
+
     private void turnVisible()
     {
+        final EHProgressDialog dialog = new EHProgressDialog(this);
+        dialog.show();
         ImmediateEventManager.getSharedManager().turnVisible(new BasicCompletionListener()
         {
             @Override
@@ -404,12 +440,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
                     drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                     drawable.setAlpha(1);
                 }
+                dialog.dismiss();
             }
 
             @Override
             public void onFailure(Exception error)
             {
-                error.printStackTrace();
+                dialog.dismiss();
             }
         });
     }
@@ -418,31 +455,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void profileImagePressed(View view)
     {
 
-    }
-
-    private void _turnInvisibleForInterval(int seconds)
-    {
-        ImmediateEventManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
-    {
-        @Override
-        public void onSuccess()
-        {
-            Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
-
-            if (drawable != null)
-            {
-                drawable.mutate();
-                drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
-                drawable.setAlpha(1);
-            }
-        }
-
-        @Override
-        public void onFailure(Exception error)
-        {
-            
-        }
-    });
     }
 
     public void onImAvailableButtonPressed(MenuItem item)

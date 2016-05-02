@@ -127,6 +127,11 @@ public class ImmediateEvent implements Serializable
         this.endHour = endHour;
     }
 
+    public boolean isCurrentlyHappening()
+    {
+        return endHour.compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0;
+    }
+
     /**
      * Returns the end hour (Weekday, Hour, Minute) by setting the components to the date provided.
      * @param date Date to which start hour will be set

@@ -17,16 +17,12 @@ import com.enhueco.view.dialog.EHProgressDialog;
 public class LoginActivity extends AppCompatActivity
 {
 
-    EHProgressDialog loginProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        loginProgressDialog = new EHProgressDialog(this);
-        loginProgressDialog.setMessage("Ingresando...");
 
         if (EnHueco.getInstance().getAppUser() != null) {
 
@@ -38,7 +34,10 @@ public class LoginActivity extends AppCompatActivity
 
     public void logIn(View view)
     {
-        loginProgressDialog.show();
+        final EHProgressDialog progressDialog = new EHProgressDialog(this);
+        progressDialog.setMessage("Ingresando...");
+        progressDialog.show();
+
         EditText loginET = (EditText) findViewById(R.id.loginText);
         String loginString = loginET.getText().toString();
         EditText passwordET = (EditText) findViewById(R.id.passwordText);
@@ -60,10 +59,7 @@ public class LoginActivity extends AppCompatActivity
                 @Override
                 public void onSuccess()
                 {
-                    if ((loginProgressDialog != null) && loginProgressDialog.isShowing())
-                    {
-                        loginProgressDialog.dismiss();
-                    }
+                    progressDialog.dismiss();
 
                     Intent intent = new Intent(LoginActivity.this, MainTabbedActivity.class);
                     startActivity(intent);
@@ -73,11 +69,7 @@ public class LoginActivity extends AppCompatActivity
                 @Override
                 public void onFailure(Exception error)
                 {
-                    if ((loginProgressDialog != null) && loginProgressDialog.isShowing())
-                    {
-                        loginProgressDialog.dismiss();
-                    }
-
+                    progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Credenciales inválidas", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -89,17 +81,11 @@ public class LoginActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        if (loginProgressDialog.isShowing()) {
-            loginProgressDialog.cancel();
-        }
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
-        if (loginProgressDialog.isShowing()) {
-            loginProgressDialog.cancel();
-        }
     }
 }
