@@ -403,6 +403,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             @Override
             public void onSuccess()
             {
+                /*
                 Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
 
                 if (drawable != null)
@@ -411,14 +412,15 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
                     drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
                     drawable.setAlpha(1);
                 }
+                */
                 dialog.dismiss();
             }
 
             @Override
             public void onFailure(Exception error)
             {
-                Utilities.showErrorToast(getApplicationContext());
                 dialog.dismiss();
+                Utilities.showErrorToast(getApplicationContext());
             }
         });
     }
@@ -432,6 +434,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             @Override
             public void onSuccess()
             {
+                /*
                 Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
 
                 if (drawable != null)
@@ -440,6 +443,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
                     drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                     drawable.setAlpha(1);
                 }
+                */
                 dialog.dismiss();
             }
 
@@ -447,6 +451,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             public void onFailure(Exception error)
             {
                 dialog.dismiss();
+                Utilities.showErrorToast(MainTabbedActivity.this);
             }
         });
     }
@@ -459,8 +464,32 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 
     public void onImAvailableButtonPressed(MenuItem item)
     {
-        InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
-        fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
+        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
+        if(event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
+        {
+            final EHProgressDialog dialog = new EHProgressDialog(this);
+            dialog.show();
+            ImmediateEventManager.getSharedManager().deleteInstantFreeTimeEvent(new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+                    dialog.dismiss();
+                    Utilities.showErrorToast(MainTabbedActivity.this);
+                }
+            });
+        }
+        else
+        {
+            InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
+            fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
+        }
     }
 
     public void onProfileImagePressed(View view)
