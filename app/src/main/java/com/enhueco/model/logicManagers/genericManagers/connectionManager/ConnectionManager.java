@@ -29,8 +29,8 @@ public class ConnectionManager
             {
                 try
                 {
-                    completionHandler.onSuccess(response);
                     Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
+                    completionHandler.onSuccess(response);
                 }
                 catch (Exception e)
                 {
@@ -59,7 +59,6 @@ public class ConnectionManager
                 {
                     e.printStackTrace();
                 }
-
             }
         })
         {
@@ -88,6 +87,7 @@ public class ConnectionManager
             {
                 try
                 {
+                    Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
                     completionHandler.onSuccess(response);
                 }
                 catch (Exception e)
@@ -102,6 +102,20 @@ public class ConnectionManager
             public void onErrorResponse(VolleyError error)
             {
                 completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
+                error.printStackTrace();
+                try
+                {
+                    if(error.networkResponse != null)
+                    {
+                        error.printStackTrace();
+                        String responseBody = new String(error.networkResponse.data, "utf-8" );
+                        Log.e("CONNECTION MANAGER", responseBody);
+                    }
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                    e.printStackTrace();
+                }
             }
         })
         {
