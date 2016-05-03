@@ -19,6 +19,7 @@ import com.enhueco.R;
 import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.squareup.picasso.Callback;
@@ -66,7 +67,20 @@ public class ProfileFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
-        AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule();
+        AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule(new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                refresh();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+
+            }
+        });
     }
 
     @Override
@@ -93,7 +107,6 @@ public class ProfileFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-
         updateProfileImage();
     }
 
@@ -161,7 +174,20 @@ public class ProfileFragment extends Fragment
             }
             */
 
-            AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule();
+            AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule(new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    refresh();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+
+                }
+            });
         }
     }
 

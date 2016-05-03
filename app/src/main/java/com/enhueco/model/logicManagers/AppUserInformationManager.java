@@ -46,7 +46,7 @@ public class AppUserInformationManager extends EHManager
      * Session Status, Friend list, Friends Schedule, User's Info
      * -EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE in case of success
      */
-    public void fetchUpdatesForAppUserAndSchedule()
+    public void fetchUpdatesForAppUserAndSchedule(final BasicCompletionListener completionListener)
     {
         try
         {
@@ -63,25 +63,25 @@ public class AppUserInformationManager extends EHManager
 
                         if (PersistenceManager.getSharedManager().persistData())
                         {
-                            Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
-                            LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                            completionListener.onSuccess();
                         }
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        generateError(e, completionListener);
                     }
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
+                    generateError(error.error, completionListener);
                 }
             });
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            generateError(e, completionListener);
         }
     }
 

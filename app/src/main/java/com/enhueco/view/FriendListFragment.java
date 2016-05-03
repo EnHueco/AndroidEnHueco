@@ -22,6 +22,7 @@ import com.enhueco.model.logicManagers.FriendsInformationManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
@@ -158,7 +159,20 @@ public class FriendListFragment extends ListFragment
             colorAnimation.start();
 
             refresh();
-            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules();
+            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules(new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    refresh();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+
+                }
+            });
         }
     }
 

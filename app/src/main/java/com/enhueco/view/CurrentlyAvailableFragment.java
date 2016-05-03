@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.enhueco.R;
+import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.logicManagers.FriendsInformationManager;
 import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
 import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManagerNotification;
@@ -28,6 +29,7 @@ import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
@@ -155,13 +157,41 @@ public class CurrentlyAvailableFragment extends ListFragment
                 @Override
                 public void onAnimationUpdate(ValueAnimator animator)
                 {
-                    appBarLayout.setBackgroundColor((Integer)animator.getAnimatedValue());
+                    appBarLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
                 }
             });
             colorAnimation.start();
 
             refresh();
-            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules();
+
+            FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules(new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    refresh();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+
+                }
+            });
+            AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule(new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    refresh();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+
+                }
+            });
         }
     }
 
