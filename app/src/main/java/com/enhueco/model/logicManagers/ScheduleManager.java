@@ -4,17 +4,22 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import com.enhueco.model.EHApplication;
+import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.*;
+import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.EHURLS;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.*;
 
 /**
  * Created by Diego on 2/28/16.
  */
-public class ScheduleManager
+public class ScheduleManager extends EHManager
 {
     private static ScheduleManager instance;
 
@@ -92,12 +97,48 @@ public class ScheduleManager
     }
 
     /**
+     * Reports the new event to the server.
+     */
+    public void reportNewEvent (Event event, final BasicCompletionListener completionListener)
+    {
+        String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT;
+        JSONObject eventJSON = event.toJSONObject();
+
+        try
+        {
+            eventJSON.put("user", EnHueco.getInstance().getAppUser().getUsername());
+            ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.POST, Optional.of(eventJSON.toString()));
+            /*ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
+            {
+                @Override
+                public void onSuccess(JSONObject responseJSON)
+                {
+
+                    PersistenceManager.getSharedManager().persistData();
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+                    generateError(error.error, completionListener);
+                }
+            });*/
+        }
+        catch (JSONException e)
+        {
+            generateError(e, completionListener);
+        }
+    }
+
+
+
+    /**
      * Imports all events from a calendar to AppUser's calendar.
      *
      * @param calendarID                            ID of calendar to be imported
      * @param generateFreeTimePeriodsBetweenClasses Determines if free time periods will be generated.
      */
-    public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses)
+    public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses, BasicCompletionListener completionListener)
     {
         Collection<Event> importedEvents = new ArrayList<>();
 
@@ -162,7 +203,7 @@ public class ScheduleManager
             DaySchedule weekDayDaySchedule = appUser.getSchedule().getWeekDays()[localWeekDayNumber];
             weekDayDaySchedule.addEvent(newEvent);
 
-            SynchronizationManager.getSharedManager().reportNewEvent(newEvent);
+            reportNewEvent(newEvent, completionListener);
 
             cursor.moveToNext();
         }

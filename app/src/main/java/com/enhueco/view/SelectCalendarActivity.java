@@ -20,6 +20,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.ScheduleManager;
+import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.Utilities;
+import com.enhueco.view.dialog.EHProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +71,27 @@ public class SelectCalendarActivity extends AppCompatActivity implements ListVie
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        DeviceCalendar calendar = calendars.get(position);
-        ScheduleManager.getSharedManager().importFromCalendarWithID(calendar.ID, false);
 
-        finish();
+        final EHProgressDialog dialog = new EHProgressDialog(this);
+        dialog.show();
+        DeviceCalendar calendar = calendars.get(position);
+
+        ScheduleManager.getSharedManager().importFromCalendarWithID(calendar.ID, false, new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                dialog.dismiss();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+                dialog.dismiss();
+                Utilities.showErrorToast(SelectCalendarActivity.this);
+            }
+        });
     }
 
     class DeviceCalendar

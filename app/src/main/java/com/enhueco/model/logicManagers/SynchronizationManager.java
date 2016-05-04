@@ -149,37 +149,4 @@ public class SynchronizationManager
     }
 
     //Reporting
-
-    /**
-     * Reports the new event to the server.
-     */
-    public void reportNewEvent (Event event)
-    {
-        String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT;
-
-        JSONObject eventJSON = event.toJSONObject();
-        try
-        {
-            eventJSON.put("user", EnHueco.getInstance().getAppUser().getUsername());
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.POST, Optional.of(eventJSON.toString()));
-
-        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
-        {
-            @Override
-            public void onSuccess(JSONObject responseJSON)
-            {
-            }
-
-            @Override
-            public void onFailure(ConnectionManagerCompoundError error)
-            {
-            }
-        });
-    }
 }

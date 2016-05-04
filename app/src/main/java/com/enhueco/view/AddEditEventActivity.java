@@ -18,10 +18,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.enhueco.model.logicManagers.PersistenceManager;
+import com.enhueco.model.logicManagers.ScheduleManager;
 import com.enhueco.model.model.*;
 import com.enhueco.model.logicManagers.SynchronizationManager;
+import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.enhueco.R;
+import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
 import com.enhueco.model.model.EnHueco;
 
@@ -248,17 +252,30 @@ public class AddEditEventActivity extends AppCompatActivity
 
         if (canAddEvents)
         {
+            final EHProgressDialog dialog = new EHProgressDialog(this);
+            dialog.show();
             if (eventToEdit.isPresent()) eventToEdit.get().getDaySchedule().removeEvent(eventToEdit.get());
 
             for (Tuple<DaySchedule, Event> dayScheduleAndEvent: daySchedulesAndEventsToAdd)
             {
                 dayScheduleAndEvent.first.addEvent(dayScheduleAndEvent.second);
-                SynchronizationManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second);
+                ScheduleManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second, new BasicCompletionListener()
+                {
+                    @Override
+                    public void onSuccess()
+                    {
+//                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Exception error)
+                    {
+//                        dialog.dismiss();
+//                        Utilities.showErrorToast(AddEditEventActivity.this);
+                    }
+                });
             }
 
-            PersistenceManager.getSharedManager().persistData();
-
-            finish();
         }
         else
         {
