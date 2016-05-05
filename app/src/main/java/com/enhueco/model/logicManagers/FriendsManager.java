@@ -1,14 +1,10 @@
 package com.enhueco.model.logicManagers;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
-import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.CompletionListener;
@@ -20,14 +16,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Diego on 2/28/16.
  */
-public class FriendsManager
+public class FriendsManager extends LogicManager
 {
     private static FriendsManager instance;
 
@@ -98,83 +92,16 @@ public class FriendsManager
             public void onSuccess(JSONObject response)
             {
                 // TODO
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(listener);
             }
 
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
 
         });
-    }
-
-    /**
-     * Adds a friend from a QR string encoded representation and returns it.
-     *
-     * @param encodedUser Encoded friend QR string representation.
-     * @return user New friend.
-     */
-    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser)
-    {
-        User newFriend = null;
-
-        String[] categories = encodedUser.split("\\\\");
-        // Get Username
-        String username = categories[0];
-        // Get Names
-        String[] completeName = categories[1].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.separationCharacter));
-        String firstNames = completeName[0].trim();
-        String lastNames = completeName[1].trim();
-        // Get Phone and Image
-        String phoneNumber = categories[2];
-
-        Optional<String> imageURL = categories.length >= 4 ? Optional.of(categories[3]) : Optional.<String>absent();
-
-        // TODO: Set correct friend last actualization date
-        Date lastUpdated = new Date();
-        newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, lastUpdated);
-
-        String[] freeTimePeriods = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.multipleElementsCharacter));
-        for (String freeTimePeriodString : freeTimePeriods)
-        {
-            String[] freeTimePeriodValues = freeTimePeriodString.split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.separationCharacter));
-            Calendar startTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
-
-            Event.EventType eventType = freeTimePeriodValues[0].equals("G") ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
-            int weekday = Integer.parseInt(freeTimePeriodValues[1]);
-            // Get Start Date
-            String[] startTimeValues = freeTimePeriodValues[2].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter));
-            startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
-            startTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
-            // Get End Date
-            String[] endTimeValues = freeTimePeriodValues[3].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter));
-            endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
-            endTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
-
-            Event newEvent = new Event(eventType, startTime, endTime);
-            newFriend.getSchedule().getWeekDays()[weekday].addEvent(newEvent);
-        }
-
-        EnHueco.getInstance().getAppUser().getFriends().put(newFriend.getUsername(), newFriend);
-
-        return newFriend;
     }
 
     /**
@@ -199,14 +126,7 @@ public class FriendsManager
                     User friend = new User(friendship.getJSONObject("secondUser"));
                     EnHueco.getInstance().getAppUser().getFriends().put(friend.getUsername(), friend);
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            listener.onSuccess();
-                        }
-                    });
+                    callCompletionListenerSuccessHandlerOnMainThread(listener);
                 }
                 catch (JSONException e)
                 {
@@ -217,14 +137,7 @@ public class FriendsManager
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
         });
     }
@@ -243,27 +156,13 @@ public class FriendsManager
                 EnHueco.getInstance().getAppUser().getFriends().remove(friend.getUsername());
                 PersistenceManager.getSharedManager().persistData();
 
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(completionListener);
             }
 
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
@@ -292,15 +191,7 @@ public class FriendsManager
                         users.add(new User(jsonUser));
                     }
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            listener.onSuccess(users);
-                        }
-                    });
-
+                    callCompletionListenerSuccessHandlerOnMainThread(listener, users);
                 }
                 catch (Exception e)
                 {
@@ -311,15 +202,7 @@ public class FriendsManager
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
         });
     }

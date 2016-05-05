@@ -1,7 +1,5 @@
 package com.enhueco.model.logicManagers;
 
-import android.os.Handler;
-import android.os.Looper;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
@@ -16,7 +14,7 @@ import java.text.ParseException;
 /**
  * Created by Diego on 2/28/16.
  */
-public class AccountManager
+public class AccountManager extends LogicManager
 {
     private static AccountManager instance;
 
@@ -61,14 +59,7 @@ public class AccountManager
 
                         AppUser user = EnHueco.getInstance().getAppUser();
 
-                        new Handler(Looper.getMainLooper()).post(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                completionListener.onSuccess();
-                            }
-                        });
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                     }
                     catch (JSONException | ParseException e)
                     {
@@ -79,14 +70,7 @@ public class AccountManager
                 @Override
                 public void onFailure(final ConnectionManagerCompoundError error)
                 {
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            completionListener.onFailure(error.error);
-                        }
-                    });
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }

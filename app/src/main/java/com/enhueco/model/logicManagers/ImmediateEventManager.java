@@ -1,8 +1,6 @@
 package com.enhueco.model.logicManagers;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.enhueco.model.EHApplication;
@@ -24,7 +22,7 @@ import java.util.TimeZone;
 /**
  * Created by Diego on 5/1/16.
  */
-public class ImmediateEventManager extends EHManager
+public class ImmediateEventManager extends LogicManager
 {
     private static ImmediateEventManager instance;
 
@@ -57,39 +55,28 @@ public class ImmediateEventManager extends EHManager
 
                     if (PersistenceManager.getSharedManager().persistData())
                     {
-                        new Handler(Looper.getMainLooper()).post(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                completionListener.onSuccess();
-                            }
-                        });
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(CurrentStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
                     }
                     else
                     {
-                        generateError(new Exception("Persistence failed"), completionListener);
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, new Exception("Persistence failed"));
                     }
                 }
-
 
                 @Override
                 public void onFailure(final ConnectionManagerCompoundError error)
                 {
-                   generateError(error.error, completionListener);
+                   callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }
-
         catch (final JSONException e)
         {
-            generateError(e, completionListener);
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
         }
-
     }
-
 
     /**
      * Posts an instant free time period that everyone sees and that overrides any classes present in the app user's schedule during the instant free time period duration.
@@ -126,12 +113,10 @@ public class ImmediateEventManager extends EHManager
             }
             else
             {
-                completionListener.onFailure(new Exception("Current immediate event type is invalid"));
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, new Exception("Current immediate event type is invalid"));
             }
         }
-
     }
-
 
     /**
      * Makes the user invisible to everyone else for the time provided

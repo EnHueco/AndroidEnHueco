@@ -2,9 +2,6 @@ package com.enhueco.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -25,11 +22,10 @@ import com.enhueco.R;
 import com.enhueco.model.logicManagers.AccountManager;
 import com.enhueco.model.logicManagers.ImmediateEventManager;
 import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.User;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
-import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
+import com.enhueco.view.dialog.EHProgressDialog;
 
 import java.util.ArrayList;
 
