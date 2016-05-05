@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.media.audiofx.BassBoost;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +30,10 @@ import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyPolicy;
 import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
+import com.enhueco.model.model.intents.AppUserIntent;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.Utilities;
+import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
 
 import java.util.HashMap;
@@ -71,13 +75,33 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     @Override
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key)
     {
+        final EHProgressDialog dialog = new EHProgressDialog(SettingsActivity.this);
+        dialog.show();
+
         if(key.equals(PrivacyManager.phoneNumberKey))
         {
             final String number = sharedPreferences.getString(key,"");
-            AppUserInformationManager.getSharedManager().pushPhoneNumber(number);
+            AppUserIntent intent = new AppUserIntent();
+            intent.setPhoneNumber(number);
+            AppUserInformationManager.getSharedManager().updateAppUser(intent, new BasicCompletionListener()
+            {
+                @Override
+                public void onSuccess()
+                {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+                    dialog.dismiss();
+                    Utilities.showErrorToast(SettingsActivity.this);
+                }
+            });
         }
         else if(key.equals(PrivacyManager.sharesEventsLocationKey) || key.equals(PrivacyManager.sharesEventsNameKey))
         {
+
             final Boolean on = sharedPreferences.getBoolean(key,false);
             final PrivacySetting setting = key.equals(PrivacyManager.sharesEventsLocationKey) ? PrivacySetting.SHOW_EVENT_LOCATIONS : PrivacySetting.SHOW_EVENT_NAMES;
             PrivacyManager.getSharedManager().turnSetting(on,setting, Optional.<PrivacyPolicy>absent(), new BasicCompletionListener()
@@ -85,12 +109,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 @Override
                 public void onSuccess()
                 {
+                    dialog.dismiss();
                     Log.v("SettingsActivity", "Changed preference: " + setting.toString() + " to " + on);
                 }
 
                 @Override
                 public void onFailure(Exception error)
                 {
+                    dialog.dismiss();
+                    Utilities.showErrorToast(getApplicationContext());
                     error.printStackTrace();
                     sharedPreferences.edit().putBoolean(key, !on);
                 }

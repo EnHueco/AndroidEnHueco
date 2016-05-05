@@ -8,10 +8,12 @@ import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
 import com.enhueco.model.model.*;
+import com.enhueco.model.model.intents.AppUserIntent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -21,7 +23,7 @@ import java.util.Map;
 /**
  * Created by Diego on 2/28/16.
  */
-public class AppUserInformationManager
+public class AppUserInformationManager extends EHManager
 {
     private static AppUserInformationManager instance;
 
@@ -44,7 +46,7 @@ public class AppUserInformationManager
      * Session Status, Friend list, Friends Schedule, User's Info
      * -EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE in case of success
      */
-    public void fetchUpdatesForAppUserAndSchedule()
+    public void fetchUpdatesForAppUserAndSchedule(final BasicCompletionListener completionListener)
     {
         try
         {
@@ -57,72 +59,60 @@ public class AppUserInformationManager
                     try
                     {
                         AppUser appUser = EnHueco.getInstance().getAppUser();
+                        appUser.updateWithJSON(response);
 
-                        User user = User.fromJSONObject(response);
-                        appUser.setImageURL(user.getImageURL());
-                        appUser.setPhoneNumber(user.getPhoneNumber());
-                        PrivacyManager.getSharedManager().persistPhoneNumber(user.getPhoneNumber());
-
-                        String scheduleUpdatedOnString = response.getString("schedule_updated_on");
-                        Date scheduleUpdatedOn = Utilities.getDateFromServerString(scheduleUpdatedOnString);
-
-                        Schedule schedule = Schedule.fromJSON(scheduleUpdatedOn, response.getJSONArray("gap_set"));
-                        appUser.setSchedule(schedule);
-
-                        Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                        if (PersistenceManager.getSharedManager().persistData())
+                        {
+                            completionListener.onSuccess();
+                        }
                     }
                     catch (Exception e)
                     {
-                        e.printStackTrace();
+                        generateError(e, completionListener);
                     }
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
+                    generateError(error.error, completionListener);
                 }
             });
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            generateError(e, completionListener);
         }
     }
 
-
-    public void pushPhoneNumber(final String phoneNumber)
+    public void updateAppUser(final AppUserIntent userIntent, final BasicCompletionListener completionListener)
     {
         try
         {
-            JSONObject params = new JSONObject();
-
-            params.put("phoneNumber", phoneNumber);
+            JSONObject params = userIntent.toJSON();
 
             ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(EHURLS.BASE + EHURLS.ME_SEGMENT, HTTPMethod.PUT, Optional.of(params.toString()));
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
             {
                 @Override
-                public void onSuccess(JSONObject response)
+                public void onSuccess(JSONObject response) throws JSONException
                 {
-                    Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_APPUSER_UPDATE);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
-                    EnHueco.getInstance().getAppUser().setPhoneNumber(phoneNumber);
+                    EnHueco.getInstance().getAppUser().updateWithJSON(response);
                     PersistenceManager.getSharedManager().persistData();
+
+                    completionListener.onSuccess();
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-                    String oldNumber = EnHueco.getInstance().getAppUser().getPhoneNumber();
-                    PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext()).edit().putString(PrivacyManager.phoneNumberKey, oldNumber);
-                    error.error.printStackTrace();
+                    generateError(error.error, completionListener);
                 }
             });
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            generateError(e, completionListener);
         }
     }
 }

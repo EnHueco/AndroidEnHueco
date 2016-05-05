@@ -25,6 +25,7 @@ public class EHSynchronizable implements Serializable
         this.updatedOn = lastUpdatedOn;
     }
 
+
     //////////////////////////////////
     //      Getters & Setters       //
     //////////////////////////////////

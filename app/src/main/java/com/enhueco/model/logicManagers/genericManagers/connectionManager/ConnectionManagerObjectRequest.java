@@ -20,4 +20,10 @@ public class ConnectionManagerObjectRequest extends ConnectionManagerRequest<JSO
         this.method = method;
         this.jsonStringParams = params;
     }
+
+    @Override
+    public String toString()
+    {
+        return URL + " : " + method + " - " + jsonStringParams;
+    }
 }

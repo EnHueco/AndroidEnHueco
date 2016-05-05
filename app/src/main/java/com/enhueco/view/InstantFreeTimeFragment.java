@@ -20,6 +20,7 @@ import com.enhueco.model.logicManagers.ImmediateEventManager;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
 
 import java.text.DateFormat;
@@ -79,7 +80,7 @@ public class InstantFreeTimeFragment extends DialogFragment
         dateFormat.setTimeZone(TimeZone.getDefault());
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 30);
+        calendar.add(Calendar.MINUTE, 15);
 
         endTime = calendar;
 
@@ -131,6 +132,8 @@ public class InstantFreeTimeFragment extends DialogFragment
     @OnClick(R.id.postButton)
     public void post (View button)
     {
+        final EHProgressDialog dialog = new EHProgressDialog(getContext());
+        dialog.show();
         Calendar endTimeInUTC = (Calendar) endTime.clone();
         endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -141,13 +144,14 @@ public class InstantFreeTimeFragment extends DialogFragment
             @Override
             public void onSuccess()
             {
+                dialog.dismiss();
                 dismiss();
             }
 
             @Override
             public void onFailure(Exception error)
             {
-                error.printStackTrace();
+                dialog.dismiss();
             }
         });
     }

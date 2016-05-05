@@ -1,7 +1,9 @@
 package com.enhueco.model.other;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -300,5 +302,10 @@ public class Utilities
         bitmap.setPixels(pix, 0, w, 0, 0, w, h);
 
         return (bitmap);
+    }
+
+    public static void showErrorToast(Context context)
+    {
+        Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT);
     }
 }

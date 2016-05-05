@@ -62,7 +62,7 @@ public class FriendsManager
                     for (int i = 0; i < array.length(); i++)
                     {
                         JSONObject user = array.getJSONObject(i);
-                        requests.add(User.fromJSONObject(user));
+                        requests.add(new User(user));
                     }
                     Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
                     intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
@@ -196,7 +196,7 @@ public class FriendsManager
             {
                 try
                 {
-                    User friend = User.fromJSONObject(friendship.getJSONObject("secondUser"));
+                    User friend = new User(friendship.getJSONObject("secondUser"));
                     EnHueco.getInstance().getAppUser().getFriends().put(friend.getUsername(), friend);
 
                     new Handler(Looper.getMainLooper()).post(new Runnable()
@@ -289,7 +289,7 @@ public class FriendsManager
                     for (int i = 0; i < array.length(); i++)
                     {
                         JSONObject jsonUser = array.getJSONObject(i);
-                        users.add(User.fromJSONObject(jsonUser));
+                        users.add(new User(jsonUser));
                     }
 
                     new Handler(Looper.getMainLooper()).post(new Runnable()

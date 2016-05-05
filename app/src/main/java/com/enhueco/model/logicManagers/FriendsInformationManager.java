@@ -7,6 +7,7 @@ import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
+import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 /**
  * Created by Diego on 2/28/16.
  */
-public class FriendsInformationManager
+public class FriendsInformationManager extends EHManager
 {
     private static FriendsInformationManager instance;
 
@@ -34,16 +35,32 @@ public class FriendsInformationManager
         return instance;
     }
 
-    private FriendsInformationManager() {}
+    private FriendsInformationManager()
+    {
+    }
 
     /**
      * Friends sync information from the server and generates request to updated if needed via Notification Center.
-     * <p>
+     * <p/>
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    public void fetchUpdatesForFriendsAndFriendSchedules()
+    public void fetchUpdatesForFriendsAndFriendSchedules(BasicCompletionListener completionListener)
     {
+        final BasicCompletionListener listener = (completionListener != null)? completionListener : new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+
+            }
+        };
 
         String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;
         ConnectionManagerArrayRequest r = new ConnectionManagerArrayRequest(url, HTTPMethod.GET, Optional.<String>absent());
@@ -87,35 +104,32 @@ public class FriendsInformationManager
                         }
                     }
 
-                    boolean removedAnyFriend = false;
-
                     for (User friend : appUser.getFriends().values())
                     {
                         if (!friendsInServer.containsKey(friend.getUsername()))
                         {
                             appUser.getFriends().remove(friend);
-                            removedAnyFriend = true;
                         }
                     }
 
-                    if (removedAnyFriend)
-                    {
-                        LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
-                    }
-
                     boolean hasToSyncFriends = friendsToSync.length() > 0;
-                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync);
+                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, listener);
+                    else
+                    {
+                        listener.onSuccess();
+                    }
                 }
 
                 catch (JSONException e)
                 {
-                    e.printStackTrace();
+                    generateError(e, listener);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
+                generateError(error.error, listener);
             }
         });
     }
@@ -126,7 +140,7 @@ public class FriendsInformationManager
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    private static void _fetchUpdatesForFriendsAndFriendSchedules(JSONArray friendArray)
+    private void _fetchUpdatesForFriendsAndFriendSchedules(JSONArray friendArray, final BasicCompletionListener completionListener)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT;
         ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(url, HTTPMethod.POST, Optional.of(friendArray.toString()));
@@ -153,21 +167,25 @@ public class FriendsInformationManager
 
                         else
                         {
-                            User newFriend = User.fromJSONObject(friendJSON);
+                            User newFriend = new User(friendJSON);
                             appUser.getFriends().put(newFriend.getUsername(), newFriend);
                         }
                     }
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
+                    if(PersistenceManager.getSharedManager().persistData())
+                    {
+                        completionListener.onSuccess();
+                    }
                 }
                 catch (JSONException e)
                 {
-                    e.printStackTrace();
+                    generateError(e, completionListener);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
+                generateError(error.error, completionListener);
             }
         });
     }

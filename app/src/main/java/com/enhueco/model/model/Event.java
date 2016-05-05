@@ -117,7 +117,7 @@ public class Event implements Serializable, Comparable<Event>
         String typeString = object.getString("type");
         String name = object.getString("name");
         String location = object.getString("location");
-        EventType type = typeString.equals("FREE_TIME") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
+        EventType type = typeString.equals("EVENT") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
 
         // Weekdays
         int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));

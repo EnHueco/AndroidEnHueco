@@ -158,6 +158,18 @@ public class PrivacyManager
         }
     }
 
+    public boolean getSharesEventsLocation()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext());
+        return preferences.getBoolean(sharesEventsLocationKey, false);
+    }
+
+    public boolean getSharesEventsNames()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext());
+        return preferences.getBoolean(sharesEventsNameKey, false);
+    }
+
     public void persistPhoneNumber(String phoneNumber)
     {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(EHApplication.getAppContext());

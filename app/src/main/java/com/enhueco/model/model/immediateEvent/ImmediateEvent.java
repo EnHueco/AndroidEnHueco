@@ -87,9 +87,11 @@ public class ImmediateEvent implements Serializable
         this.location = object.getString("location");
 
         ImmediateEventType newType = null;
+
+        String objectType = object.getString("type");
         for(ImmediateEventType type : ImmediateEventType.values())
         {
-            if(type.toString().equals(object.getString("type")))
+            if(type.toString().equals(objectType))
             {
                 newType = type;
                 break;
@@ -125,6 +127,11 @@ public class ImmediateEvent implements Serializable
     public void setEndHour(Calendar endHour)
     {
         this.endHour = endHour;
+    }
+
+    public boolean isCurrentlyHappening()
+    {
+        return endHour.compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0;
     }
 
     /**
