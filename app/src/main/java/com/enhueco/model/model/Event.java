@@ -18,6 +18,8 @@ import java.util.TimeZone;
 
 public class Event implements Serializable, Comparable<Event>
 {
+
+
     public enum EventType
     {
         FREE_TIME, CLASS
@@ -61,24 +63,6 @@ public class Event implements Serializable, Comparable<Event>
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public Event(EventType type, Optional<String> name, Optional<String> location, Calendar startHour, Calendar endHour)
-    {
-        this.type = type;
-        this.name = name;
-        this.startHour = startHour;
-        this.endHour = endHour;
-        this.location = location;
-    }
-
-    public Event(EventType type, Calendar startHour, Calendar endHour)
-    {
-        this.type = type;
-        this.name = Optional.absent();
-        this.startHour = startHour;
-        this.endHour = endHour;
-        this.location = Optional.absent();
-    }
-
     public Event(EventType type, Optional<String> name, Optional<String> location, int startHour, int startMinute, int endHour, int endMinute)
     {
         this.type = type;
@@ -96,6 +80,16 @@ public class Event implements Serializable, Comparable<Event>
         this.endHour = startCalendar;
     }
 
+    public Event(EventType eventType, Optional<String> name, Optional<String> location, Calendar startTime, Calendar
+            endTime)
+    {
+        this.type = eventType;
+        this.name = name;
+        this.location = location;
+        this.startHour = startTime;
+        this.endHour = endTime;
+    }
+
 
     public Event(ImmediateEvent iEvent)
     {
@@ -111,13 +105,10 @@ public class Event implements Serializable, Comparable<Event>
      * @return Event Event created
      * @throws JSONException JSON if object not successfully created
      */
-    public static Event fromJSONObject(JSONObject object) throws JSONException
+    public Event(JSONObject object) throws JSONException
     {
-        // Type, name and location
+        // Type
         String typeString = object.getString("type");
-        String name = object.getString("name");
-        String location = object.getString("location");
-        EventType type = typeString.equals("EVENT") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
 
         // Weekdays
         int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));
@@ -132,10 +123,12 @@ public class Event implements Serializable, Comparable<Event>
         int endHour = Integer.parseInt(endHourStringComponents[0]);
         int endMinute = Integer.parseInt(endHourStringComponents[1]);
 
-        Calendar startHourCalendar = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
-        Calendar endHourCalendar = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
+        this.name = Optional.fromNullable(object.getString("name"));
+        this.location = Optional.fromNullable(object.getString("location"));
+        this.type = typeString.equals("EVENT") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
+        this.startHour = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
+        this.endHour = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
 
-        return new Event(type, Optional.fromNullable(name), Optional.fromNullable(location), startHourCalendar, endHourCalendar);
     }
 
     //////////////////////////////////
@@ -148,8 +141,7 @@ public class Event implements Serializable, Comparable<Event>
      */
     public boolean isAfterCurrentTime()
     {
-        Event event = new Event(null, Calendar.getInstance(TimeZone.getTimeZone("UTC")),null);
-        boolean afterCurrentTime = this.compareTo(event) > 0;
+        boolean afterCurrentTime = this.getStartHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) > 0;
         return afterCurrentTime;
     }
 
@@ -157,23 +149,18 @@ public class Event implements Serializable, Comparable<Event>
      * Generates a JSONObject representation of the event
      * @return object JSONObject representation of event
      */
-    public JSONObject toJSONObject()
+    public JSONObject toJSONObject() throws JSONException
     {
         JSONObject object = new JSONObject();
-        try
-        {
-            object.put("type", type);
-            object.put("name", name.orNull());
-            object.put("location", location.orNull());
-            object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
-            object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
-            object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));
-            object.put("end_hour", endHour.get(Calendar.HOUR_OF_DAY)+":"+ endHour.get(Calendar.MINUTE));
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+
+        object.put("type", type);
+        object.put("name", name.orNull());
+        object.put("location", location.orNull());
+        object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
+        object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
+        object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));
+        object.put("end_hour", endHour.get(Calendar.HOUR_OF_DAY)+":"+ endHour.get(Calendar.MINUTE));
+
         return object;
     }
 
@@ -285,17 +272,22 @@ public class Event implements Serializable, Comparable<Event>
 
     public Calendar getStartHour()
     {
-        return (Calendar) startHour.clone();
+        return startHour;
     }
 
     public Calendar getEndHour()
     {
-        return (Calendar) endHour.clone();
+        return endHour;
     }
 
     public Optional<String> getLocation()
     {
         return location;
+    }
+
+    public int getWeekday()
+    {
+        return startHour.get(Calendar.DAY_OF_WEEK);
     }
 
     /////////////////////////////////

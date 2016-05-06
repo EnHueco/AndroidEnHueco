@@ -78,7 +78,7 @@ public class Schedule extends EHSynchronizable implements Serializable
         {
             // Create event
             JSONObject object = eventsArray.getJSONObject(i);
-            Event event = Event.fromJSONObject(object);
+            Event event = new Event(object);
 
             //Locate event in local array of weekdays based on its UTC startHour
             Calendar calendar = (Calendar) event.getStartHour().clone();
