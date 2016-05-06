@@ -11,10 +11,12 @@ import android.util.Log;
 import android.view.View;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.bumptech.glide.util.Util;
 import com.enhueco.R;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
+import com.enhueco.model.other.Utilities;
 
 import java.util.*;
 
@@ -82,11 +84,20 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         Intent intent = new Intent(this, AddEditEventActivity.class);
 
         Calendar startHour = event.getStartTime();
-        startHour.setTimeZone(TimeZone.getDefault());
+        int millis = startHour.getTimeZone().getOffset(startHour.getTimeInMillis());
+        startHour.add(Calendar.MILLISECOND, +millis);
+
+        Log.v("SCHEDULE ACTIVITY 1", startHour.get(Calendar.HOUR_OF_DAY) + "");
+        Log.v("SCHEDULE ACTIVITY 1.1", startHour.getTimeZone().getDisplayName() + "");
+        startHour.setTimeZone(Utilities.getDeviceTimezone());
+        Log.v("SCHEDULE ACTIVITY 1.2", startHour.getTimeZone().getDisplayName() + "");
+        Log.v("SCHEDULE ACTIVITY 2", startHour.get(Calendar.HOUR_OF_DAY) + "");
 
         int localWeekday = startHour.get(Calendar.DAY_OF_WEEK);
 
         startHour.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Log.v("SCHEDULE ACTIVITY 2.1", startHour.getTimeZone().getDisplayName() + "");
+        Log.v("SCHEDULE ACTIVITY 3", startHour.get(Calendar.HOUR_OF_DAY) + "");
         Event eventToEdit = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[localWeekday].getEventWithStartHour(startHour).get();
 
         intent.putExtra("eventToEdit", eventToEdit);
@@ -109,51 +120,52 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     @Override
     public List<WeekViewEvent> onMonthChange(int newYear, int newMonth)
     {
-        Log.v("MONTH CHANGED", ""+ newYear + "-" + newMonth);
+        Log.v("MONTH CHANGED", "" + newYear + "-" + newMonth);
         ArrayList<WeekViewEvent> events = new ArrayList<>();
 
         // Get first day of month
         Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         globalCalendar.set(Calendar.YEAR, newYear);
         globalCalendar.set(Calendar.MONTH, newMonth);
-        globalCalendar.set(Calendar.DAY_OF_MONTH, 1);
 
-//        Calendar temp = Calendar.getInstance(/*TimeZone.getTimeZone("UTC"))*/);
-//        Calendar temp2 = (Calendar) temp.clone(); temp2.add(Calendar.HOUR_OF_DAY, 2);
-//        EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[5].addEvent(new Event(Event.EventType.CLASS, temp, temp2));
+        long id = 0;
 
-        int id = 0;
+
         // Iterate through month
         while (globalCalendar.get(Calendar.MONTH) == newMonth)
         {
+            //TODO: Reuse already generated week elements
             // Add all events current weekday
             int newEventWeekday = globalCalendar.get(Calendar.DAY_OF_WEEK);
 
             Collection<Event> currentWeekDayEvents = user.getSchedule().getWeekDays()[newEventWeekday].getEvents();
 
-            for (Event currentEvent: currentWeekDayEvents)
+            for (Event currentEvent : currentWeekDayEvents)
             {
+                Calendar calendar = Calendar.getInstance();
+                int difMillis = calendar.getTimeZone().getDefault().getOffset(calendar.getTimeInMillis());
+
                 Calendar startTimeEvent = (Calendar) currentEvent.getStartHour().clone();
-                startTimeEvent.setTimeZone(TimeZone.getDefault());
+                startTimeEvent.setTimeZone(Utilities.getDeviceTimezone());
 
                 Calendar endTimeEvent = (Calendar) currentEvent.getEndHour().clone();
-                endTimeEvent.setTimeZone(TimeZone.getDefault());
+                endTimeEvent.setTimeZone(Utilities.getDeviceTimezone());
 
-                // Set global calendar time in start local calendar
-                Calendar startCalendarLocal = (Calendar) globalCalendar.clone();
-                startCalendarLocal.setTimeZone(TimeZone.getDefault());
-                startCalendarLocal.set(Calendar.HOUR_OF_DAY, startTimeEvent.get(Calendar.HOUR_OF_DAY));
-                startCalendarLocal.set(Calendar.MINUTE, startTimeEvent.get(Calendar.MINUTE));
 
-                Calendar endCalendarLocal = (Calendar) globalCalendar.clone();
-                endCalendarLocal.setTimeZone(TimeZone.getDefault());
-                endCalendarLocal.set(Calendar.HOUR_OF_DAY, endTimeEvent.get(Calendar.HOUR_OF_DAY));
-                endCalendarLocal.set(Calendar.MINUTE, endTimeEvent.get(Calendar.MINUTE));
+                Calendar startCalendar = (Calendar) globalCalendar.clone();
+                startCalendar.set(Calendar.HOUR_OF_DAY, startTimeEvent.get(Calendar.HOUR_OF_DAY));
+                startCalendar.set(Calendar.MINUTE, startTimeEvent.get(Calendar.MINUTE));
+                startCalendar.add(Calendar.MILLISECOND, difMillis);
+
+
+                Calendar endCalendar = (Calendar) globalCalendar.clone();
+                endCalendar.set(Calendar.HOUR_OF_DAY, endTimeEvent.get(Calendar.HOUR_OF_DAY));
+                endCalendar.set(Calendar.MINUTE, endTimeEvent.get(Calendar.MINUTE));
+                endCalendar.add(Calendar.MILLISECOND, difMillis);
 
                 // Add weekViewEvent
-
-                WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startCalendarLocal, endCalendarLocal);
-                weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.FREE_TIME)? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
+                WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startCalendar, endCalendar);
+                weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.FREE_TIME) ? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
 
                 events.add(weekViewEvent);
             }
@@ -161,7 +173,8 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
             globalCalendar.add(Calendar.DATE, 1);
         }
 
-        return events;
+
+            return events;
     }
 
     @Override
