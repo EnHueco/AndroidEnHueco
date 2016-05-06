@@ -217,29 +217,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
             //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
         }
 
-        // QR Code Scan Cancelled
-        else if (result.getContents() == null)
-        {
-            Log.d("MainActivity", "Cancelled scan");
-            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-        }
-        // QR Code Scan Succeed
-        else
-        {
-            Log.d("MainActivity", "Scanned");
-            try
-            {
-                User friend = FriendsManager.getSharedManager().addFriendFromStringEncodedFriendRepresentation(result.getContents());
-                FriendListFragment fr = (FriendListFragment) mainPagerAdapter.getItem(1);
-                fr.refresh();
-                Toast.makeText(this, "El usuario " + friend.getUsername() + " ha sido agregado.", Toast.LENGTH_LONG).show();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 

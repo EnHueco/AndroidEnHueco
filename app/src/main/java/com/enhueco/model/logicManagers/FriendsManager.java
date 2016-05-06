@@ -125,59 +125,6 @@ public class FriendsManager
     }
 
     /**
-     * Adds a friend from a QR string encoded representation and returns it.
-     *
-     * @param encodedUser Encoded friend QR string representation.
-     * @return user New friend.
-     */
-    public User addFriendFromStringEncodedFriendRepresentation(String encodedUser)
-    {
-        User newFriend = null;
-
-        String[] categories = encodedUser.split("\\\\");
-        // Get Username
-        String username = categories[0];
-        // Get Names
-        String[] completeName = categories[1].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.separationCharacter));
-        String firstNames = completeName[0].trim();
-        String lastNames = completeName[1].trim();
-        // Get Phone and Image
-        String phoneNumber = categories[2];
-
-        Optional<String> imageURL = categories.length >= 4 ? Optional.of(categories[3]) : Optional.<String>absent();
-
-        // TODO: Set correct friend last actualization date
-        Date lastUpdated = new Date();
-        newFriend = new User(username, firstNames, lastNames, phoneNumber, imageURL, username, lastUpdated);
-
-        String[] freeTimePeriods = categories.length < 5 ? new String[0] : categories[4].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.multipleElementsCharacter));
-        for (String freeTimePeriodString : freeTimePeriods)
-        {
-            String[] freeTimePeriodValues = freeTimePeriodString.split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.separationCharacter));
-            Calendar startTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
-
-            Event.EventType eventType = freeTimePeriodValues[0].equals("G") ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
-            int weekday = Integer.parseInt(freeTimePeriodValues[1]);
-            // Get Start Date
-            String[] startTimeValues = freeTimePeriodValues[2].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter));
-            startTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
-            startTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
-            // Get End Date
-            String[] endTimeValues = freeTimePeriodValues[3].split(Character.toString(AppUser.UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter));
-            endTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startTimeValues[0]));
-            endTime.set(Calendar.MINUTE, Integer.parseInt(startTimeValues[1]));
-
-            Event newEvent = new Event(eventType, startTime, endTime);
-            newFriend.getSchedule().getWeekDays()[weekday].addEvent(newEvent);
-        }
-
-        EnHueco.getInstance().getAppUser().getFriends().put(newFriend.getUsername(), newFriend);
-
-        return newFriend;
-    }
-
-    /**
      * Accept a friend request to another user with given username.
      *
      * @param username Username of the user who's friend request will be accepted.
