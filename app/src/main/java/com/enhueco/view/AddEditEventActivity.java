@@ -241,14 +241,16 @@ public class AddEditEventActivity extends AppCompatActivity
             newEventEndTime.set(Calendar.SECOND, 0);
             newEventEndTime.set(Calendar.MILLISECOND, 0);
 
-            //while (startTimeCopy.get(Calendar.DAY_OF_WEEK) != i + 1) startTimeCopy.add(Calendar.DAY_OF_YEAR, 1);
+            while (newEventStartTime.get(Calendar.DAY_OF_WEEK) != i + 1) newEventStartTime.add(Calendar.DAY_OF_YEAR, 1);
+            while (newEventEndTime.get(Calendar.DAY_OF_WEEK) != i + 1) newEventEndTime.add(Calendar.DAY_OF_YEAR, 1);
 
             Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
 
-            startTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-            endTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+            newEventStartTime.setTimeZone((TimeZone.getTimeZone("UTC")));
+            newEventEndTime.setTimeZone((TimeZone.getTimeZone("UTC")));
 
-            Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of(eventLocationText.getText().toString()), startTime, endTime);
+            Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of
+                    (eventLocationText.getText().toString()), newEventStartTime, newEventEndTime);
 
             DaySchedule daySchedule = weekDaysSchedule[i + 1];
 
@@ -274,6 +276,7 @@ public class AddEditEventActivity extends AppCompatActivity
                 public void onSuccess()
                 {
                     dialog.dismiss();
+                    finish();
                 }
 
                 @Override
