@@ -76,7 +76,15 @@ public class EnHueco
         //friend1.getSchedule().getWeekDays()[localCalendar.get(Calendar.DAY_OF_WEEK)].addEvent(new Event(Event.EventType.FREE_TIME, startHour, endHour));
         appUser.getFriends().put(friend2.getUsername(), friend2);
 
-        PersistenceManager.getSharedManager().persistData();
+        try
+        {
+            PersistenceManager.getSharedManager().persistData();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     //////////////////////////////////
