@@ -11,6 +11,7 @@ import com.enhueco.model.other.EHURLS;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,11 +44,12 @@ public class ScheduleManager extends EHManager
      */
     public Schedule getCommonFreeTimePeriodsScheduleForUsers(User[] users)
     {
+
         AppUser appUser = EnHueco.getInstance().getAppUser();
 
         Date currentDate = new Date();
         Schedule commonFreeTimePeriodsSchedule = new Schedule();
-
+/*
         if (users.length < 2) return commonFreeTimePeriodsSchedule;
 
         for (int i = 1; i < appUser.getSchedule().getWeekDays().length; i++)
@@ -92,7 +94,7 @@ public class ScheduleManager extends EHManager
 
             commonFreeTimePeriodsSchedule.getWeekDays()[i].setEvents(currentCommonFreeTimePeriods);
         }
-
+*/
         return commonFreeTimePeriodsSchedule;
     }
 
@@ -101,33 +103,7 @@ public class ScheduleManager extends EHManager
      */
     public void reportNewEvent (Event event, final BasicCompletionListener completionListener)
     {
-        String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT;
-        JSONObject eventJSON = event.toJSONObject();
 
-        try
-        {
-            eventJSON.put("user", EnHueco.getInstance().getAppUser().getUsername());
-            ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.POST, Optional.of(eventJSON.toString()));
-            /*ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
-            {
-                @Override
-                public void onSuccess(JSONObject responseJSON)
-                {
-
-                    PersistenceManager.getSharedManager().persistData();
-                }
-
-                @Override
-                public void onFailure(ConnectionManagerCompoundError error)
-                {
-                    generateError(error.error, completionListener);
-                }
-            });*/
-        }
-        catch (JSONException e)
-        {
-            generateError(e, completionListener);
-        }
     }
 
 
@@ -140,6 +116,7 @@ public class ScheduleManager extends EHManager
      */
     public void importFromCalendarWithID(String calendarID, boolean generateFreeTimePeriodsBetweenClasses, BasicCompletionListener completionListener)
     {
+        /*
         Collection<Event> importedEvents = new ArrayList<>();
 
         Calendar lastMondayAtStartOfDay = Calendar.getInstance();
@@ -211,6 +188,51 @@ public class ScheduleManager extends EHManager
         if (generateFreeTimePeriodsBetweenClasses)
         {
             //TODO: Calculate free time periods and add them
+        }
+        */
+    }
+
+    public void reportNewEvents(ArrayList<Event> second, final BasicCompletionListener completionListener)
+    {
+        try
+        {
+            String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT;
+            JSONArray eventsArray = new JSONArray();
+            for(Event e : second)
+            {
+                eventsArray.put(e.toJSONObject());
+            }
+            ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(url, HTTPMethod.POST,Optional.of(eventsArray.toString()));
+            ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONArray>()
+            {
+                @Override
+                public void onSuccess(JSONArray jsonResponse) throws Exception
+                {
+                    Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
+                    for(int i = 0 ; i < jsonResponse.length() ; i++)
+                    {
+                        JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
+                        Event event = new Event(eventJSON);
+
+                        schedule.getWeekDays()[event.getWeekday()].addEvent(event);
+                    }
+                    if(PersistenceManager.getSharedManager().persistData())
+                    {
+                        completionListener.onSuccess();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+                    generateError(error.error, completionListener);
+                }
+            });
+        }
+        catch (JSONException e)
+        {
+            generateError(e, completionListener);
         }
     }
 }

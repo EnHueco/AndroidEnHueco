@@ -37,12 +37,18 @@ public class AddEditEventActivity extends AppCompatActivity
 
     private static final String LOG = "AddEditEventActivity";
     RadioGroup eventType;
-    @Bind(R.id.freeTimeEventTypeRadioButton) RadioButton freeTimeEventTypeRadioButton;
-    @Bind(R.id.eventNameTextEdit) EditText eventNameText;
-    @Bind(R.id.eventLocationTextEdit) EditText eventLocationText;
-    @Bind(R.id.startTimeEditText) EditText startTimeText;
-    @Bind(R.id.endTimeEditText) EditText endTimeText;
-    @Bind(R.id.weekDaysEditText) EditText weekDaysText;
+    @Bind(R.id.freeTimeEventTypeRadioButton)
+    RadioButton freeTimeEventTypeRadioButton;
+    @Bind(R.id.eventNameTextEdit)
+    EditText eventNameText;
+    @Bind(R.id.eventLocationTextEdit)
+    EditText eventLocationText;
+    @Bind(R.id.startTimeEditText)
+    EditText startTimeText;
+    @Bind(R.id.endTimeEditText)
+    EditText endTimeText;
+    @Bind(R.id.weekDaysEditText)
+    EditText weekDaysText;
     Calendar startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
@@ -83,7 +89,7 @@ public class AddEditEventActivity extends AppCompatActivity
             eventNameText.setText(eventToEdit.getName().orNull());
             eventLocationText.setText(eventToEdit.getLocation().orNull());
 
-            Calendar calendar =  Calendar.getInstance();
+            Calendar calendar = Calendar.getInstance();
             Date currentDate = new Date();
 
             calendar.setTime(eventToEdit.getStartHourInDate(currentDate));
@@ -94,6 +100,8 @@ public class AddEditEventActivity extends AppCompatActivity
 
             updateTextEdit(startTimeText, startTime);
             updateTextEdit(endTimeText, endTime);
+
+            weekDaysText.setVisibility(View.GONE);
         }
     }
 
@@ -113,9 +121,11 @@ public class AddEditEventActivity extends AppCompatActivity
                 + " " + ampm);
     }
 
-    @OnClick(R.id.startTimeEditText) void onStartTimeTextTap (View sender)
+    @OnClick(R.id.startTimeEditText)
+    void onStartTimeTextTap(View sender)
     {
-        TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, R.style.Dialog), new TimePickerDialog.OnTimeSetListener()
+        TimePickerDialog startTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style
+                .Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
         {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute)
@@ -129,7 +139,8 @@ public class AddEditEventActivity extends AppCompatActivity
         startTimePicker.show();
     }
 
-    @OnClick(R.id.endTimeEditText) void onEndTimeTextTap (View sender)
+    @OnClick(R.id.endTimeEditText)
+    void onEndTimeTextTap(View sender)
     {
         TimePickerDialog endTimePicker = new TimePickerDialog(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_NoActionBar), new TimePickerDialog.OnTimeSetListener()
         {
@@ -145,7 +156,8 @@ public class AddEditEventActivity extends AppCompatActivity
         endTimePicker.show();
     }
 
-    @OnClick(R.id.weekDaysEditText) void onWeekDaysEditTextTap(View sender)
+    @OnClick(R.id.weekDaysEditText)
+    void onWeekDaysEditTextTap(View sender)
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
@@ -209,7 +221,7 @@ public class AddEditEventActivity extends AppCompatActivity
 
     public void addEvent(MenuItem item)
     {
-        List<Tuple<DaySchedule, Event>> daySchedulesAndEventsToAdd = new ArrayList<>();
+        ArrayList eventsToAdd = new ArrayList<>();
         boolean canAddEvents = true;
 
 
@@ -221,8 +233,8 @@ public class AddEditEventActivity extends AppCompatActivity
             Calendar newEventStartTime = (Calendar) startTime.clone();
             Calendar newEventEndTime = (Calendar) endTime.clone();
 
-            newEventStartTime.set(Calendar.DAY_OF_WEEK, i+1);
-            newEventEndTime.set(Calendar.DAY_OF_WEEK, i+1);
+            newEventStartTime.set(Calendar.DAY_OF_WEEK, i + 1);
+            newEventEndTime.set(Calendar.DAY_OF_WEEK, i + 1);
 
             newEventStartTime.set(Calendar.SECOND, 0);
             newEventStartTime.set(Calendar.MILLISECOND, 0);
@@ -246,7 +258,7 @@ public class AddEditEventActivity extends AppCompatActivity
             }
             else
             {
-                daySchedulesAndEventsToAdd.add(new Tuple<>(daySchedule, newEvent));
+                eventsToAdd.add(newEvent);
             }
         }
 
@@ -256,30 +268,25 @@ public class AddEditEventActivity extends AppCompatActivity
             dialog.show();
             if (eventToEdit.isPresent()) eventToEdit.get().getDaySchedule().removeEvent(eventToEdit.get());
 
-
-
-            for (Tuple<DaySchedule, Event> dayScheduleAndEvent: daySchedulesAndEventsToAdd)
+            ScheduleManager.getSharedManager().reportNewEvents(eventsToAdd, new BasicCompletionListener()
             {
-                dayScheduleAndEvent.first.addEvent(dayScheduleAndEvent.second);
-                ScheduleManager.getSharedManager().reportNewEvent(dayScheduleAndEvent.second, new BasicCompletionListener()
+                @Override
+                public void onSuccess()
                 {
-                    @Override
-                    public void onSuccess()
-                    {
-//                        dialog.dismiss();
-                    }
+                    dialog.dismiss();
+                }
 
-                    @Override
-                    public void onFailure(Exception error)
-                    {
-//                        dialog.dismiss();
-//                        Utilities.showErrorToast(AddEditEventActivity.this);
-                    }
-                });
-            }
-
+                @Override
+                public void onFailure(Exception error)
+                {
+                    dialog.dismiss();
+                    Utilities.showErrorToast(AddEditEventActivity.this);
+                }
+            });
         }
+
         else
+
         {
             new AlertDialog.Builder(this)
                     .setTitle("Imposible agregar evento")
@@ -288,6 +295,7 @@ public class AddEditEventActivity extends AppCompatActivity
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
+
     }
 
     public void cancelEvent(MenuItem item)
