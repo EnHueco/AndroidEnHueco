@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,10 +154,16 @@ public class FriendsManager extends LogicManager
             @Override
             public void onSuccess(JSONObject friendship)
             {
-                EnHueco.getInstance().getAppUser().getFriends().remove(friend.getUsername());
-                PersistenceManager.getSharedManager().persistData();
-
-                callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                try
+                {
+                    EnHueco.getInstance().getAppUser().getFriends().remove(friend.getUsername());
+                    PersistenceManager.getSharedManager().persistData();
+                    callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                }
+                catch (IOException e)
+                {
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+                }
             }
 
             @Override

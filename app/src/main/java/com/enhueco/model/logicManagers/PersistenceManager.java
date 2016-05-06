@@ -27,29 +27,21 @@ public class PersistenceManager
         return instance;
     }
 
-    private PersistenceManager() {}
+    private PersistenceManager()
+    {
+    }
 
     /**
      * Persists all app's system data in path
-     *
-     * @return true if correctly persisted or false otherwise
      */
-    public boolean persistData()
+    public void persistData() throws IOException
     {
-        try
-        {
-            FileOutputStream fos = EHApplication.getAppContext().openFileOutput(AppUser.FILE_NAME, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(EnHueco.getInstance().getAppUser());
-            os.close();
-            fos.close();
-            return true;
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return false;
+
+        FileOutputStream fos = EHApplication.getAppContext().openFileOutput(AppUser.FILE_NAME, Context.MODE_PRIVATE);
+        ObjectOutputStream os = new ObjectOutputStream(fos);
+        os.writeObject(EnHueco.getInstance().getAppUser());
+        os.close();
+        fos.close();
     }
 
     /**

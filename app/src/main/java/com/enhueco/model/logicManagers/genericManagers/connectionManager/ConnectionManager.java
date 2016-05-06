@@ -27,16 +27,8 @@ public class ConnectionManager
             @Override
             public void onResponse(JSONObject response)
             {
-                try
-                {
-                    Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
-                    completionHandler.onSuccess(response);
-                }
-                catch (Exception e)
-                {
-                    completionHandler.onFailure(new ConnectionManagerCompoundError(e, request));
-                    e.printStackTrace();
-                }
+                Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
+                completionHandler.onSuccess(response);
 
             }
         }, new Response.ErrorListener()
@@ -51,7 +43,7 @@ public class ConnectionManager
                 {
                     if (error.networkResponse != null)
                     {
-                        String responseBody = new String(error.networkResponse.data, "utf-8" );
+                        String responseBody = new String(error.networkResponse.data, "utf-8");
                         Log.e("CONNECTION MANAGER", responseBody);
                     }
                 }
@@ -86,16 +78,8 @@ public class ConnectionManager
             @Override
             public void onResponse(JSONArray response)
             {
-                try
-                {
-                    Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
-                    completionHandler.onSuccess(response);
-                }
-                catch (Exception e)
-                {
-                    completionHandler.onFailure(new ConnectionManagerCompoundError(e, request));
-                    e.printStackTrace();
-                }
+                Log.v("CONNECTION MANAGER", "RECEIVED RESPONSE: " + response.toString());
+                completionHandler.onSuccess(response);
             }
         }, new Response.ErrorListener()
         {
@@ -106,10 +90,10 @@ public class ConnectionManager
                 error.printStackTrace();
                 try
                 {
-                    if(error.networkResponse != null)
+                    if (error.networkResponse != null)
                     {
                         error.printStackTrace();
-                        String responseBody = new String(error.networkResponse.data, "utf-8" );
+                        String responseBody = new String(error.networkResponse.data, "utf-8");
                         Log.e("CONNECTION MANAGER", responseBody);
                     }
                 }

@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -168,12 +169,12 @@ public class FriendsInformationManager extends LogicManager
                             appUser.getFriends().put(newFriend.getUsername(), newFriend);
                         }
                     }
-                    if(PersistenceManager.getSharedManager().persistData())
-                    {
-                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
-                    }
+
+                    PersistenceManager.getSharedManager().persistData();
+                    callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+
                 }
-                catch (JSONException e)
+                catch (JSONException | IOException e)
                 {
                     callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                 }

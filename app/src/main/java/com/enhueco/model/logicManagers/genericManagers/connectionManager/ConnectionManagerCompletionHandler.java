@@ -8,6 +8,6 @@ import org.json.JSONException;
  */
 public interface ConnectionManagerCompletionHandler<T>
 {
-    void onSuccess(T jsonResponse) throws Exception;
+    void onSuccess(T jsonResponse);
     void onFailure(ConnectionManagerCompoundError error);
 }

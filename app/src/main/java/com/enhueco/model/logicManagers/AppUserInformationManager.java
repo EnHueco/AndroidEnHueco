@@ -9,6 +9,8 @@ import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 /**
  * Created by Diego on 2/28/16.
  */
@@ -49,13 +51,10 @@ public class AppUserInformationManager extends LogicManager
                     {
                         AppUser appUser = EnHueco.getInstance().getAppUser();
                         appUser.updateWithJSON(response);
+                        PersistenceManager.getSharedManager().persistData();
 
-                        if (PersistenceManager.getSharedManager().persistData())
-                        {
-                            callCompletionListenerSuccessHandlerOnMainThread(completionListener);
-                        }
                     }
-                    catch (Exception e)
+                    catch (JSONException | IOException e)
                     {
                         callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                     }
@@ -84,12 +83,19 @@ public class AppUserInformationManager extends LogicManager
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
             {
                 @Override
-                public void onSuccess(JSONObject response) throws JSONException
+                public void onSuccess(JSONObject response)
                 {
-                    EnHueco.getInstance().getAppUser().updateWithJSON(response);
-                    PersistenceManager.getSharedManager().persistData();
+                    try
+                    {
+                        EnHueco.getInstance().getAppUser().updateWithJSON(response);
+                        PersistenceManager.getSharedManager().persistData();
 
-                    callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                    }
+                    catch (JSONException | IOException e)
+                    {
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+                    }
                 }
 
                 @Override

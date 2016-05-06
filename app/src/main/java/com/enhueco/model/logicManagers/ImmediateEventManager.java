@@ -16,6 +16,7 @@ import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -45,23 +46,26 @@ public class ImmediateEventManager extends LogicManager
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
             {
                 @Override
-                public void onSuccess(JSONObject jsonResponse) throws JSONException
+                public void onSuccess(JSONObject jsonResponse)
                 {
-                    Log.v("IMMEDIATE EVENT MANAGER", "Update Successful");
-                    Log.v("IMMEDIATE EVENT MANAGER", jsonResponse.toString());
-
-                    ImmediateEvent event = new ImmediateEvent(jsonResponse);
-                    EnHueco.getInstance().getAppUser().setInstantFreeTimePeriod(Optional.of(event));
-
-                    if (PersistenceManager.getSharedManager().persistData())
+                    try
                     {
+                        Log.v("IMMEDIATE EVENT MANAGER", "Update Successful");
+                        Log.v("IMMEDIATE EVENT MANAGER", jsonResponse.toString());
+
+                        ImmediateEvent event = null;
+                        event = new ImmediateEvent(jsonResponse);
+                        EnHueco.getInstance().getAppUser().setInstantFreeTimePeriod(Optional.of(event));
+
+                        PersistenceManager.getSharedManager().persistData();
+
                         callCompletionListenerSuccessHandlerOnMainThread(completionListener);
 
                         LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(new Intent(CurrentStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
                     }
-                    else
+                    catch (JSONException | IOException e)
                     {
-                        callCompletionListenerFailureHandlerOnMainThread(completionListener, new Exception("Persistence failed"));
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                     }
                 }
 

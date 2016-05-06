@@ -15,12 +15,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Created by Diego on 2/28/16.
  */
-public class ScheduleManager extends EHManager
+public class ScheduleManager extends LogicManager
 {
     private static ScheduleManager instance;
 
@@ -206,33 +207,37 @@ public class ScheduleManager extends EHManager
             ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONArray>()
             {
                 @Override
-                public void onSuccess(JSONArray jsonResponse) throws Exception
+                public void onSuccess(JSONArray jsonResponse)
                 {
-                    Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
-                    for(int i = 0 ; i < jsonResponse.length() ; i++)
+                    try
                     {
-                        JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
-                        Event event = new Event(eventJSON);
+                        Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
+                        for(int i = 0 ; i < jsonResponse.length() ; i++)
+                        {
+                            JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
+                            Event event = new Event(eventJSON);
 
-                        schedule.getWeekDays()[event.getWeekday()].addEvent(event);
+                            schedule.getWeekDays()[event.getWeekday()].addEvent(event);
+                        }
+                        PersistenceManager.getSharedManager().persistData();
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                     }
-                    if(PersistenceManager.getSharedManager().persistData())
+                    catch (JSONException | IOException e)
                     {
-                        completionListener.onSuccess();
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                     }
-
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-                    generateError(error.error, completionListener);
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }
         catch (JSONException e)
         {
-            generateError(e, completionListener);
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
         }
     }
 }
