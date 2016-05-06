@@ -80,6 +80,7 @@ public class ConnectionManager
 
     public static void sendAsyncRequest(final ConnectionManagerArrayRequest request, final ConnectionManagerCompletionHandler<JSONArray> completionHandler)
     {
+        Log.v("CONNECTION MANAGER", "SENDING REQUEST: " + request.toString());
         JsonRequest jsonRequest = new JsonArrayRequest(request.method.volleyValue, request.URL, request.jsonStringParams.orNull(), new Response.Listener<JSONArray>()
         {
             @Override
