@@ -1,8 +1,6 @@
 package com.enhueco.model.model.immediateEvent;
 
-import com.bumptech.glide.util.Util;
 import com.enhueco.model.other.Utilities;
-import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 

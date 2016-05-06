@@ -1,29 +1,18 @@
 package com.enhueco.model.logicManagers;
 
-import android.content.Intent;
-import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
-import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
-import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
-import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
 import com.enhueco.model.model.*;
 import com.enhueco.model.model.intents.AppUserIntent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
-import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by Diego on 2/28/16.
  */
-public class AppUserInformationManager extends EHManager
+public class AppUserInformationManager extends LogicManager
 {
     private static AppUserInformationManager instance;
 
@@ -63,25 +52,25 @@ public class AppUserInformationManager extends EHManager
 
                         if (PersistenceManager.getSharedManager().persistData())
                         {
-                            completionListener.onSuccess();
+                            callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                         }
                     }
                     catch (Exception e)
                     {
-                        generateError(e, completionListener);
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                     }
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-                    generateError(error.error, completionListener);
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }
         catch (Exception e)
         {
-            generateError(e, completionListener);
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
         }
     }
 
@@ -100,19 +89,19 @@ public class AppUserInformationManager extends EHManager
                     EnHueco.getInstance().getAppUser().updateWithJSON(response);
                     PersistenceManager.getSharedManager().persistData();
 
-                    completionListener.onSuccess();
+                    callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                 }
 
                 @Override
                 public void onFailure(ConnectionManagerCompoundError error)
                 {
-                    generateError(error.error, completionListener);
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }
         catch (Exception e)
         {
-            generateError(e, completionListener);
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
         }
     }
 }

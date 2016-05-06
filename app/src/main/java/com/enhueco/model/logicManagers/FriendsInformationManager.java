@@ -1,8 +1,5 @@
 package com.enhueco.model.logicManagers;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
@@ -21,7 +18,7 @@ import java.util.HashMap;
 /**
  * Created by Diego on 2/28/16.
  */
-public class FriendsInformationManager extends EHManager
+public class FriendsInformationManager extends LogicManager
 {
     private static FriendsInformationManager instance;
 
@@ -116,20 +113,20 @@ public class FriendsInformationManager extends EHManager
                     if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, listener);
                     else
                     {
-                        listener.onSuccess();
+                        callCompletionListenerSuccessHandlerOnMainThread(listener);
                     }
                 }
 
                 catch (JSONException e)
                 {
-                    generateError(e, listener);
+                    callCompletionListenerFailureHandlerOnMainThread(listener, e);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                generateError(error.error, listener);
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
         });
     }
@@ -173,19 +170,19 @@ public class FriendsInformationManager extends EHManager
                     }
                     if(PersistenceManager.getSharedManager().persistData())
                     {
-                        completionListener.onSuccess();
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                     }
                 }
                 catch (JSONException e)
                 {
-                    generateError(e, completionListener);
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                generateError(error.error, completionListener);
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }

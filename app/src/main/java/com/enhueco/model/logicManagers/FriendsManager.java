@@ -1,14 +1,10 @@
 package com.enhueco.model.logicManagers;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
-import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.CompletionListener;
@@ -20,14 +16,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Diego on 2/28/16.
  */
-public class FriendsManager
+public class FriendsManager extends LogicManager
 {
     private static FriendsManager instance;
 
@@ -98,27 +92,13 @@ public class FriendsManager
             public void onSuccess(JSONObject response)
             {
                 // TODO
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(listener);
             }
 
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
 
         });
@@ -146,14 +126,7 @@ public class FriendsManager
                     User friend = new User(friendship.getJSONObject("secondUser"));
                     EnHueco.getInstance().getAppUser().getFriends().put(friend.getUsername(), friend);
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            listener.onSuccess();
-                        }
-                    });
+                    callCompletionListenerSuccessHandlerOnMainThread(listener);
                 }
                 catch (JSONException e)
                 {
@@ -164,14 +137,7 @@ public class FriendsManager
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
         });
     }
@@ -190,27 +156,13 @@ public class FriendsManager
                 EnHueco.getInstance().getAppUser().getFriends().remove(friend.getUsername());
                 PersistenceManager.getSharedManager().persistData();
 
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(completionListener);
             }
 
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
@@ -239,15 +191,7 @@ public class FriendsManager
                         users.add(new User(jsonUser));
                     }
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            listener.onSuccess(users);
-                        }
-                    });
-
+                    callCompletionListenerSuccessHandlerOnMainThread(listener, users);
                 }
                 catch (Exception e)
                 {
@@ -258,15 +202,7 @@ public class FriendsManager
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        listener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
             }
         });
     }

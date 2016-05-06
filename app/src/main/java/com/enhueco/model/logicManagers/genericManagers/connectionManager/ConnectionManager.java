@@ -46,11 +46,11 @@ public class ConnectionManager
             {
                 completionHandler.onFailure(new ConnectionManagerCompoundError(error, request));
                 error.printStackTrace();
+
                 try
                 {
-                    if(error.networkResponse != null)
+                    if (error.networkResponse != null)
                     {
-                        error.printStackTrace();
                         String responseBody = new String(error.networkResponse.data, "utf-8" );
                         Log.e("CONNECTION MANAGER", responseBody);
                     }

@@ -1,7 +1,5 @@
 package com.enhueco.model.logicManagers;
 
-import android.os.Handler;
-import android.os.Looper;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
@@ -11,12 +9,13 @@ import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 /**
  * Created by Diego on 2/28/16.
  */
-public class AccountManager
+public class AccountManager extends LogicManager
 {
     private static AccountManager instance;
 
@@ -58,33 +57,18 @@ public class AccountManager
                     {
                         EnHueco.getInstance().setAppUser(new AppUser(response));
                         PersistenceManager.getSharedManager().persistData();
-
-                        new Handler(Looper.getMainLooper()).post(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                completionListener.onSuccess();
-                            }
-                        });
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                     }
-                    catch (JSONException | ParseException e)
+                    catch (JSONException | ParseException | IOException e)
                     {
-                        e.printStackTrace();
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                     }
                 }
 
                 @Override
                 public void onFailure(final ConnectionManagerCompoundError error)
                 {
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            completionListener.onFailure(error.error);
-                        }
-                    });
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
                 }
             });
         }

@@ -1,30 +1,25 @@
 package com.enhueco.model.logicManagers.privacyManager;
 
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import com.enhueco.R;
 import com.enhueco.model.EHApplication;
-import com.enhueco.model.logicManagers.PersistenceManager;
+import com.enhueco.model.logicManagers.LogicManager;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
-import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * Created by Diego Montoya Sefair on 2/28/16.
  */
 
-public class PrivacyManager
+public class PrivacyManager extends LogicManager
 {
     private static PrivacyManager instance;
 
@@ -57,27 +52,13 @@ public class PrivacyManager
             @Override
             public void onSuccess(JSONObject jsonResponse)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(completionListener);
             }
 
             @Override
             public void onFailure(final ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onFailure(error.error);
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
@@ -106,27 +87,13 @@ public class PrivacyManager
             @Override
             public void onSuccess(JSONObject jsonResponse)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
+                callCompletionListenerSuccessHandlerOnMainThread(completionListener);
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        completionListener.onSuccess();
-                    }
-                });
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
