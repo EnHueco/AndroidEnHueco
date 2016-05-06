@@ -39,6 +39,12 @@ public class Utilities
         return null;
     }
 
+    public static TimeZone getDeviceTimezone()
+    {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getTimeZone();
+    }
+
     /**
      * Transforms a date into a string formatted for the server
      * @param date Server encoded string date
