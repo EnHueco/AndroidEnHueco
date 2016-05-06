@@ -256,6 +256,8 @@ public class AddEditEventActivity extends AppCompatActivity
             dialog.show();
             if (eventToEdit.isPresent()) eventToEdit.get().getDaySchedule().removeEvent(eventToEdit.get());
 
+
+
             for (Tuple<DaySchedule, Event> dayScheduleAndEvent: daySchedulesAndEventsToAdd)
             {
                 dayScheduleAndEvent.first.addEvent(dayScheduleAndEvent.second);

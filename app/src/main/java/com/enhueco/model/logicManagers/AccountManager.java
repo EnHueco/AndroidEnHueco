@@ -59,8 +59,6 @@ public class AccountManager
                         EnHueco.getInstance().setAppUser(new AppUser(response));
                         PersistenceManager.getSharedManager().persistData();
 
-                        AppUser user = EnHueco.getInstance().getAppUser();
-
                         new Handler(Looper.getMainLooper()).post(new Runnable()
                         {
                             @Override

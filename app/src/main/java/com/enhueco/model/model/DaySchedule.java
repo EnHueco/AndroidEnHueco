@@ -1,5 +1,6 @@
 package com.enhueco.model.model;
 
+import android.util.Log;
 import com.google.common.base.Optional;
 
 import java.io.Serializable;
@@ -42,7 +43,8 @@ public class DaySchedule implements Serializable
 
     /**
      * Checks if its possible to add an event to dayschedule, excluding an event.
-     * @param newEvent Event that will be checked.
+     *
+     * @param newEvent       Event that will be checked.
      * @param eventToExclude Event to exclude while checking.
      * @return canAdd true if event doesn't overlap with any free time period or class, excluding eventToExclude
      */
@@ -72,6 +74,7 @@ public class DaySchedule implements Serializable
 
     /**
      * Adds event if it doesn't overlap with any other event.
+     *
      * @param newEvent Event to be added
      * @return success Event was successfully added
      */
@@ -109,6 +112,7 @@ public class DaySchedule implements Serializable
 
     /**
      * Removes an event from event's list
+     *
      * @param event Event to be removed
      * @return success If event could be successfully removed
      */
@@ -121,9 +125,12 @@ public class DaySchedule implements Serializable
     {
         for (Event event : events)
         {
-            if (event.getStartHour().get(Calendar.DAY_OF_WEEK) == startHour.get(Calendar.DAY_OF_WEEK) &&
-                    event.getStartHour().get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY) &&
-                    event.getStartHour().get(Calendar.MINUTE) == startHour.get(Calendar.MINUTE))
+            boolean sameDayOfWeek = event.getStartHour().get(Calendar.DAY_OF_WEEK) == startHour.get(Calendar.DAY_OF_WEEK);
+            Log.v("EVENT START HOUR", event.getStartHour().get(Calendar.HOUR_OF_DAY)+"");
+            Log.v("START HOUR HOUR", startHour.get(Calendar.HOUR_OF_DAY) + "");
+            boolean sameHourOfDay = event.getStartHour().get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY);
+            boolean sameMinute = event.getStartHour().get(Calendar.MINUTE) == startHour.get(Calendar.MINUTE);
+            if (sameDayOfWeek && sameHourOfDay && sameMinute)
             {
                 return Optional.of(event);
             }
