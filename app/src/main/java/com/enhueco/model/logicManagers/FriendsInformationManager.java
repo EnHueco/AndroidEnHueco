@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -102,15 +103,21 @@ public class FriendsInformationManager extends LogicManager
                         }
                     }
 
+                    ArrayList<User> friendsToDelete = new ArrayList<>();
+
                     for (User friend : appUser.getFriends().values())
                     {
                         if (!friendsInServer.containsKey(friend.getUsername()))
                         {
-                            appUser.getFriends().remove(friend);
+                            friendsToDelete.add(friend);
                         }
                     }
+                    for( User friend : friendsToDelete)
+                    {
+                        appUser.getFriends().remove(friend.getUsername());
+                    }
 
-                    boolean hasToSyncFriends = friendsToSync.length() > 0;
+                    boolean hasToSyncFriends = friendsToDelete.size() > 0 || friendsToSync.length() > 0;
                     if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, listener);
                     else
                     {
