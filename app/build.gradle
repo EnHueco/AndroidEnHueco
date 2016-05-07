@@ -50,6 +50,9 @@ dependencies {
     // Rounded images
     compile 'com.makeramen:roundedimageview:2.2.1'
 
+    // Joda Time
+    compile 'net.danlew:android.joda:2.9.3'
+    
     // QR Code generation API
     compile 'net.glxn.qrgen:android:2.1-SNAPSHOT'
     compile 'com.github.medyo:fancybuttons:1.5@aar'
