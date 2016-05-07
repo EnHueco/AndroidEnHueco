@@ -30,6 +30,11 @@ public class UserIntent
     private Optional<String> imageURL;
 
     /**
+     * User's profile image thumbnail
+     */
+    private String imageThumbnail;
+
+    /**
      * User's phone number
      */
     private String phoneNumber;
@@ -41,6 +46,7 @@ public class UserIntent
         if (firstNames != null)user.put("firstNames", firstNames);
         if (lastNames != null) user.put("lastNames",lastNames);
         if (imageURL != null) user.put("imageURL",imageURL.or(""));
+        if (imageThumbnail != null) user.put("image_thumbnail", phoneNumber);
         if (phoneNumber != null) user.put("phoneNumber", phoneNumber);
         return user;
     }

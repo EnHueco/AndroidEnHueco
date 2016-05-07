@@ -47,6 +47,11 @@ public class User extends EHSynchronizable implements Serializable
     private Optional<String> imageURL;
 
     /**
+     * User's profile image thumbnail
+     */
+    private String imageThumbnail;
+
+    /**
      * User's phone number
      */
     private String phoneNumber;
@@ -101,7 +106,8 @@ public class User extends EHSynchronizable implements Serializable
         super(null, null);
     }
 
-    public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date updatedOn)
+    public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL,
+                String imageThumbnail, String ID, Date updatedOn)
     {
         super(ID, updatedOn);
         this.username = username;
@@ -109,6 +115,7 @@ public class User extends EHSynchronizable implements Serializable
         this.lastNames = lastNames;
         this.phoneNumber = phoneNumber;
         this.imageURL = imageURL;
+        this.imageThumbnail = imageThumbnail;
         this.setID(ID);
     }
 
@@ -127,6 +134,7 @@ public class User extends EHSynchronizable implements Serializable
         firstNames = object.getString("firstNames");
         lastNames = object.getString("lastNames");
         imageURL = Optional.of(object.getString("imageURL"));
+        imageThumbnail =object.getString("image_thumbnail");
         phoneNumber = object.getString("phoneNumber");
 
         schedule = Schedule.fromJSON(Utilities.getDateFromServerString(object.getString("schedule_updated_on")), (JSONArray) object.get("gap_set"));
@@ -134,37 +142,6 @@ public class User extends EHSynchronizable implements Serializable
 
     }
 
-    /**
-     * Extracts JSONObject user values into a dictionary. Useful to have only one point of access to JSON Object data
-     *
-     * @param object JSONObject representation of User data
-     * @return extractedValues Dictionary with User data
-     * @throws JSONException Thrown if cannot decode User correctly
-     */
-    private static HashMap<String, Object> extractJSONObjectUserValues(JSONObject object) throws JSONException
-    {
-        HashMap<String, Object> extractedValues = new HashMap<>();
-
-        extractedValues.put("username", object.getString("login"));
-        extractedValues.put("firstNames", object.getString("firstNames"));
-        extractedValues.put("lastNames", object.getString("lastNames"));
-        extractedValues.put("imageURL", object.getString("imageURL"));
-        extractedValues.put("phoneNumber", object.getString("phoneNumber"));
-        extractedValues.put("updatedOn", object.getString("updated_on"));
-
-        if (object.has("schedule_updated_on") && object.has("gap_set"))
-        {
-            extractedValues.put("scheduleUpdatedOn", Utilities.getDateFromServerString(object.getString("schedule_updated_on")));
-            extractedValues.put("schedule", object.getJSONArray("gap_set"));
-            extractedValues.put("containsSchedule", true);
-        }
-        else
-        {
-            extractedValues.put("containsSchedule", false);
-        }
-
-        return extractedValues;
-    }
 
     /**
      * Updates user with JSONObject representation
@@ -173,41 +150,34 @@ public class User extends EHSynchronizable implements Serializable
      */
     public void updateWithJSON(JSONObject object) throws JSONException
     {
-        HashMap<String, Object> values = extractJSONObjectUserValues(object);
-
-        String updatedOnString = (String) values.get("updatedOn");
+        String updatedOnString = (String) object.get("updated_on");
         Date updatedOn = Utilities.getDateFromServerString(updatedOnString);
 
         // if JSONObject updatedOn date is newer
         boolean userIsNotUpdated = false;
         if (userIsNotUpdated = updatedOn.compareTo(this.getUpdatedOn()) > 0)
         {
-            String username = (String) values.get("username");
-            String firstNames = (String) values.get("firstNames");
-            String lastNames = (String) values.get("lastNames");
-            String imageURL = (String) values.get("imageURL");
-            String phoneNumber = (String) values.get("phoneNumber");
-
-            this.username = username;
-            this.firstNames = firstNames;
-            this.lastNames = lastNames;
-            this.imageURL = Optional.of(imageURL);
-            this.phoneNumber = phoneNumber;
+            this.username = object.getString("login");
+            this.firstNames = object.getString("firstNames");
+            this.lastNames = object.getString("lastNames");
+            this.imageURL = Optional.of(object.getString("imageURL"));
+            this.imageThumbnail = object.getString("image_thumbnail");
+            this.phoneNumber = object.getString("phoneNumber");
 
             this.setID(username);
             this.setUpdatedOn(updatedOn);
         }
 
-        boolean objectContainsScheduleInformation = (Boolean) values.get("containsSchedule");
-
-        if (objectContainsScheduleInformation)
+        if (object.has("schedule_updated_on") && object.has("gap_set"))
         {
             boolean scheduleIsNotUpdated = false;
 
+            Date date = Utilities.getDateFromServerString(object.getString("schedule_updated_on"));
             // Updates schedule only if schedule's last update date in server is newer
-            if (scheduleIsNotUpdated = ((Date) values.get("scheduleUpdatedOn")).compareTo(this.schedule.getUpdatedOn()) > 0)
+            if (date.compareTo(this.schedule.getUpdatedOn()) > 0)
             {
-                this.schedule = Schedule.fromJSON((Date) values.get("scheduleUpdatedOn"), (JSONArray) values.get("schedule"));
+                this.schedule = Schedule.fromJSON(Utilities.getDateFromServerString(object.getString
+                        ("schedule_updated_on")), object.getJSONArray("gap_set"));
             }
         }
 
@@ -362,6 +332,11 @@ public class User extends EHSynchronizable implements Serializable
     public Optional<String> getImageURL()
     {
         return imageURL;
+    }
+
+    public String getImageThumbnail()
+    {
+        return imageThumbnail;
     }
 
     public String getPhoneNumber()

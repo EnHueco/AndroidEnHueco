@@ -15,6 +15,7 @@ public class UserSearch
     private final String firstNames;
     private final String lastNames;
     private final Optional<String> imageURL;
+    private final String imageThumbnail;
 
 
     public UserSearch(JSONObject jsonObject) throws JSONException
@@ -23,6 +24,7 @@ public class UserSearch
         firstNames = jsonObject.getString("firstNames");
         lastNames = jsonObject.getString("lastNames");
         imageURL = Optional.of(jsonObject.getString("imageURL"));
+        imageThumbnail = jsonObject.getString("image_thumbnail");
     }
 
 
@@ -44,5 +46,10 @@ public class UserSearch
     public Optional<String> getImageURL()
     {
         return imageURL;
+    }
+
+    public String getImageThumbnail()
+    {
+        return imageThumbnail;
     }
 }

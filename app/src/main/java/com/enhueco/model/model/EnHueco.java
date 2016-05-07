@@ -62,9 +62,16 @@ public class EnHueco
      */
     public void createTestAppUser()
     {
-        appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "3176694189", Optional.of("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg"), "pa.perez11", new Date());
-        User friend1 = new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", Optional.of("https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xat1/v/t1.0-9/1377456_10152974578604740_7067096578609392451_n.jpg?oh=89245c25c3ddaa4f7d1341f7788de261&oe=56925447&__gda__=1448954703_30d0fe175a8ab0b665dc074d63a087d6"), "da.gomez11", new Date());
-        User friend2 = new User("cl.jimenez12", "Claudia Lucía", "Jiménez Guarín", "", Optional.<String>absent(), "cl.jimenez12", new Date());
+        appUser = new AppUser("d.montoya10", "", "Diego", "Montoya Sefair", "3176694189", Optional.of
+                ("https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o" +
+                        ".jpg"), "https://fbcdn-sphotos-a-a.akamaihd.net/hphotos-ak-xap1/t31.0-8/1498135_821566567860780_1633731954_o.jpg", "pa.perez11", new Date());
+        User friend1 = new User("da.gomez11", "Diego Alejandro", "Gomez Mosquera", "3144141917", Optional.of("https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xat1/v/t1.0-9/1377456_10152974578604740_7067096578609392451_n.jpg?oh=89245c25c3ddaa4f7d1341f7788de261&oe=56925447&__gda__=1448954703_30d0fe175a8ab0b665dc074d63a087d6"),
+                "https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xat1/v/t1" +
+                        ".0-9/1377456_10152974578604740_7067096578609392451_n" +
+                        ".jpg?oh=89245c25c3ddaa4f7d1341f7788de261&oe=56925447&__gda__" +
+                        "=1448954703_30d0fe175a8ab0b665dc074d63a087d6", "da.gomez11", new Date());
+        User friend2 = new User("cl.jimenez12", "Claudia Lucía", "Jiménez Guarín", "", Optional.<String>absent(), "", "cl" +
+                ".jimenez12", new Date());
         appUser.getFriends().put(friend1.getUsername(), friend1);
         appUser.getFriends().put(appUser.getUsername(), appUser);
 

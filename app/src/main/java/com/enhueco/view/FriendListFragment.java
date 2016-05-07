@@ -245,7 +245,7 @@ public class FriendListFragment extends ListFragment
 
             if (user.getImageURL().isPresent())
             {
-                Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+                Picasso.with(context).load(EHURLS.BASE + user.getImageThumbnail()).fit().transform(transformation).into(iv);
             }
 
             TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);

@@ -55,9 +55,10 @@ public class AppUser extends User implements Serializable
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public AppUser(String username, String token, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL, String ID, Date lastUpdatedOn)
+    public AppUser(String username, String token, String firstNames, String lastNames, String phoneNumber,
+                   Optional<String> imageURL, String imageThumbnail, String ID, Date lastUpdatedOn)
     {
-        super(username, firstNames, lastNames, phoneNumber, imageURL, ID, lastUpdatedOn);
+        super(username, firstNames, lastNames, phoneNumber, imageURL, imageThumbnail, ID, lastUpdatedOn);
 
         this.token = token;
     }
