@@ -6,6 +6,7 @@ import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
+import com.enhueco.model.model.UserSearch;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.CompletionListener;
 import com.enhueco.model.other.EHURLS;
@@ -180,7 +181,7 @@ public class FriendsManager extends LogicManager
      * @param id       Keyword that searches for users
      * @param listener Listener of the event
      */
-    public void searchUsers(String id, final CompletionListener<List<User>> listener)
+    public void searchUsers(String id, final CompletionListener<List<UserSearch>> listener)
     {
         ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<String >absent());
 
@@ -191,11 +192,11 @@ public class FriendsManager extends LogicManager
             {
                 try
                 {
-                    final ArrayList<User> users = new ArrayList<User>();
+                    final ArrayList<UserSearch> users = new ArrayList<>();
                     for (int i = 0; i < array.length(); i++)
                     {
                         JSONObject jsonUser = array.getJSONObject(i);
-                        users.add(new User(jsonUser));
+                        users.add(new UserSearch(jsonUser));
                     }
 
                     callCompletionListenerSuccessHandlerOnMainThread(listener, users);

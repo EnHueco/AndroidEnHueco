@@ -9,12 +9,11 @@
                 android:paddingRight="24dp"
                 android:weightSum="100">
 
-	<LinearLayout
+	<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:id="@+id/dialogImageView"
+			android:id="@+id/profileImageView"
 			android:orientation="horizontal"
-			android:background="@drawable/layout_bg"
 			android:minWidth="40dp"
 			android:minHeight="40dp"
 			android:layout_alignParentLeft="true"
@@ -40,7 +39,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_toLeftOf="@id/btn_acceptFriendship"
-			android:layout_toRightOf="@id/dialogImageView"
+			android:layout_toRightOf="@id/profileImageView"
 			android:layout_marginLeft="16dp"
 			android:layout_marginRight="16dp">
 

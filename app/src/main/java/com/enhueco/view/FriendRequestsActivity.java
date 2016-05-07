@@ -23,6 +23,7 @@ import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
 import com.squareup.picasso.Picasso;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -167,7 +168,7 @@ public class FriendRequestsActivity extends AppCompatActivity implements SwipeRe
                         @Override
                         public void onFailure(Exception error)
                         {
-
+                            Utilities.showErrorToast(getApplicationContext());
                         }
                     });
                 }

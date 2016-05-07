@@ -10,15 +10,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.model.*;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.R;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.CompletionListener;
+import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
+import com.enhueco.view.dialog.EHProgressDialog;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
     private Timer mTimer;
     private SearchFriendArrayAdapter adapter;
 
-    List<User> filteredFriends = new ArrayList<>(EnHueco.getInstance().getAppUser().getFriends().values());
+    List<UserSearch> filteredFriends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,6 +47,7 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         ListView friendLV = (ListView) findViewById(R.id.searchFriendListView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        filteredFriends = new ArrayList<>();
         adapter = new SearchFriendArrayAdapter(this, 0, filteredFriends);
         friendLV.setAdapter(adapter);
 
@@ -51,8 +55,10 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
         getSupportActionBar().setTitle("Agregar amigos");
     }
 
-    private void updateResults()
+    private void updateResults(List<UserSearch> result)
     {
+        filteredFriends.clear();
+        filteredFriends.addAll(result);
         adapter.notifyDataSetChanged();
     }
 
@@ -117,39 +123,54 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
                     @Override
                     public void run()
                     {
-                        if(!newText.isEmpty()) FriendsManager.getSharedManager().searchUsers(newText, new CompletionListener<List<User>>()
-                        {
-                            @Override
-                            public void onSuccess(List<User> friends)
-                            {
-                                filteredFriends = friends;
-                                updateResults();
-                            }
+                        final EHProgressDialog ehProgressDialog = new EHProgressDialog(SearchNewFriendsActivity.this);
+                        ehProgressDialog.setMessage("Buscando");
 
-                            @Override
-                            public void onFailure(Exception error)
-                            {
-                                //TODO: Show error
-                            }
-                        });
+                        if (!newText.isEmpty())
+                        {
+                            ehProgressDialog.show();
+                            FriendsManager.getSharedManager().searchUsers(newText, new
+                                    CompletionListener<List<UserSearch>>()
+                                    {
+                                        @Override
+                                        public void onSuccess(List<UserSearch> result)
+                                        {
+                                            updateResults(result);
+                                            ehProgressDialog.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onFailure(Exception error)
+                                        {
+                                            Utilities.showErrorToast(getApplicationContext());
+                                            ehProgressDialog.dismiss();
+                                        }
+                                    });
+                        }
                     }
                 });
             }
-        }, 500);
+        }, 450);
         return false;
     }
 
-    public class SearchFriendArrayAdapter extends ArrayAdapter<User>
+    public class SearchFriendArrayAdapter extends ArrayAdapter<UserSearch>
     {
 
         Context context;
-        List<User> objects;
+        List<UserSearch> objects;
 
-        public SearchFriendArrayAdapter(Context context, int resource, List<User> objects)
+        public SearchFriendArrayAdapter(Context context, int resource, List<UserSearch> objects)
         {
             super(context, resource, objects);
             this.context = context;
             this.objects = objects;
+        }
+
+        @Override
+        public boolean isEnabled(int position)
+        {
+            return false;
         }
 
         @Override
@@ -158,36 +179,51 @@ public class SearchNewFriendsActivity extends AppCompatActivity implements MenuI
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.item_friend_search, null);
 
+            UserSearch user = objects.get(position);
+
+            ImageView iv = (ImageView) view.findViewById(R.id.profileImageView);
+            Transformation transformation = Utilities.getRoundTransformation();
+            Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);
+
             TextView tv1 = (TextView) view.findViewById(R.id.fullNameTextView);
             final TextView tv2 = (TextView) view.findViewById(R.id.usernameTextView);
-            tv1.setText(objects.get(position).toString());
+            tv1.setText(user.getFirstNames() + " " + user.getLastNames());
             tv2.setText(objects.get(position).getUsername());
 
             final FancyButton addFriendButton = (FancyButton) view.findViewById(R.id.btn_addFriend);
-            addFriendButton.setOnClickListener(new View.OnClickListener()
+            // Hide "add button" if already friends
+            if (EnHueco.getInstance().getAppUser().getFriends().containsKey(user.getUsername()))
             {
-                @Override
-                public void onClick(View v)
+                addFriendButton.setVisibility(View.GONE);
+            }
+            else
+            {
+                addFriendButton.setVisibility(View.VISIBLE);
+                addFriendButton.setOnClickListener(new View.OnClickListener()
                 {
-
-                    FriendsManager.getSharedManager().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
+                    @Override
+                    public void onClick(View v)
                     {
-                        @Override
-                        public void onSuccess()
+                        FriendsManager.getSharedManager().sendFriendRequestToUserRequestWithUsername(tv2.getText().toString(), new BasicCompletionListener()
                         {
-                            //TODO
-                        }
+                            @Override
+                            public void onSuccess()
+                            {
+                                Toast.makeText(getApplicationContext(), "Solicitud enviada exitósamente", Toast
+                                        .LENGTH_SHORT).show();
+                            }
 
-                        @Override
-                        public void onFailure(Exception error)
-                        {
-                            //TODO
-                        }
-                    });
+                            @Override
+                            public void onFailure(Exception error)
+                            {
+                                Utilities.showErrorToast(getApplicationContext());
+                            }
+                        });
 
-                    addFriendButton.setVisibility(View.INVISIBLE);
-                }
-            });
+                        addFriendButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
 
             return view;
         }

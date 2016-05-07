@@ -31,6 +31,7 @@ import com.enhueco.model.model.User;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
@@ -286,8 +287,8 @@ public class CurrentlyAvailableFragment extends ListFragment
             View view = inflater.inflate(R.layout.item_currently_available, null);
 
             ImageView iv = (ImageView) view.findViewById(R.id.friendIcon);
-            Transformation transformation = new RoundedTransformationBuilder().oval(true).build();
 
+            Transformation transformation = Utilities.getRoundTransformation();
             if (user.getImageURL().isPresent())
             {
                 Picasso.with(context).load(EHURLS.BASE + user.getImageURL().get()).fit().transform(transformation).into(iv);

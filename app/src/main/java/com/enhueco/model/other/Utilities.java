@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.Toast;
+import com.enhueco.view.SearchNewFriendsActivity;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Transformation;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -314,4 +317,10 @@ public class Utilities
     {
         Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT);
     }
+
+    public static Transformation getRoundTransformation()
+    {
+        return new RoundedTransformationBuilder().oval(true).build();
+    }
+
 }
