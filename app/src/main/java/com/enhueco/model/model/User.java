@@ -134,7 +134,7 @@ public class User extends EHSynchronizable implements Serializable
         firstNames = object.getString("firstNames");
         lastNames = object.getString("lastNames");
         imageURL = Optional.of(object.getString("imageURL"));
-        imageThumbnail =object.getString("image_thumbnail");
+        imageThumbnail = object.getString("image_thumbnail");
         phoneNumber = object.getString("phoneNumber");
 
         schedule = Schedule.fromJSON(Utilities.getDateFromServerString(object.getString("schedule_updated_on")), (JSONArray) object.get("gap_set"));

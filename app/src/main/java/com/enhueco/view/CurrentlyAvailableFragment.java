@@ -145,6 +145,7 @@ public class CurrentlyAvailableFragment extends ListFragment
 
         if (isVisibleToUser)
         {
+            /*
             //((MainTabbedActivity) getActivity()).getWindow().setStatusBarColor(getResources().getColor(R.color.mb_gray)=;
             final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
 
@@ -163,6 +164,7 @@ public class CurrentlyAvailableFragment extends ListFragment
             });
             colorAnimation.start();
 
+*/
             refresh();
 
             FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules(new BasicCompletionListener()
@@ -199,8 +201,8 @@ public class CurrentlyAvailableFragment extends ListFragment
     private void refresh()
     {
         currentlyAvailableFriends.clear();
-        currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
+        // Add user immediate event if currently happening
         Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
 
             if (instantFreeTimePeriod.isPresent() &&
@@ -209,6 +211,10 @@ public class CurrentlyAvailableFragment extends ListFragment
         {
             currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
         }
+
+        // Add friends
+        List<Tuple<User, Event>> friends = CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends();
+        currentlyAvailableFriends.addAll(friends);
 
         adapter.notifyDataSetChanged();
     }

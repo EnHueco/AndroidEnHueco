@@ -44,27 +44,13 @@ public class FriendsInformationManager extends LogicManager
      * Notifications
      * - EHSystemNotification.SystemDidReceiveFriendAndScheduleUpdates in case of success
      */
-    public void fetchUpdatesForFriendsAndFriendSchedules(BasicCompletionListener completionListener)
+    public void fetchUpdatesForFriendsAndFriendSchedules(final BasicCompletionListener completionListener)
     {
-        final BasicCompletionListener listener = (completionListener != null)? completionListener : new BasicCompletionListener()
-        {
-            @Override
-            public void onSuccess()
-            {
-
-            }
-
-            @Override
-            public void onFailure(Exception error)
-            {
-
-            }
-        };
-
         String url = EHURLS.BASE + EHURLS.FRIENDS_SYNC_SEGMENT;
-        ConnectionManagerArrayRequest r = new ConnectionManagerArrayRequest(url, HTTPMethod.GET, Optional.<String>absent());
+        ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(url, HTTPMethod.GET, Optional.<String>absent
+                ());
 
-        ConnectionManager.sendAsyncRequest(r, new ConnectionManagerCompletionHandler<JSONArray>()
+        ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONArray>()
         {
             @Override
             public void onSuccess(JSONArray friendsJSON)
@@ -118,23 +104,23 @@ public class FriendsInformationManager extends LogicManager
                     }
 
                     boolean hasToSyncFriends = friendsToDelete.size() > 0 || friendsToSync.length() > 0;
-                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, listener);
+                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, completionListener);
                     else
                     {
-                        callCompletionListenerSuccessHandlerOnMainThread(listener);
+                        callCompletionListenerSuccessHandlerOnMainThread(completionListener);
                     }
                 }
 
                 catch (JSONException e)
                 {
-                    callCompletionListenerFailureHandlerOnMainThread(listener, e);
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
-                callCompletionListenerFailureHandlerOnMainThread(listener, error.error);
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
@@ -162,19 +148,9 @@ public class FriendsInformationManager extends LogicManager
                     for (int i = 0; i < friendsJSON.length(); i++)
                     {
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
-                        String friendJSONusername = friendJSON.getString("login");
 
-                        if (appUser.getFriends().containsKey(friendJSONusername))
-                        {
-                            User oldFriend = appUser.getFriends().get(friendJSONusername);
-                            oldFriend.updateWithJSON(friendJSON);
-                        }
-
-                        else
-                        {
-                            User newFriend = new User(friendJSON);
-                            appUser.getFriends().put(newFriend.getUsername(), newFriend);
-                        }
+                        User newFriend = new User(friendJSON);
+                        appUser.getFriends().put(newFriend.getUsername(), newFriend);
                     }
 
                     PersistenceManager.getSharedManager().persistData();

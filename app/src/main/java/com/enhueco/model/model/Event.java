@@ -1,9 +1,12 @@
 package com.enhueco.model.model;
 
+import android.util.Log;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -125,7 +128,7 @@ public class Event implements Serializable, Comparable<Event>
 
         this.name = Optional.fromNullable(object.getString("name"));
         this.location = Optional.fromNullable(object.getString("location"));
-        this.type = typeString.equals("EVENT") || typeString.equals("GAP")? EventType.FREE_TIME : EventType.CLASS;
+        this.type = typeString.equals("FREE_TIME")? EventType.FREE_TIME : EventType.CLASS;
         this.startHour = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
         this.endHour = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
 
@@ -207,7 +210,12 @@ public class Event implements Serializable, Comparable<Event>
     public Calendar getStartHourCalendarInLocalTimezone()
     {
         Calendar cal = ((Calendar)startHour.clone());
+        Log.v("EVENT", cal.getTimeZone().getDisplayName());
+        Log.v("EVENT", cal.get(Calendar.HOUR_OF_DAY) + "");
         cal.setTimeZone(TimeZone.getDefault());
+        Log.v("EVENT", cal.getTimeZone().getDisplayName());
+        Log.v("EVENT", cal.get(Calendar.HOUR_OF_DAY) + "");
+
         return cal;
     }
 
@@ -218,6 +226,7 @@ public class Event implements Serializable, Comparable<Event>
     public Calendar getEndHourCalendarInLocalTimezone()
     {
         Calendar cal = ((Calendar)endHour.clone());
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.setTimeZone(TimeZone.getDefault());
         return cal;
     }
@@ -239,7 +248,7 @@ public class Event implements Serializable, Comparable<Event>
 
         boolean isBeforeEnd = current.get(Calendar.HOUR_OF_DAY) < endHour.get(Calendar.HOUR_OF_DAY)
                 || ( current.get(Calendar.HOUR_OF_DAY) == endHour.get(Calendar.HOUR_OF_DAY) &&
-                current.get(Calendar.MINUTE) < startHour.get(Calendar.MINUTE)
+                current.get(Calendar.MINUTE) < endHour.get(Calendar.MINUTE)
         );
 
         boolean happening = isAfterStart && isBeforeEnd;
