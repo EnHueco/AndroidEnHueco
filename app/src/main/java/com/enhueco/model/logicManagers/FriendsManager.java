@@ -2,6 +2,7 @@ package com.enhueco.model.logicManagers;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.EnHueco;
@@ -37,14 +38,16 @@ public class FriendsManager extends LogicManager
         return instance;
     }
 
-    private FriendsManager() {}
+    private FriendsManager()
+    {
+    }
 
     /**
      * Fetches updates for both outgoing and incoming friend requests on the server and notifies the result via Notification Center.
      * Notifications
      * -EHSystemNotification.SystemDidReceiveFriendRequestUpdates in case of success
      */
-    public void fetchFriendRequests()
+    public void fetchFriendRequests(final CompletionListener<ArrayList<UserSearch>> completionListener)
     {
         ConnectionManagerArrayRequest incomingRequestsRequest = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.INCOMING_FRIEND_REQUESTS_SEGMENT, HTTPMethod.GET, Optional.<String>absent());
         ConnectionManager.sendAsyncRequest(incomingRequestsRequest, new ConnectionManagerCompletionHandler<JSONArray>()
@@ -54,32 +57,31 @@ public class FriendsManager extends LogicManager
             {
                 try
                 {
-                    ArrayList<User> requests = new ArrayList<>();
+                    ArrayList<UserSearch> requests = new ArrayList<>();
                     for (int i = 0; i < array.length(); i++)
                     {
                         JSONObject user = array.getJSONObject(i);
-                        requests.add(new User(user));
+                        requests.add(new UserSearch(user));
                     }
-                    Intent intent = new Intent(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_REQUEST_UPDATES);
-                    intent.putExtra(FriendRequestsActivity.EXTRA_REQUESTS, requests);
-                    LocalBroadcastManager.getInstance(EHApplication.getAppContext()).sendBroadcast(intent);
+                    callCompletionListenerSuccessHandlerOnMainThread(completionListener, requests);
                 }
                 catch (Exception e)
                 {
-                    e.printStackTrace();
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
                 }
             }
 
             @Override
             public void onFailure(ConnectionManagerCompoundError error)
             {
+                callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
             }
         });
     }
 
     /**
      * Sends a friend request to the username provided and notifies the result via Notification Center.
-     * <p>
+     * <p/>
      * Notifications
      * - EHSystemNotification.SystemDidSendFriendRequest in case of success
      * - EHSystemNotification.SystemDidFailToSendFriendRequest in case of failure
@@ -123,17 +125,12 @@ public class FriendsManager extends LogicManager
             @Override
             public void onSuccess(JSONObject friendship)
             {
-                try
-                {
-                    User friend = new User(friendship.getJSONObject("secondUser"));
-                    EnHueco.getInstance().getAppUser().getFriends().put(friend.getUsername(), friend);
 
-                    callCompletionListenerSuccessHandlerOnMainThread(listener);
-                }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
+//                    User friend = new User(friendship.getJSONObject("secondUser"));
+//                    EnHueco.getInstance().getAppUser().getFriends().put(friend.getUsername(), friend);
+
+                callCompletionListenerSuccessHandlerOnMainThread(listener);
+
             }
 
             @Override
@@ -143,8 +140,8 @@ public class FriendsManager extends LogicManager
             }
         });
     }
-    
-    public void deleteFriend (final User friend, final BasicCompletionListener completionListener)
+
+    public void deleteFriend(final User friend, final BasicCompletionListener completionListener)
     {
         String url = EHURLS.BASE + EHURLS.FRIENDS_SEGMENT + friend.getUsername() + "/";
 
@@ -183,7 +180,7 @@ public class FriendsManager extends LogicManager
      */
     public void searchUsers(String id, final CompletionListener<List<UserSearch>> listener)
     {
-        ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<String >absent());
+        ConnectionManagerArrayRequest request = new ConnectionManagerArrayRequest(EHURLS.BASE + EHURLS.USERS_SEARCH + id, HTTPMethod.GET, Optional.<String>absent());
 
         ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONArray>()
         {
@@ -197,6 +194,7 @@ public class FriendsManager extends LogicManager
                     {
                         JSONObject jsonUser = array.getJSONObject(i);
                         users.add(new UserSearch(jsonUser));
+
                     }
 
                     callCompletionListenerSuccessHandlerOnMainThread(listener, users);

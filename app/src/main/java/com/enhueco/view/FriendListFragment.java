@@ -65,15 +65,6 @@ public class FriendListFragment extends ListFragment
         filteredFriends.addAll(EnHueco.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                refresh();
-            }
-        }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
     }
 
     @Override
