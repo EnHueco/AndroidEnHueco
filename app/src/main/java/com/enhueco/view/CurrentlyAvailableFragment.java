@@ -312,12 +312,12 @@ public class CurrentlyAvailableFragment extends ListFragment
             tvFreeTimeName.setText(event.getName().or(""));
 
             TextView tv2 = (TextView) view.findViewById(R.id.freeTimeEndTime);
-            LocalTime localTime = event.getEndHourInLocalTimezone();
 
-            DateTime dateTime = localTime.toDateTimeToday(DateTimeZone.UTC);
+            DateTime startDateTime = event.getStartHourInLocalTimezone().toDateTimeToday(DateTimeZone.UTC);
+            DateTime endDateTime = event.getEndHourInLocalTimezone().toDateTimeToday(DateTimeZone.UTC);
             DateTimeFormatter dtf = DateTimeFormat.forPattern("hh:mm a");
 
-            tv2.setText(dtf.print(dateTime));
+            tv2.setText(dtf.print(startDateTime) + " - " + dtf.print(endDateTime));
             return view;
         }
     }

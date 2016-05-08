@@ -252,14 +252,18 @@ public class FriendListFragment extends ListFragment
             if(eventShown.isPresent())
             {
                 DateTime dateTime = eventShown.get().getEndHour().toDateTimeToday(DateTimeZone.UTC);
+
+
+                DateTime startDateTime = eventShown.get().getStartHourInLocalTimezone().toDateTimeToday(DateTimeZone.UTC);
+                DateTime endDateTime = eventShown.get().getEndHourInLocalTimezone().toDateTimeToday(DateTimeZone.UTC);
                 DateTimeFormatter dtf = DateTimeFormat.forPattern("hh:mm a");
 
-                nextFreeTimeHourTextView.setText(dtf.print(dateTime));
+                nextFreeTimeHourTextView.setText(dtf.print(startDateTime) + " - " + dtf.print(endDateTime));
                 nextFreeTimeHourNameTextView.setText(eventShown.get().getName().or(""));
             }
             else
             {
-                nextFreeTimeHourTextView.setText("-- --");
+                nextFreeTimeHourTextView.setText("");
                 nextFreeTimeHourNameTextView.setText("");
             }
 
