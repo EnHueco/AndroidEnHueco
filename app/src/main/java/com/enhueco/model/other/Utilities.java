@@ -7,6 +7,10 @@ import android.widget.Toast;
 import com.enhueco.view.SearchNewFriendsActivity;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Transformation;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,25 +25,23 @@ import java.util.TimeZone;
  */
 public class Utilities
 {
+
+    private final static String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ss";
     /**
-     * Transforms server encoded string date into a Java Date object
+     * Transforms server encoded string date into a Joda Time DateTime
      * @param stringDate Server encoded string date
-     * @return new Date containing input values
-     * @throws ParseException In case the string is not correctly encoded
+     * @return new LocalTime containing input values
      */
-    public static Date getDateFromServerString(String stringDate)
+    public static LocalTime getLocalTimeFromServerString(String stringDate)
     {
-        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try
-        {
-            return df1.parse(stringDate);
-        }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
+        DateTime dateTime = getDateTimeFromServerString(stringDate);
+        return dateTime.toLocalTime();
+    }
+
+    public static DateTime getDateTimeFromServerString(String string)
+    {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(dateFormatPattern).withZoneUTC();
+        return dtf.parseDateTime(string);
     }
 
     public static TimeZone getDeviceTimezone()
@@ -50,13 +52,12 @@ public class Utilities
 
     /**
      * Transforms a date into a string formatted for the server
-     * @param date Server encoded string date
+     * @param dateTime Server encoded string date
      */
-    public static String getServerFormattedStringFromDate(Date date)
+    public static String getServerFormattedStringFromDate(DateTime dateTime)
     {
-        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return df1.format(date);
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(dateFormatPattern).withZoneUTC();
+        return dtf.print(dateTime);
     }
 
     public static int getSecondsUntilTomorrow()
@@ -323,4 +324,13 @@ public class Utilities
         return new RoundedTransformationBuilder().oval(true).build();
     }
 
+    public static int serverWeekDayToJodaWeekDay(int serverWeekDay)
+    {
+        return ((serverWeekDay+5)%7)+1;
+    }
+
+    public static int jodaWeekDayToServerWeekDay(int jodaWeekDay)
+    {
+        return ((jodaWeekDay+1)%8);
+    }
 }

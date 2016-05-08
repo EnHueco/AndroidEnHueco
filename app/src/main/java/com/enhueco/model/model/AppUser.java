@@ -4,6 +4,7 @@ import android.util.Log;
 import com.enhueco.model.logicManagers.privacyManager.PrivacyManager;
 import com.enhueco.model.logicManagers.privacyManager.PrivacySetting;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +57,7 @@ public class AppUser extends User implements Serializable
     //////////////////////////////////
 
     public AppUser(String username, String token, String firstNames, String lastNames, String phoneNumber,
-                   Optional<String> imageURL, String imageThumbnail, String ID, Date lastUpdatedOn)
+                   Optional<String> imageURL, String imageThumbnail, String ID, DateTime lastUpdatedOn)
     {
         super(username, firstNames, lastNames, phoneNumber, imageURL, imageThumbnail, ID, lastUpdatedOn);
 
@@ -104,64 +105,6 @@ public class AppUser extends User implements Serializable
                 friend.refreshIsNearby();
             }
         }
-    }
-
-    /**
-     * Generates QR encoded representation of user.
-     *
-     * @return representation QR encoded representation of user.
-     */
-    public String getStringEncodedRepresentation()
-    {
-        StringBuilder sb = new StringBuilder();
-
-        // Add username
-        sb.append(getUsername());
-        sb.append(UserStringEncodingSeparationCharacters.splitCharacter);
-        // Add names
-        sb.append(getFirstNames());
-        sb.append(UserStringEncodingSeparationCharacters.separationCharacter);
-        sb.append(getLastNames());
-        sb.append(UserStringEncodingSeparationCharacters.splitCharacter);
-        // Add phone
-        sb.append(getPhoneNumber());
-        sb.append(UserStringEncodingSeparationCharacters.splitCharacter);
-        // Add image
-        sb.append(getImageURL().get());
-        sb.append(UserStringEncodingSeparationCharacters.splitCharacter);
-
-        boolean firstEvent = true;
-
-        // Add events
-        int i = 1;
-
-        for (DaySchedule currentDS : getSchedule().getWeekDays())
-        {
-            for (Event currentEvent : currentDS.getEvents())
-            {
-                Event.EventType eventType = currentEvent.getType();
-                DecimalFormat mFormat = new DecimalFormat("00");
-
-                if (firstEvent) firstEvent = false;
-                else if (!firstEvent) sb.append(UserStringEncodingSeparationCharacters.multipleElementsCharacter);
-                // Add Class and weekday
-                sb.append(eventType.equals(Event.EventType.CLASS) ? 'C' : 'G');
-                sb.append(UserStringEncodingSeparationCharacters.separationCharacter);
-                sb.append(i);
-                sb.append(UserStringEncodingSeparationCharacters.separationCharacter);
-                // Add hours
-                sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.HOUR_OF_DAY)));
-                sb.append(UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter);
-                sb.append(mFormat.format(currentEvent.getStartHour().get(Calendar.MINUTE)));
-                sb.append(UserStringEncodingSeparationCharacters.separationCharacter);
-                sb.append(mFormat.format(currentEvent.getEndHour().get(Calendar.HOUR_OF_DAY)));
-                sb.append(UserStringEncodingSeparationCharacters.hourMinuteSeparationCharacter);
-                sb.append(mFormat.format(currentEvent.getEndHour().get(Calendar.MINUTE)));
-            }
-            i++;
-        }
-        sb.append(UserStringEncodingSeparationCharacters.splitCharacter);
-        return sb.toString();
     }
 
     //////////////////////////////////

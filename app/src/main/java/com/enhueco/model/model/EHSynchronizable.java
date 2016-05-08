@@ -1,5 +1,7 @@
 package com.enhueco.model.model;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,13 +15,13 @@ public class EHSynchronizable implements Serializable
     //////////////////////////////////
 
     private String ID;
-    private Date updatedOn;
+    private DateTime updatedOn;
 
     //////////////////////////////////
     //         Constructors         //
     //////////////////////////////////
 
-    public EHSynchronizable(String ID, Date lastUpdatedOn)
+    public EHSynchronizable(String ID, DateTime lastUpdatedOn)
     {
         this.ID = ID;
         this.updatedOn = lastUpdatedOn;
@@ -39,12 +41,12 @@ public class EHSynchronizable implements Serializable
         this.ID = ID;
     }
 
-    public Date getUpdatedOn()
+    public DateTime getUpdatedOn()
     {
         return updatedOn;
     }
 
-    public void setUpdatedOn(Date updatedOn)
+    public void setUpdatedOn(DateTime updatedOn)
     {
         this.updatedOn = updatedOn;
     }

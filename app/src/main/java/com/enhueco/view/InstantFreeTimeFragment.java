@@ -22,6 +22,8 @@ import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -134,10 +136,10 @@ public class InstantFreeTimeFragment extends DialogFragment
     {
         final EHProgressDialog dialog = new EHProgressDialog(getContext());
         dialog.show();
-        Calendar endTimeInUTC = (Calendar) endTime.clone();
-        endTimeInUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+        LocalTime endTime = LocalTime.now(DateTimeZone.UTC);
 
-        InstantFreeTimeEvent freeTimeEvent = new InstantFreeTimeEvent(nameEditText.getText().toString(), endTimeInUTC, locationEditText.getText().toString());
+        InstantFreeTimeEvent freeTimeEvent = new InstantFreeTimeEvent(nameEditText.getText().toString(), endTime,
+                locationEditText.getText().toString());
 
         ImmediateEventManager.getSharedManager().createInstantFreeTimeEvent(freeTimeEvent, new BasicCompletionListener()
         {

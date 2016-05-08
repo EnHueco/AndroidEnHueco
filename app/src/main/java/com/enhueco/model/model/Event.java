@@ -1,12 +1,14 @@
 package com.enhueco.model.model;
 
 import android.util.Log;
+import com.bumptech.glide.util.Util;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +24,9 @@ import java.util.TimeZone;
 public class Event implements Serializable, Comparable<Event>
 {
 
+
+    private int endHourWeekday;
+    private int startHourWeekday;
 
     public enum EventType
     {
@@ -50,12 +55,12 @@ public class Event implements Serializable, Comparable<Event>
     /**
      * Event's start hour
      */
-    private final Calendar startHour;
+    private final LocalTime startHour;
 
     /**
      * Event's end hour
      */
-    private final Calendar endHour;
+    private final LocalTime endHour;
 
     /**
      * Event's location
@@ -66,33 +71,18 @@ public class Event implements Serializable, Comparable<Event>
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public Event(EventType type, Optional<String> name, Optional<String> location, int startHour, int startMinute, int endHour, int endMinute)
+    public Event(EventType type, Optional<String> name, Optional<String> location, int startHourWeekday, int
+            startHour, int startMinute, int endHourWeekday, int endHour, int endMinute)
     {
         this.type = type;
         this.name = name;
         this.location = location;
 
-        Calendar startCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        startCalendar.set(Calendar.HOUR_OF_DAY, startHour);
-        startCalendar.set(Calendar.MINUTE, startMinute);
-        this.startHour = startCalendar;
-
-        Calendar endCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        endCalendar.set(Calendar.HOUR_OF_DAY, endHour);
-        endCalendar.set(Calendar.MINUTE, endMinute);
-        this.endHour = startCalendar;
+        this.startHour = new LocalTime(startHour, startMinute);
+        this.startHourWeekday = startHourWeekday;
+        this.endHour = new LocalTime(endHour, endMinute);
+        this.endHourWeekday = endHourWeekday;
     }
-
-    public Event(EventType eventType, Optional<String> name, Optional<String> location, Calendar startTime, Calendar
-            endTime)
-    {
-        this.type = eventType;
-        this.name = name;
-        this.location = location;
-        this.startHour = startTime;
-        this.endHour = endTime;
-    }
-
 
     public Event(ImmediateEvent iEvent)
     {
@@ -101,9 +91,13 @@ public class Event implements Serializable, Comparable<Event>
         this.location = Optional.of(iEvent.getLocation());
         this.endHour = iEvent.getEndHour();
         this.startHour = iEvent.getEndHour();
+        this.startHourWeekday = DateTime.now(DateTimeZone.UTC).getDayOfWeek();
+        this.endHourWeekday = DateTime.now(DateTimeZone.UTC).getDayOfWeek();
     }
+
     /**
      * Creates new Event from a JSONObject representation
+     *
      * @param object JSONObject representation
      * @return Event Event created
      * @throws JSONException JSON if object not successfully created
@@ -112,10 +106,6 @@ public class Event implements Serializable, Comparable<Event>
     {
         // Type
         String typeString = object.getString("type");
-
-        // Weekdays
-        int startHourWeekday = Integer.parseInt(object.getString("start_hour_weekday"));
-        int endHourWeekday = Integer.parseInt(object.getString("end_hour_weekday"));
 
         // Start hour
         String[] startHourStringComponents = object.getString("start_hour").split(":");
@@ -128,9 +118,13 @@ public class Event implements Serializable, Comparable<Event>
 
         this.name = Optional.fromNullable(object.getString("name"));
         this.location = Optional.fromNullable(object.getString("location"));
-        this.type = typeString.equals("FREE_TIME")? EventType.FREE_TIME : EventType.CLASS;
-        this.startHour = Utilities.calendarWithWeekdayHourMinute(startHourWeekday, startHour, startMinute);
-        this.endHour = Utilities.calendarWithWeekdayHourMinute(endHourWeekday, endHour, endMinute);
+        this.type = typeString.equals("FREE_TIME") ? EventType.FREE_TIME : EventType.CLASS;
+        this.startHour = new LocalTime(startHour, startMinute);
+        this.endHour = new LocalTime(endHour, endMinute);
+        this.startHourWeekday = Utilities.serverWeekDayToJodaWeekDay(Integer.parseInt(object.getString
+                ("start_hour_weekday")));
+        this.endHourWeekday = Utilities.serverWeekDayToJodaWeekDay(Integer.parseInt(object.getString
+                ("end_hour_weekday")));
 
     }
 
@@ -139,17 +133,18 @@ public class Event implements Serializable, Comparable<Event>
     //////////////////////////////////
 
     /**
-     * Checks if event's time is agter current time.
+     * Checks if event's time is after current time.
+     *
      * @return afterCurrentTime True if event is after current time.
      */
     public boolean isAfterCurrentTime()
     {
-        boolean afterCurrentTime = this.getStartHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) > 0;
-        return afterCurrentTime;
+        return startHour.isAfter(LocalTime.now(DateTimeZone.UTC));
     }
 
     /**
      * Generates a JSONObject representation of the event
+     *
      * @return object JSONObject representation of event
      */
     public JSONObject toJSONObject() throws JSONException
@@ -159,22 +154,27 @@ public class Event implements Serializable, Comparable<Event>
         object.put("type", type);
         object.put("name", name.orNull());
         object.put("location", location.orNull());
-        object.put("start_hour_weekday", startHour.get(Calendar.DAY_OF_WEEK));
-        object.put("end_hour_weekday", endHour.get(Calendar.DAY_OF_WEEK));
-        object.put("start_hour", startHour.get(Calendar.HOUR_OF_DAY)+":"+ startHour.get(Calendar.MINUTE));
-        object.put("end_hour", endHour.get(Calendar.HOUR_OF_DAY)+":"+ endHour.get(Calendar.MINUTE));
+        object.put("start_hour_weekday", Utilities.jodaWeekDayToServerWeekDay(startHourWeekday));
+        object.put("end_hour_weekday", Utilities.jodaWeekDayToServerWeekDay(endHourWeekday));
+        object.put("start_hour", startHour.getHourOfDay() + ":" + startHour.getMinuteOfHour());
+        object.put("end_hour", endHour.getHourOfDay() + ":" + endHour.getMinuteOfHour());
 
         return object;
     }
 
+    //TODO
+    /*
+
     /**
      * Returns the start hour (Weekday, Hour, Minute) by setting the components to the date provided.
+     *
      * @param date Date to which start hour will be set
      * @return newDate Date with new components
-     */
-    public Date getStartHourInDate (Date date)
+
+    public Date getStartHourInDate(Date date)
     {
-        Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        // TODO
+        /*Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         globalCalendar.setTime(date);
 
         globalCalendar.set(Calendar.DAY_OF_WEEK, startHour.get(Calendar.DAY_OF_WEEK));
@@ -183,15 +183,18 @@ public class Event implements Serializable, Comparable<Event>
         globalCalendar.set(Calendar.SECOND, 0);
 
         return globalCalendar.getTime();
+
     }
 
     /**
      * Returns the end hour (Weekday, Hour, Minute) by setting the components to the date provided.
+     *
      * @param date Date to which start hour will be set
      * @return newDate Date with new components
-     */
-    public Date getEndHourInDate (Date date)
+
+    public Date getEndHourInDate(Date date)
     {
+
         Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         globalCalendar.setTime(date);
 
@@ -205,11 +208,12 @@ public class Event implements Serializable, Comparable<Event>
 
     /**
      * Retrieves a calendar in local timezone with event's start hour.
+     *
      * @return cal Calendar with event's start hour.
-     */
+
     public Calendar getStartHourCalendarInLocalTimezone()
     {
-        Calendar cal = ((Calendar)startHour.clone());
+        Calendar cal = ((Calendar) startHour.clone());
         Log.v("EVENT", cal.getTimeZone().getDisplayName());
         Log.v("EVENT", cal.get(Calendar.HOUR_OF_DAY) + "");
         cal.setTimeZone(TimeZone.getDefault());
@@ -221,37 +225,27 @@ public class Event implements Serializable, Comparable<Event>
 
     /**
      * Retrieves a calendar in local timezone with event's end hour.
+     *
      * @return cal Calendar with event's end hour.
-     */
+
     public Calendar getEndHourCalendarInLocalTimezone()
     {
-        Calendar cal = ((Calendar)endHour.clone());
+        Calendar cal = ((Calendar) endHour.clone());
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.setTimeZone(TimeZone.getDefault());
         return cal;
     }
 
+    */
     /**
      * Checks if event is currently happening.
+     *
      * @return happening True if event is happening right now, false otherwise
      */
     public boolean isCurrentlyHappening()
     {
-        Calendar current = Calendar.getInstance(TimeZone.getDefault());
-        Calendar startHour = this.getStartHourCalendarInLocalTimezone();
-        Calendar endHour = this.getEndHourCalendarInLocalTimezone();
-
-        boolean isAfterStart = current.get(Calendar.HOUR_OF_DAY) > startHour.get(Calendar.HOUR_OF_DAY)
-                || ( current.get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY) &&
-                current.get(Calendar.MINUTE) >= startHour.get(Calendar.MINUTE)
-        );
-
-        boolean isBeforeEnd = current.get(Calendar.HOUR_OF_DAY) < endHour.get(Calendar.HOUR_OF_DAY)
-                || ( current.get(Calendar.HOUR_OF_DAY) == endHour.get(Calendar.HOUR_OF_DAY) &&
-                current.get(Calendar.MINUTE) < endHour.get(Calendar.MINUTE)
-        );
-
-        boolean happening = isAfterStart && isBeforeEnd;
+        LocalTime current = new LocalTime(DateTimeZone.UTC);
+        boolean happening = current.isAfter(this.startHour) && current.isBefore(this.endHour);
         return happening;
     }
 
@@ -279,12 +273,24 @@ public class Event implements Serializable, Comparable<Event>
         return type;
     }
 
-    public Calendar getStartHour()
+    public LocalTime getStartHour()
     {
         return startHour;
     }
 
-    public Calendar getEndHour()
+    public LocalTime getStartHourInLocalTimezone()
+    {
+        return startHour.toDateTimeToday(DateTimeZone.UTC).withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
+                .toLocalTime();
+    }
+
+    public LocalTime getEndHourInLocalTimezone()
+    {
+        return endHour.toDateTimeToday(DateTimeZone.UTC).withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
+                .toLocalTime();
+    }
+
+    public LocalTime getEndHour()
     {
         return endHour;
     }
@@ -294,9 +300,22 @@ public class Event implements Serializable, Comparable<Event>
         return location;
     }
 
-    public int getWeekday()
+    public int getEndHourWeekday()
     {
-        return startHour.get(Calendar.DAY_OF_WEEK);
+        return endHourWeekday;
+    }
+
+    public int getStartHourWeekday()
+    {
+        return startHourWeekday;
+    }
+
+    public int getLocalWeekDay()
+    {
+        DateTime dateTime = startHour.toDateTimeToday(DateTimeZone.UTC);
+        while(dateTime.getDayOfWeek() != startHourWeekday) dateTime = dateTime.plusDays(1);
+        dateTime = dateTime.withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+        return dateTime.getDayOfWeek();
     }
 
     /////////////////////////////////
@@ -306,28 +325,6 @@ public class Event implements Serializable, Comparable<Event>
     @Override
     public int compareTo(Event another)
     {
-        if(another == null) return 1;
-        Calendar thisLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        thisLocal.set(Calendar.HOUR_OF_DAY, this.getStartHour().get(Calendar.HOUR_OF_DAY));
-        thisLocal.set(Calendar.MINUTE, this.getStartHour().get(Calendar.MINUTE));
-        thisLocal.setTimeZone(TimeZone.getDefault());
-
-        Calendar anotherLocal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        anotherLocal.set(Calendar.HOUR_OF_DAY, another.getStartHour().get(Calendar.HOUR_OF_DAY));
-        anotherLocal.set(Calendar.MINUTE, another.getStartHour().get(Calendar.MINUTE));
-        anotherLocal.setTimeZone(TimeZone.getDefault());
-
-        // this has a greater time
-        if((thisLocal.get(Calendar.HOUR_OF_DAY) > anotherLocal.get(Calendar.HOUR_OF_DAY))
-                || ( thisLocal.get(Calendar.HOUR_OF_DAY) == anotherLocal.get(Calendar.HOUR_OF_DAY) &&
-                thisLocal.get(Calendar.MINUTE) > anotherLocal.get(Calendar.MINUTE))
-                )
-            return 1;
-            // both have same time
-        else if ( thisLocal.get(Calendar.HOUR_OF_DAY) == anotherLocal.get(Calendar.HOUR_OF_DAY) &&
-                thisLocal.get(Calendar.MINUTE) == anotherLocal.get(Calendar.MINUTE))
-            return 0;
-            // another has greater time
-        else return -1;
+        return startHour.compareTo(another.startHour);
     }
 }

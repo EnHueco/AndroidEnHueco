@@ -2,6 +2,8 @@ package com.enhueco.model.model;
 
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,31 +40,6 @@ public class Schedule extends EHSynchronizable implements Serializable
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public Schedule()
-    {
-        super("", new Date());
-
-        weekDays = new DaySchedule[8];
-
-        for (int i = 1; i < weekDays.length; i++)
-        {
-            weekDays[i] = new DaySchedule(weekDayNames[i - 1]);
-        }
-    }
-
-    public Schedule(Date updatedOn)
-    {
-        super("", updatedOn);
-
-        weekDays = new DaySchedule[8];
-
-        for (int i = 1; i < weekDays.length; i++)
-        {
-            weekDays[i] = new DaySchedule(weekDayNames[i - 1]);
-        }
-    }
-
-
     /**
      * Creates a new schedule from a JSONArray representation
      * @param updatedOn date when schedule was last updated on
@@ -70,9 +47,16 @@ public class Schedule extends EHSynchronizable implements Serializable
      * @return schedule new schedule with all events and attributes set
      * @throws JSONException if JSONArray is incorrectly typed
      */
-    public static Schedule fromJSON(Date updatedOn, JSONArray eventsArray) throws JSONException
+    public Schedule(DateTime updatedOn, JSONArray eventsArray) throws JSONException
     {
-        Schedule schedule = new Schedule(updatedOn);
+        super("", updatedOn);
+
+        weekDays = new DaySchedule[8];
+
+        for (int i = 1; i < weekDays.length; i++)
+        {
+            weekDays[i] = new DaySchedule(weekDayNames[i - 1], i);
+        }
 
         for(int i = 0; i < eventsArray.length(); i++)
         {
@@ -81,14 +65,12 @@ public class Schedule extends EHSynchronizable implements Serializable
             Event event = new Event(object);
 
             //Locate event in local array of weekdays based on its UTC startHour
-            Calendar calendar = (Calendar) event.getStartHour().clone();
-            calendar.setTimeZone(TimeZone.getDefault());
-            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+            int weekDay = event.getLocalWeekDay();
 
+            // TODO : This doesn't work with DST. So stop using array of weekdays.
             // Add event
-            schedule.weekDays[weekDay].addEvent(event);
+            weekDays[weekDay].addEvent(event);
         }
-        return schedule;
     }
 
     //////////////////////////////////

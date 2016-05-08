@@ -29,6 +29,10 @@ import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -247,19 +251,10 @@ public class FriendListFragment extends ListFragment
 
             if(eventShown.isPresent())
             {
-                DecimalFormat mFormat = new DecimalFormat("00");
-                String postFix = "AM";
+                DateTime dateTime = eventShown.get().getEndHour().toDateTimeToday(DateTimeZone.UTC);
+                DateTimeFormatter dtf = DateTimeFormat.forPattern("hh:mm a");
 
-                int hour = eventShown.get().getStartHourCalendarInLocalTimezone().get(Calendar.HOUR_OF_DAY);
-                int minute = eventShown.get().getStartHour().get(Calendar.MINUTE);
-                if(hour > 12)
-                {
-                    hour-=12;
-                    postFix = "PM";
-                }
-                String time = mFormat.format(hour) +  ":" + mFormat.format(minute) + " " + postFix;
-
-                nextFreeTimeHourTextView.setText(time);
+                nextFreeTimeHourTextView.setText(dtf.print(dateTime));
                 nextFreeTimeHourNameTextView.setText(eventShown.get().getName().or(""));
             }
             else

@@ -262,8 +262,8 @@ public class ProximityUpdatesManager implements Serializable
         if (nextFreeTimePeriod.isPresent())
         {
             //Start when next free time period starts
-            alarmTriggerCalendar.set(Calendar.HOUR_OF_DAY, nextFreeTimePeriod.get().getStartHour().get(Calendar.HOUR_OF_DAY));
-            alarmTriggerCalendar.set(Calendar.MINUTE, nextFreeTimePeriod.get().getStartHour().get(Calendar.MINUTE));
+            alarmTriggerCalendar.set(Calendar.HOUR_OF_DAY, nextFreeTimePeriod.get().getStartHour().getHourOfDay());
+            alarmTriggerCalendar.set(Calendar.MINUTE, nextFreeTimePeriod.get().getStartHour().getMinuteOfHour());
         }
         else //The day is over, user doesn't have more free time periods ahead
         {

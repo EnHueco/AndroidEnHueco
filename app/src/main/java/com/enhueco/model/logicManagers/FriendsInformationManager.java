@@ -1,13 +1,12 @@
 package com.enhueco.model.logicManagers;
 
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
-import com.enhueco.model.model.AppUser;
-import com.enhueco.model.model.EnHueco;
-import com.enhueco.model.model.User;
+import com.enhueco.model.model.*;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,52 +58,51 @@ public class FriendsInformationManager extends LogicManager
                 {
                     AppUser appUser = EnHueco.getInstance().getAppUser();
 
-                    JSONArray friendsToSync = new JSONArray();
-                    HashMap<String, Boolean> friendsInServer = new HashMap<String, Boolean>();
+                    ArrayList<UserSync> friendsToSync = new ArrayList<>();
+                    HashMap<String, UserSync> friendsInServer = new HashMap<>();
 
                     for (int i = 0; i < friendsJSON.length(); i++)
                     {
                         JSONObject friendJSON = friendsJSON.getJSONObject(i);
 
-                        String friendJSONID = friendJSON.getString("login");
-                        friendsInServer.put(friendJSONID, true);
-                        Date serverFriendupdatedOn = Utilities.getDateFromServerString(friendJSON.getString("updated_on"));
-                        Date serverFriendScheduleupdatedOn = Utilities.getDateFromServerString(friendJSON.getString("schedule_updated_on"));
+                        UserSync userSync = new UserSync(friendJSON);
+                        friendsInServer.put(userSync.getUsername(), userSync);
 
-                        // TODO: Use hash to search user
-                        User friendFound = null;
+                        boolean isNewFriend = !appUser.getFriends().containsKey(userSync.getUsername());
 
-                        for (User friend : appUser.getFriends().values())
+                        if (isNewFriend
+                                || appUser.getFriends().get(userSync.getUsername()).getUpdatedOn().isBefore(userSync.getUpdatedOn())
+                                || appUser.getFriends().get(userSync.getUsername()).getSchedule().getUpdatedOn()
+                                .isBefore(userSync.getScheduleUpdatedOn()))
                         {
-                            if (friend.getUsername().equals(friendJSONID)) friendFound = friend;
-                        }
-
-                        if (friendFound == null
-                                || serverFriendupdatedOn.getTime() > friendFound.getUpdatedOn().getTime()
-                                || serverFriendScheduleupdatedOn.getTime() > friendFound.getSchedule().getUpdatedOn().getTime())
-                        {
-                            friendJSON.remove("updated_on");
-                            friendJSON.remove("schedule_updated_on");
-                            friendsToSync.put(friendJSON);
+                            friendsToSync.add(userSync);
                         }
                     }
 
+                    // Delete not found friends
                     ArrayList<User> friendsToDelete = new ArrayList<>();
 
                     for (User friend : appUser.getFriends().values())
                     {
-                        if (!friendsInServer.containsKey(friend.getUsername()))
-                        {
-                            friendsToDelete.add(friend);
-                        }
+                        if (!friendsInServer.containsKey(friend.getUsername())) friendsToDelete.add(friend);
                     }
-                    for( User friend : friendsToDelete)
+                    for (User friend : friendsToDelete)
                     {
                         appUser.getFriends().remove(friend.getUsername());
                     }
 
-                    boolean hasToSyncFriends = friendsToDelete.size() > 0 || friendsToSync.length() > 0;
-                    if (hasToSyncFriends) _fetchUpdatesForFriendsAndFriendSchedules(friendsToSync, completionListener);
+                    // Sync friends
+                    boolean hasToSyncFriends = friendsToDelete.size() > 0 || friendsToSync.size() > 0;
+
+                    if (hasToSyncFriends)
+                    {
+                        JSONArray jsonArray = new JSONArray();
+                        for(UserSync user : friendsToSync)
+                        {
+                            jsonArray.put(user.toJSON());
+                        }
+                        _fetchUpdatesForFriendsAndFriendSchedules(jsonArray, completionListener);
+                    }
                     else
                     {
                         callCompletionListenerSuccessHandlerOnMainThread(completionListener);

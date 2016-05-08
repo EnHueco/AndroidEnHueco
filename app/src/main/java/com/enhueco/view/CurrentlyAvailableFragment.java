@@ -37,12 +37,14 @@ import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * A fragment representing a list of Items.
@@ -66,7 +68,9 @@ public class CurrentlyAvailableFragment extends ListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CurrentlyAvailableFragment() {}
+    public CurrentlyAvailableFragment()
+    {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -205,8 +209,7 @@ public class CurrentlyAvailableFragment extends ListFragment
         // Add user immediate event if currently happening
         Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
 
-            if (instantFreeTimePeriod.isPresent() &&
-                instantFreeTimePeriod.get().getEndHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0 &&
+        if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().isCurrentlyHappening() &&
                 instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
             currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
@@ -234,11 +237,11 @@ public class CurrentlyAvailableFragment extends ListFragment
         if (null != mListener)
         {
             Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
-            boolean instantFreeTimeActive = instantFreeTimePeriod.isPresent() &&
-                    instantFreeTimePeriod.get().getEndHour().compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0 &&
-                    instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT);
+            boolean instantFreeTimeActive = instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get()
+                    .isCurrentlyHappening() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent
+                    .ImmediateEventType.EVENT);
 
-            if(instantFreeTimeActive && position == 0) return;
+            if (instantFreeTimeActive && position == 0) return;
             Intent intent = new Intent(getActivity(), FriendDetailActivity.class);
             intent.putExtra("friendID", currentlyAvailableFriends.get(position).first.getID());
             startActivity(intent);
@@ -304,24 +307,17 @@ public class CurrentlyAvailableFragment extends ListFragment
             TextView tv1 = (TextView) view.findViewById(R.id.nameTextView);
             tv1.setText(user.toString());
 
-            TextView tv2 = (TextView) view.findViewById(R.id.freeTimeEndTime);
-            Calendar localTime = event.getEndHourCalendarInLocalTimezone();
 
-            TextView tvFreeTimeName= (TextView) view.findViewById(R.id.freeTimeName);
+            TextView tvFreeTimeName = (TextView) view.findViewById(R.id.freeTimeName);
             tvFreeTimeName.setText(event.getName().or(""));
 
-            DecimalFormat mFormat = new DecimalFormat("00");
+            TextView tv2 = (TextView) view.findViewById(R.id.freeTimeEndTime);
+            LocalTime localTime = event.getEndHourInLocalTimezone();
 
-            int hour = localTime.get(Calendar.HOUR_OF_DAY);
-            String ampm = "AM";
-            if(localTime.get(Calendar.HOUR_OF_DAY) > 12)
-            {
-                hour-=12; ampm = "PM";
-            }
+            DateTime dateTime = localTime.toDateTimeToday(DateTimeZone.UTC);
+            DateTimeFormatter dtf = DateTimeFormat.forPattern("hh:mm a");
 
-            String timeRemaining = mFormat.format(hour) + ":"
-                    + mFormat.format(localTime.get(Calendar.MINUTE)) + " " + ampm;
-            tv2.setText(timeRemaining);
+            tv2.setText(dtf.print(dateTime));
             return view;
         }
     }

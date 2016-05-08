@@ -1,13 +1,14 @@
 package com.enhueco.model.model.immediateEvent;
 
 import com.enhueco.model.other.Utilities;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by Diego on 5/1/16.
@@ -53,14 +54,14 @@ public class ImmediateEvent implements Serializable
     /**
      * Event's end hour
      */
-    private Calendar endHour;
+    private LocalTime endHour;
 
     /**
      * Event's location
      */
     private final String location;
 
-    protected ImmediateEvent(String name, ImmediateEventType type, Calendar endHour, String location)
+    protected ImmediateEvent(String name, ImmediateEventType type, LocalTime endHour, String location)
     {
         this.name = name;
         this.type = type;
@@ -75,7 +76,9 @@ public class ImmediateEvent implements Serializable
         object.put("name", name);
         object.put("type", type.toString());
         object.put("location", location);
-        object.put("valid_until", Utilities.getServerFormattedStringFromDate(endHour.getTime()));
+
+        object.put("valid_until", Utilities.getServerFormattedStringFromDate(DateTime.now(DateTimeZone.UTC).withTime
+                (endHour)));
         return object;
     }
 
@@ -87,19 +90,18 @@ public class ImmediateEvent implements Serializable
         ImmediateEventType newType = null;
 
         String objectType = object.getString("type");
-        for(ImmediateEventType type : ImmediateEventType.values())
+        for (ImmediateEventType type : ImmediateEventType.values())
         {
-            if(type.toString().equals(objectType))
+            if (type.toString().equals(objectType))
             {
                 newType = type;
                 break;
             }
         }
-        if(newType == null) throw new JSONException("JSON 'type' value has no correspondence with model types");
+        if (newType == null) throw new JSONException("JSON 'type' value has no correspondence with model types");
         else this.type = newType;
 
-        this.endHour = Calendar.getInstance();
-        this.endHour.setTime(Utilities.getDateFromServerString(object.getString("valid_until")));
+        this.endHour = Utilities.getLocalTimeFromServerString(object.getString("valid_until"));
     }
 
     public String getName()
@@ -112,7 +114,7 @@ public class ImmediateEvent implements Serializable
         return type;
     }
 
-    public Calendar getEndHour()
+    public LocalTime getEndHour()
     {
         return endHour;
     }
@@ -122,31 +124,9 @@ public class ImmediateEvent implements Serializable
         return location;
     }
 
-    public void setEndHour(Calendar endHour)
-    {
-        this.endHour = endHour;
-    }
 
     public boolean isCurrentlyHappening()
     {
-        return endHour.compareTo(Calendar.getInstance(TimeZone.getTimeZone("UTC"))) >= 0;
-    }
-
-    /**
-     * Returns the end hour (Weekday, Hour, Minute) by setting the components to the date provided.
-     * @param date Date to which start hour will be set
-     * @return newDate Date with new components
-     */
-    public Date getEndHourInDate (Date date)
-    {
-        Calendar globalCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        globalCalendar.setTime(date);
-
-        globalCalendar.set(Calendar.DAY_OF_WEEK, endHour.get(Calendar.DAY_OF_WEEK));
-        globalCalendar.set(Calendar.HOUR_OF_DAY, endHour.get(Calendar.HOUR_OF_DAY));
-        globalCalendar.set(Calendar.MINUTE, endHour.get(Calendar.MINUTE));
-        globalCalendar.set(Calendar.SECOND, 0);
-
-        return globalCalendar.getTime();
+        return endHour.isBefore(new LocalTime(DateTimeZone.UTC));
     }
 }

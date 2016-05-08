@@ -1,5 +1,7 @@
 package com.enhueco.model.model.immediateEvent;
 
+import org.joda.time.LocalTime;
+
 import java.util.Calendar;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Calendar;
 public class InvisibilityEvent extends ImmediateEvent
 {
 
-    public InvisibilityEvent(Calendar endHour)
+    public InvisibilityEvent(LocalTime endHour)
     {
         super("", ImmediateEventType.INVISIBILITY, endHour, "");
     }

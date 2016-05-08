@@ -2,6 +2,9 @@ package com.enhueco.model.model;
 
 import android.util.Log;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import java.io.Serializable;
 import java.util.*;
@@ -21,6 +24,8 @@ public class DaySchedule implements Serializable
      */
     private final String weekDayName;
 
+    private final int weekDay;
+
     /**
      * Event tree
      */
@@ -30,14 +35,13 @@ public class DaySchedule implements Serializable
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public DaySchedule(String weekDayName)
+    public DaySchedule(String weekDayName, int weekDay)
     {
         this.weekDayName = weekDayName;
+        this.weekDay = weekDay;
         events = new TreeSet<>();
     }
-
-
-    //////////////////////////////////
+//////////////////////////////////
     //      Main Functionality      //
     //////////////////////////////////
 
@@ -50,19 +54,23 @@ public class DaySchedule implements Serializable
      */
     public boolean canAddEvent(Event newEvent, Optional<Event> eventToExclude)
     {
-        Date currentDate = new Date();
-
-        Date newEventStartHourInCurrentDate = newEvent.getStartHourInDate(currentDate);
-        Date newEventEndHourInCurrentDate = newEvent.getEndHourInDate(currentDate);
+        DateTime newEventStartHourDT = newEvent.getStartHour().toDateTimeToday(DateTimeZone.UTC).withZone
+                (DateTimeZone.forTimeZone(TimeZone.getDefault()));
+        DateTime newEventEndHourDT = newEvent.getEndHour().toDateTimeToday(DateTimeZone.UTC).withZone
+                (DateTimeZone.forTimeZone(TimeZone.getDefault()));
+        ;
 
         for (Event event : events)
         {
             if (!eventToExclude.isPresent() || !eventToExclude.get().equals(newEvent))
             {
-                Date startHourInCurrentDate = event.getStartHourInDate(currentDate);
-                Date endHourInCurrentDate = event.getEndHourInDate(currentDate);
+                DateTime eventStartHourDT = event.getStartHour().toDateTimeToday(DateTimeZone.UTC).withZone
+                        (DateTimeZone.forTimeZone(TimeZone.getDefault()));
+                DateTime eventEndHourDT = event.getEndHour().toDateTimeToday(DateTimeZone.UTC).withZone
+                        (DateTimeZone.forTimeZone(TimeZone.getDefault()));
 
-                if (!(newEventEndHourInCurrentDate.before(startHourInCurrentDate) || newEventStartHourInCurrentDate.after(endHourInCurrentDate)))
+                if ((newEventStartHourDT.isAfter(eventStartHourDT) && newEventStartHourDT.isBefore(eventStartHourDT))
+                        || (newEventEndHourDT.isBefore(eventEndHourDT) && newEventEndHourDT.isAfter(eventStartHourDT)))
                 {
                     return false;
                 }
@@ -97,7 +105,7 @@ public class DaySchedule implements Serializable
      *
      * @return True if all events could be added correctly
      */
-    public boolean addEvents(Event[] newEvents)
+    private boolean addEvents(Event[] newEvents)
     {
         for (Event newEvent : newEvents)
         {
@@ -121,16 +129,12 @@ public class DaySchedule implements Serializable
         return events.remove(event);
     }
 
-    public Optional<Event> getEventWithStartHour(Calendar startHour)
+    public Optional<Event> getEventWithStartHour(LocalTime startHour)
     {
         for (Event event : events)
         {
-            boolean sameDayOfWeek = event.getStartHour().get(Calendar.DAY_OF_WEEK) == startHour.get(Calendar.DAY_OF_WEEK);
-            Log.v("EVENT START HOUR", event.getStartHour().get(Calendar.HOUR_OF_DAY)+"");
-            Log.v("START HOUR HOUR", startHour.get(Calendar.HOUR_OF_DAY) + "");
-            boolean sameHourOfDay = event.getStartHour().get(Calendar.HOUR_OF_DAY) == startHour.get(Calendar.HOUR_OF_DAY);
-            boolean sameMinute = event.getStartHour().get(Calendar.MINUTE) == startHour.get(Calendar.MINUTE);
-            if (sameDayOfWeek && sameHourOfDay && sameMinute)
+
+            if (event.getStartHour().isEqual(startHour))
             {
                 return Optional.of(event);
             }
@@ -155,5 +159,10 @@ public class DaySchedule implements Serializable
     public void setEvents(Collection<Event> events)
     {
         this.events = new TreeSet<>(events);
+    }
+
+    public int getWeekDay()
+    {
+        return weekDay;
     }
 }

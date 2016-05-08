@@ -13,6 +13,8 @@ import com.enhueco.model.model.immediateEvent.InvisibilityEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.google.common.base.Optional;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,9 +52,6 @@ public class ImmediateEventManager extends LogicManager
                 {
                     try
                     {
-                        Log.v("IMMEDIATE EVENT MANAGER", "Update Successful");
-                        Log.v("IMMEDIATE EVENT MANAGER", jsonResponse.toString());
-
                         ImmediateEvent event = null;
                         event = new ImmediateEvent(jsonResponse);
                         EnHueco.getInstance().getAppUser().setInstantFreeTimePeriod(Optional.of(event));
@@ -103,17 +102,17 @@ public class ImmediateEventManager extends LogicManager
         Optional<ImmediateEvent> event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
         if (event.isPresent())
         {
-            Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            ImmediateEvent deletion;
+            LocalTime currentTime = new LocalTime(DateTimeZone.UTC);
+            ImmediateEvent deletionEvent;
             if (event.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
             {
-                deletion = new InstantFreeTimeEvent(event.get().getName(), currentTime, event.get().getLocation());
-                updateImmediateEvent(deletion, completionListener);
+                deletionEvent = new InstantFreeTimeEvent(event.get().getName(), currentTime, event.get().getLocation());
+                updateImmediateEvent(deletionEvent, completionListener);
             }
             else if (event.get().getType().equals(ImmediateEvent.ImmediateEventType.INVISIBILITY))
             {
-                deletion = new InvisibilityEvent(currentTime);
-                updateImmediateEvent(deletion, completionListener);
+                deletionEvent = new InvisibilityEvent(currentTime);
+                updateImmediateEvent(deletionEvent, completionListener);
             }
             else
             {
@@ -129,10 +128,8 @@ public class ImmediateEventManager extends LogicManager
      */
     public void turnInvisibleForTimeInterval(int seconds, final BasicCompletionListener completionListener)
     {
-        Calendar expiryCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiryCalendar.add(Calendar.SECOND, seconds);
-
-        InvisibilityEvent event = new InvisibilityEvent(expiryCalendar);
+        LocalTime time = LocalTime.now(DateTimeZone.UTC).plusSeconds(seconds);
+        InvisibilityEvent event = new InvisibilityEvent(time);
         updateImmediateEvent(event, completionListener);
     }
 

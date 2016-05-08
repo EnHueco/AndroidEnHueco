@@ -1,5 +1,7 @@
 package com.enhueco.model.model.immediateEvent;
 
+import org.joda.time.LocalTime;
+
 import java.util.Calendar;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Calendar;
 public class InstantFreeTimeEvent extends ImmediateEvent
 {
 
-    public InstantFreeTimeEvent(String name, Calendar endHour, String location)
+    public InstantFreeTimeEvent(String name, LocalTime endHour, String location)
     {
         super(name, ImmediateEventType.EVENT, endHour, location);
     }

@@ -49,7 +49,8 @@ public class ScheduleManager extends LogicManager
         AppUser appUser = EnHueco.getInstance().getAppUser();
 
         Date currentDate = new Date();
-        Schedule commonFreeTimePeriodsSchedule = new Schedule();
+        //Schedule commonFreeTimePeriodsSchedule = new Schedule();
+        return null;
 /*
         if (users.length < 2) return commonFreeTimePeriodsSchedule;
 
@@ -95,8 +96,8 @@ public class ScheduleManager extends LogicManager
 
             commonFreeTimePeriodsSchedule.getWeekDays()[i].setEvents(currentCommonFreeTimePeriods);
         }
-*/
         return commonFreeTimePeriodsSchedule;
+*/
     }
 
     /**
@@ -217,7 +218,7 @@ public class ScheduleManager extends LogicManager
                             JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
                             Event event = new Event(eventJSON);
 
-                            schedule.getWeekDays()[event.getWeekday()].addEvent(event);
+                            schedule.getWeekDays()[event.getLocalWeekDay()].addEvent(event);
                         }
                         PersistenceManager.getSharedManager().persistData();
                         callCompletionListenerSuccessHandlerOnMainThread(completionListener);

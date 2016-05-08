@@ -17,19 +17,18 @@ import android.widget.TimePicker;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.enhueco.model.logicManagers.PersistenceManager;
 import com.enhueco.model.logicManagers.ScheduleManager;
 import com.enhueco.model.model.*;
-import com.enhueco.model.logicManagers.SynchronizationManager;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.Utilities;
-import com.enhueco.model.structures.Tuple;
 import com.enhueco.R;
 import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
 import com.enhueco.model.model.EnHueco;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class AddEditEventActivity extends AppCompatActivity
@@ -49,7 +48,7 @@ public class AddEditEventActivity extends AppCompatActivity
     EditText endTimeText;
     @Bind(R.id.weekDaysEditText)
     EditText weekDaysText;
-    Calendar startTime, endTime;
+    LocalTime startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
 
@@ -73,9 +72,8 @@ public class AddEditEventActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Evento");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        startTime = Calendar.getInstance(TimeZone.getDefault());
-        endTime = Calendar.getInstance(TimeZone.getDefault());
-        endTime.add(Calendar.MINUTE, 30);
+        startTime = LocalTime.now();
+        endTime = LocalTime.now().plusMinutes(30);
         selectedWeekDays = new boolean[7];
         weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
 
@@ -89,14 +87,8 @@ public class AddEditEventActivity extends AppCompatActivity
             eventNameText.setText(eventToEdit.getName().orNull());
             eventLocationText.setText(eventToEdit.getLocation().orNull());
 
-            Calendar calendar = Calendar.getInstance();
-            Date currentDate = new Date();
-
-            calendar.setTime(eventToEdit.getStartHourInDate(currentDate));
-            startTime = (Calendar) calendar.clone();
-
-            calendar.setTime(eventToEdit.getEndHourInDate(currentDate));
-            endTime = (Calendar) calendar.clone();
+            startTime = eventToEdit.getStartHourInLocalTimezone();
+            endTime = eventToEdit.getEndHourInLocalTimezone();
 
             updateTextEdit(startTimeText, startTime);
             updateTextEdit(endTimeText, endTime);
@@ -105,20 +97,11 @@ public class AddEditEventActivity extends AppCompatActivity
         }
     }
 
-    private void updateCalendar(Calendar calendar, int hourOfDay, int minute)
+    private void updateTextEdit(EditText et, LocalTime time)
     {
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-    }
-
-    private void updateTextEdit(EditText et, Calendar calendar)
-    {
-        String ampm = (calendar.get(Calendar.AM_PM) == calendar.AM) ? "AM" : "PM";
-
-        DecimalFormat mFormat = new DecimalFormat("00");
-        et.setText(mFormat.format(Double.valueOf(calendar.get(Calendar.HOUR)))
-                + " : " + mFormat.format(Double.valueOf(calendar.get(Calendar.MINUTE)))
-                + " " + ampm);
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("hh : mm a");
+        String string = dtf.print(time);
+        et.setText(string);
     }
 
     @OnClick(R.id.startTimeEditText)
@@ -130,11 +113,11 @@ public class AddEditEventActivity extends AppCompatActivity
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute)
             {
-                updateCalendar(startTime, hourOfDay, minute);
+                startTime = startTime.withHourOfDay(hourOfDay).withMinuteOfHour(minute);
                 updateTextEdit(startTimeText, startTime);
 
             }
-        }, startTime.get(Calendar.HOUR_OF_DAY), startTime.get(Calendar.MINUTE), false);
+        }, startTime.getHourOfDay(), startTime.getMinuteOfHour(), false);
 
         startTimePicker.show();
     }
@@ -147,11 +130,11 @@ public class AddEditEventActivity extends AppCompatActivity
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute)
             {
-                updateCalendar(endTime, hourOfDay, minute);
+                endTime = endTime.withHourOfDay(hourOfDay).withMinuteOfHour(minute);
                 updateTextEdit(endTimeText, endTime);
 
             }
-        }, endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), false);
+        }, endTime.getHourOfDay(), endTime.getMinuteOfHour(), false);
 
         endTimePicker.show();
     }
@@ -230,29 +213,14 @@ public class AddEditEventActivity extends AppCompatActivity
         {
             if (!selectedWeekDays[i]) continue;
 
-            Calendar newEventStartTime = (Calendar) startTime.clone();
-            Calendar newEventEndTime = (Calendar) endTime.clone();
-
-            newEventStartTime.set(Calendar.DAY_OF_WEEK, i + 1);
-            newEventEndTime.set(Calendar.DAY_OF_WEEK, i + 1);
-
-            newEventStartTime.set(Calendar.SECOND, 0);
-            newEventStartTime.set(Calendar.MILLISECOND, 0);
-            newEventEndTime.set(Calendar.SECOND, 0);
-            newEventEndTime.set(Calendar.MILLISECOND, 0);
-
-            while (newEventStartTime.get(Calendar.DAY_OF_WEEK) != i + 1) newEventStartTime.add(Calendar.DAY_OF_YEAR, 1);
-            while (newEventEndTime.get(Calendar.DAY_OF_WEEK) != i + 1) newEventEndTime.add(Calendar.DAY_OF_YEAR, 1);
-
             Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
 
-            newEventStartTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-            newEventEndTime.setTimeZone((TimeZone.getTimeZone("UTC")));
-
             Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of
-                    (eventLocationText.getText().toString()), newEventStartTime, newEventEndTime);
+                    (eventLocationText.getText().toString()), ((i+5)%7)+1, startTime.getHourOfDay(), startTime
+                    .getMinuteOfHour(),((i+5)%7)+1,endTime.getHourOfDay(), endTime.getMinuteOfHour());
 
-            DaySchedule daySchedule = weekDaysSchedule[i + 1];
+            // TODO: Delete daySchedules
+            DaySchedule daySchedule = weekDaysSchedule[newEvent.getLocalWeekDay()];
 
             if (!daySchedule.canAddEvent(newEvent, eventToEdit))
             {

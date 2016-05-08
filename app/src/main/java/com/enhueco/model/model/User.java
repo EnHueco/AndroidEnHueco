@@ -5,6 +5,7 @@ import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +13,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -107,7 +107,7 @@ public class User extends EHSynchronizable implements Serializable
     }
 
     public User(String username, String firstNames, String lastNames, String phoneNumber, Optional<String> imageURL,
-                String imageThumbnail, String ID, Date updatedOn)
+                String imageThumbnail, String ID, DateTime updatedOn)
     {
         super(ID, updatedOn);
         this.username = username;
@@ -128,7 +128,7 @@ public class User extends EHSynchronizable implements Serializable
      */
     public User(JSONObject object) throws JSONException
     {
-        super(object.getString("login"), Utilities.getDateFromServerString((String) object.get("updated_on")));
+        super(object.getString("login"), Utilities.getDateTimeFromServerString((String) object.get("updated_on")));
 
         username = object.getString("login");
         firstNames = object.getString("firstNames");
@@ -137,7 +137,8 @@ public class User extends EHSynchronizable implements Serializable
         imageThumbnail = object.getString("image_thumbnail");
         phoneNumber = object.getString("phoneNumber");
 
-        schedule = Schedule.fromJSON(Utilities.getDateFromServerString(object.getString("schedule_updated_on")), (JSONArray) object.get("gap_set"));
+        schedule = new Schedule(Utilities.getDateTimeFromServerString(object.getString("schedule_updated_on")),
+                (JSONArray) object.get("gap_set"));
         instantFreeTimePeriod = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
 
     }
@@ -151,11 +152,11 @@ public class User extends EHSynchronizable implements Serializable
     public void updateWithJSON(JSONObject object) throws JSONException
     {
         String updatedOnString = (String) object.get("updated_on");
-        Date updatedOn = Utilities.getDateFromServerString(updatedOnString);
+        DateTime updatedOn = Utilities.getDateTimeFromServerString(updatedOnString);
 
         // if JSONObject updatedOn date is newer
         boolean userIsNotUpdated = false;
-        if (userIsNotUpdated = updatedOn.compareTo(this.getUpdatedOn()) > 0)
+        if (userIsNotUpdated = updatedOn.isAfter(this.getUpdatedOn()))
         {
             this.username = object.getString("login");
             this.firstNames = object.getString("firstNames");
@@ -172,11 +173,11 @@ public class User extends EHSynchronizable implements Serializable
         {
             boolean scheduleIsNotUpdated = false;
 
-            Date date = Utilities.getDateFromServerString(object.getString("schedule_updated_on"));
+            DateTime dateTime = Utilities.getDateTimeFromServerString(object.getString("schedule_updated_on"));
             // Updates schedule only if schedule's last update date in server is newer
-            if (date.compareTo(this.schedule.getUpdatedOn()) > 0)
+            if (dateTime.isAfter(this.schedule.getUpdatedOn()))
             {
-                this.schedule = Schedule.fromJSON(Utilities.getDateFromServerString(object.getString
+                this.schedule = new Schedule(Utilities.getDateTimeFromServerString(object.getString
                         ("schedule_updated_on")), object.getJSONArray("gap_set"));
             }
         }
