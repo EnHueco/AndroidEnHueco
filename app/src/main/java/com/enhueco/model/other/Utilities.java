@@ -331,6 +331,6 @@ public class Utilities
 
     public static int jodaWeekDayToServerWeekDay(int jodaWeekDay)
     {
-        return ((jodaWeekDay+1)%8);
+        return ((jodaWeekDay%7)+1);
     }
 }

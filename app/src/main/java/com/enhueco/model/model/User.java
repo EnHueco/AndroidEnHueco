@@ -1,11 +1,13 @@
 package com.enhueco.model.model;
 
+import com.bumptech.glide.util.Util;
 import com.enhueco.model.logicManagers.ProximityUpdatesManager;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -293,8 +295,7 @@ public class User extends EHSynchronizable implements Serializable
     {
         Optional<Event> currentFreeTime = Optional.absent();
 
-        Calendar localCalendar = Calendar.getInstance();
-        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
+        int localWeekDayNumber = Utilities.jodaWeekDayToServerWeekDay(DateTime.now().getDayOfWeek());
 
         for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
         {

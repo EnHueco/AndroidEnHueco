@@ -1,6 +1,7 @@
 package com.enhueco.model.model;
 
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
+import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -69,7 +70,7 @@ public class Schedule extends EHSynchronizable implements Serializable
 
             // TODO : This doesn't work with DST. So stop using array of weekdays.
             // Add event
-            weekDays[weekDay].addEvent(event);
+            weekDays[Utilities.jodaWeekDayToServerWeekDay(weekDay)].addEvent(event);
         }
     }
 

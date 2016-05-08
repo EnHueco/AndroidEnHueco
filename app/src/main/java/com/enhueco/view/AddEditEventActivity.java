@@ -216,8 +216,10 @@ public class AddEditEventActivity extends AppCompatActivity
             Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
 
             Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of
-                    (eventLocationText.getText().toString()), ((i+5)%7)+1, startTime.getHourOfDay(), startTime
-                    .getMinuteOfHour(),((i+5)%7)+1,endTime.getHourOfDay(), endTime.getMinuteOfHour());
+                    (eventLocationText.getText().toString()), Utilities.serverWeekDayToJodaWeekDay(i+1), startTime
+                    .getHourOfDay(), startTime
+                    .getMinuteOfHour(),Utilities.serverWeekDayToJodaWeekDay(i+1),endTime.getHourOfDay(), endTime
+                    .getMinuteOfHour());
 
             // TODO: Delete daySchedules
             DaySchedule daySchedule = weekDaysSchedule[newEvent.getLocalWeekDay()];

@@ -127,6 +127,6 @@ public class ImmediateEvent implements Serializable
 
     public boolean isCurrentlyHappening()
     {
-        return endHour.isBefore(new LocalTime(DateTimeZone.UTC));
+        return endHour.isAfter(new LocalTime(DateTimeZone.UTC));
     }
 }

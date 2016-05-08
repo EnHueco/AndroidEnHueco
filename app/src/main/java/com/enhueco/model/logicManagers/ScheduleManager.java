@@ -8,6 +8,7 @@ import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.*;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -218,7 +219,8 @@ public class ScheduleManager extends LogicManager
                             JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
                             Event event = new Event(eventJSON);
 
-                            schedule.getWeekDays()[event.getLocalWeekDay()].addEvent(event);
+                            schedule.getWeekDays()[event.getLocalWeekDay()]
+                                    .addEvent(event);
                         }
                         PersistenceManager.getSharedManager().persistData();
                         callCompletionListenerSuccessHandlerOnMainThread(completionListener);
