@@ -31,43 +31,23 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
     private User user = EnHueco.getInstance().getAppUser();
 
+    private boolean isAppUser = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
-        for (User user : EnHueco.getInstance().getAppUser().getFriends().values())
-        {
-            if (user.getID().equals(getIntent().getStringExtra("friendID")))
-            {
-                this.user = user;
-                break;
-            }
-        }
+        String userID = getIntent().getExtras().getString("userID");
+        setIsAppUserOrFriend(userID);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        fab = (FloatingActionButton) findViewById(R.id.addEventButton);
-        if (user != EnHueco.getInstance().getAppUser()) fab.setVisibility(View.GONE);
-
-        mWeekView = (WeekView) findViewById(R.id.weekView);
-
-        mWeekView.setNumberOfVisibleDays(3);
-
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Mi Horario");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Set an action when any event is clicked.
-        mWeekView.setOnEventClickListener(this);
-
-        // The week view has infinite scrolling horizontally. We have to provide the events of a
-        // month every time the month changes on the week view.
-        mWeekView.setMonthChangeListener(this);
-
-        // Set long press listener for events.
-        mWeekView.setEventLongPressListener(this);
+        fab = (FloatingActionButton) findViewById(R.id.addEventButton);
 
         findViewById(R.id.importButton).setOnClickListener(new View.OnClickListener()
         {
@@ -78,20 +58,51 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
                 startActivity(intent);
             }
         });
+
+        if (!isAppUser)
+        {
+            fab.setVisibility(View.GONE);
+            getSupportActionBar().setTitle("Horario");
+            findViewById(R.id.importButton).setVisibility(View.GONE);
+        }
+
+        mWeekView = (WeekView) findViewById(R.id.weekView);
+        mWeekView.setNumberOfVisibleDays(3);
+        mWeekView.setOnEventClickListener(this);
+        mWeekView.setMonthChangeListener(this);
+        mWeekView.setEventLongPressListener(this);
+
+    }
+
+    private void setIsAppUserOrFriend(String userID)
+    {
+        for (User user : EnHueco.getInstance().getAppUser().getFriends().values())
+        {
+            if (user.getID().equals(userID))
+            {
+                this.user = user;
+                isAppUser = false;
+                break;
+            }
+        }
     }
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect)
     {
-        Intent intent = new Intent(this, AddEditEventActivity.class);
+        if(this.user == EnHueco.getInstance().getAppUser())
+        {
+            Intent intent = new Intent(this, AddEditEventActivity.class);
 
-        DateTime startDateTime = new DateTime(event.getStartTime().getTime()).withZone(DateTimeZone.UTC);
+            DateTime startDateTime = new DateTime(event.getStartTime().getTime()).withZone(DateTimeZone.UTC);
 
-        Event eventToEdit = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[startDateTime.getDayOfWeek()]
-                .getEventWithStartHour(startDateTime.toLocalTime()).get();
+            Event eventToEdit = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[Utilities.jodaWeekDayToServerWeekDay(startDateTime
+                    .getDayOfWeek())]
+                    .getEventWithStartHour(startDateTime.toLocalTime()).get();
 
-        intent.putExtra("eventToEdit", eventToEdit);
-        startActivity(intent);
+            intent.putExtra("eventToEdit", eventToEdit);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -121,7 +132,9 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         {
             // Add all events current weekday
             int newEventWeekday = time.getDayOfWeek();
-            Collection<Event> currentWeekDayEvents = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[newEventWeekday].getEvents();
+            Collection<Event> currentWeekDayEvents = this.user.getSchedule().getWeekDays()[Utilities
+                    .jodaWeekDayToServerWeekDay(newEventWeekday)]
+                    .getEvents();
 
             for (Event currentEvent : currentWeekDayEvents)
             {
