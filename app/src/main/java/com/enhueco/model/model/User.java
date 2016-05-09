@@ -1,5 +1,6 @@
 package com.enhueco.model.model;
 
+import android.app.VoiceInteractor;
 import com.bumptech.glide.util.Util;
 import com.enhueco.model.logicManagers.ProximityUpdatesManager;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
@@ -213,19 +214,16 @@ public class User extends EHSynchronizable implements Serializable
      */
     public Optional<Event> getCurrentFreeTimePeriod()
     {
-        Date currentDate = new Date();
+        int weekDay = Utilities.jodaWeekDayToServerWeekDay(DateTime.now().getDayOfWeek());
 
-        Calendar localCalendar = Calendar.getInstance();
-        int localWeekDayNumber = localCalendar.get(Calendar.DAY_OF_WEEK);
-
-        for (Event event : schedule.getWeekDays()[localWeekDayNumber].getEvents())
+        for (Event event : this.getSchedule().getWeekDays()[weekDay].getEvents())
         {
-            if (event.getType().equals(Event.EventType.FREE_TIME) && event.isCurrentlyHappening())
+            if (!event.getType().equals(Event.EventType.FREE_TIME)) continue;
+            if (event.isCurrentlyHappening())
             {
                 return Optional.of(event);
             }
         }
-
         return Optional.absent();
     }
 
@@ -261,31 +259,6 @@ public class User extends EHSynchronizable implements Serializable
         }
 
         return nextFreeTimePeriod;
-    }
-
-    /**
-     * Retrieves User's current free time period if found
-     *
-     * @return ans Current "Free Time" period if one is going on, otherwise null
-     */
-    public Event currentFreeTimePeriod()
-    {
-        Event ans = null;
-        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        for (Event event : this.getSchedule().getWeekDays()[day].getEvents())
-        {
-            if (!event.getType().equals(Event.EventType.FREE_TIME)) continue;
-            if (event.isCurrentlyHappening())
-            {
-                ans = event;
-                break;
-            }
-        }
-
-        return ans;
-
     }
 
     /**
