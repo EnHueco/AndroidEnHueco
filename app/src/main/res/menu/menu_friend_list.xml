@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.enhueco.view.MainTabbedActivity">
+
+	<item
+			android:id="@+id/menu_item_friend_requests"
+			app:actionLayout="@layout/menu_action_item_badge"
+			android:title="@string/requests"
+			android:orderInCategory="100"
+			app:showAsAction="ifRoom"/>
+
+	<item
+			android:id="@+id/action_add_friend"
+			android:title="@string/addFriend"
+			android:orderInCategory="101"
+			app:showAsAction="ifRoom"
+			android:onClick="addFriend"
+			android:icon="@android:drawable/ic_menu_add"
+			/>
+
+
+</menu>

@@ -89,33 +89,8 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getSupportActionBar().setTitle("En Hueco");
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_tabbed, menu);
 
         optionsMenu = menu;
-
-        menu.findItem(R.id.action_search).setVisible(false);
-
-        if (tabLayout.getSelectedTabPosition() == 0)
-        {
-            menu.findItem(R.id.action_add_friend).setVisible(false);
-            menu.findItem(R.id.action_requests).setVisible(false);
-            menu.findItem(R.id.action_settings).setVisible(false);
-        }
-
-        if (tabLayout.getSelectedTabPosition() == 1)
-        {
-            menu.findItem(R.id.action_turn_invisible).setVisible(false);
-            menu.findItem(R.id.action_im_available).setVisible(false);
-            menu.findItem(R.id.action_settings).setVisible(false);
-        }
-        if (tabLayout.getSelectedTabPosition() == 2)
-        {
-            menu.findItem(R.id.action_turn_invisible).setVisible(false);
-            menu.findItem(R.id.action_im_available).setVisible(false);
-            menu.findItem(R.id.action_add_friend).setVisible(false);
-            menu.findItem(R.id.action_requests).setVisible(false);
-        }
 
         return true;
     }
@@ -127,7 +102,12 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+
+        switch (item.getItemId())
+        {
+            case R.id.menu_item_friend_requests:
+                openFriendRequestsView();
+        }
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings)
@@ -136,6 +116,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
 //        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void openFriendRequestsView()
+    {
+        Intent intent = new Intent(this, FriendRequestsActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -188,11 +175,6 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     {
     }
 
-    public void showRequests(MenuItem item)
-    {
-        Intent intent = new Intent(this, FriendRequestsActivity.class);
-        startActivity(intent);
-    }
 
     public AppBarLayout getAppBarLayout()
     {

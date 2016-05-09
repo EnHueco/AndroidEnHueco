@@ -25,6 +25,7 @@
 
 	<item
 			android:id="@+id/action_requests"
+			app:actionLayout="@layout/menu_action_item_badge"
 			android:title="@string/requests"
 			android:orderInCategory="100"
 			app:showAsAction="ifRoom"

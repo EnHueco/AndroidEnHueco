@@ -13,9 +13,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -77,6 +75,8 @@ public class CurrentlyAvailableFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
@@ -116,6 +116,13 @@ public class CurrentlyAvailableFragment extends ListFragment
         registerForContextMenu(view);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_available_friends, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

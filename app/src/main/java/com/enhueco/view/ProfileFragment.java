@@ -10,9 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.enhueco.R;
@@ -67,6 +65,8 @@ public class ProfileFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         AppUserInformationManager.getSharedManager().fetchUpdatesForAppUserAndSchedule(new BasicCompletionListener()
         {
             @Override
@@ -101,6 +101,13 @@ public class ProfileFragment extends Fragment
         backgroundImageView = (ImageView) view.findViewById(R.id.backgroundImageImageView);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_my_profile, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

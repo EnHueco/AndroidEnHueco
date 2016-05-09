@@ -3,30 +3,33 @@ package com.enhueco.view;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.FriendsInformationManager;
+import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
+import com.enhueco.model.model.UserSearch;
 import com.enhueco.model.other.BasicCompletionListener;
+import com.enhueco.model.other.CompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.mikepenz.actionitembadge.library.ActionItemBadge;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.typeface.IIcon;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 import org.joda.time.DateTime;
@@ -50,6 +53,8 @@ public class FriendListFragment extends ListFragment
     private OnFragmentInteractionListener mListener;
     private FriendsArrayAdapter friendArrayAdapter;
 
+    private int numRequests;
+
     private final List<User> filteredFriends = new ArrayList<>();
 
     /**
@@ -64,11 +69,38 @@ public class FriendListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        numRequests = 0;
 
         filteredFriends.clear();
         filteredFriends.addAll(EnHueco.getInstance().getAppUser().getFriends().values());
         friendArrayAdapter = new FriendsArrayAdapter(getActivity(), 0, filteredFriends);
         setListAdapter(friendArrayAdapter);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_friend_list, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+        if (numRequests > 0)
+        {
+            ActionItemBadge.update(this.getActivity(), menu.findItem(R.id.menu_item_friend_requests), FontAwesome.Icon
+                    .faw_users, ActionItemBadge.BadgeStyles.RED, numRequests);
+        }
+        else
+        {
+            ActionItemBadge.update(this.getActivity(), menu.findItem(R.id.menu_item_friend_requests), FontAwesome.Icon
+                    .faw_users, -1, Integer.MIN_VALUE);
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -137,7 +169,7 @@ public class FriendListFragment extends ListFragment
         {
             final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
 
-            Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
+            Integer colorFrom = ((ColorDrawable) appBarLayout.getBackground()).getColor();
             Integer colorTo = ContextCompat.getColor(getContext(), R.color.colorPrimary);
 
             ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -168,9 +200,24 @@ public class FriendListFragment extends ListFragment
 
                 }
             });
+
+            FriendsManager.getSharedManager().fetchFriendRequests(new CompletionListener<ArrayList<UserSearch>>()
+            {
+                @Override
+                public void onSuccess(ArrayList<UserSearch> result)
+                {
+                    numRequests = result.size();
+                    FriendListFragment.this.getActivity().invalidateOptionsMenu();
+                }
+
+                @Override
+                public void onFailure(Exception error)
+                {
+
+                }
+            });
         }
     }
-
 
     /**
      * This interface must be implemented by activities that contain this
@@ -202,7 +249,8 @@ public class FriendListFragment extends ListFragment
 
             mapIndex = new LinkedHashMap<String, Integer>();
 
-            for (int x = 0; x < objects.size(); x++) {
+            for (int x = 0; x < objects.size(); x++)
+            {
                 String user = objects.get(x).getUsername();
                 String ch = user.substring(0, 1);
                 ch = ch.toUpperCase(Locale.US);
@@ -210,7 +258,7 @@ public class FriendListFragment extends ListFragment
                 // HashMap will prevent duplicates
                 mapIndex.put(ch, x);
             }
-            
+
             // create a list from the set to sort
             Set<String> sectionLetters = mapIndex.keySet();
             ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
@@ -223,14 +271,13 @@ public class FriendListFragment extends ListFragment
         }
 
 
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
             User user = objects.get(position);
 
             Tuple<Optional<Event>, Optional<Event>> currentAndNextFreeTimePeriods = user.getCurrentAndNextFreeTimePeriods();
-            Optional<Event> eventShown = currentAndNextFreeTimePeriods.first.isPresent()? currentAndNextFreeTimePeriods.first : currentAndNextFreeTimePeriods.second;
+            Optional<Event> eventShown = currentAndNextFreeTimePeriods.first.isPresent() ? currentAndNextFreeTimePeriods.first : currentAndNextFreeTimePeriods.second;
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.item_friend, null);
@@ -249,7 +296,7 @@ public class FriendListFragment extends ListFragment
             TextView nextFreeTimeHourTextView = (TextView) view.findViewById(R.id.nextFreeTime);
             TextView nextFreeTimeHourNameTextView = (TextView) view.findViewById(R.id.nextFreeTimeName);
 
-            if(eventShown.isPresent())
+            if (eventShown.isPresent())
             {
                 DateTime dateTime = eventShown.get().getEndHour().toDateTimeToday(DateTimeZone.UTC);
 
