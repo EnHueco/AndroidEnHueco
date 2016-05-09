@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.enhueco.R;
@@ -315,7 +316,13 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
     public void onImAvailableButtonPressed(MenuItem item)
     {
         ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
-        if(event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
+
+        if(EnHueco.getInstance().getAppUser().getCurrentFreeTimePeriod().isPresent())
+        {
+            Toast.makeText(this,"Ya te encuentras en hueco",Toast.LENGTH_SHORT).show();
+        }
+
+        else if(event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
             final EHProgressDialog dialog = new EHProgressDialog(this);
             dialog.show();
