@@ -90,23 +90,6 @@ public class CurrentlyAvailableFragment extends ListFragment
         adapter = new CurrentlyFreeArrayAdapter(getActivity(), 0, currentlyAvailableFriends);
         setListAdapter(adapter);
 
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                refresh();
-            }
-        }, new IntentFilter(EnHueco.EHSystemNotification.SYSTEM_DID_RECEIVE_FRIEND_AND_SCHEDULE_UPDATES));
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(new BroadcastReceiver()
-        {
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                refresh();
-            }
-        }, new IntentFilter(CurrentStateManagerNotification.DID_POST_INSTANT_FREE_TIME_PERIOD));
     }
 
     @Override

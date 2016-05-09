@@ -22,21 +22,29 @@ import com.enhueco.model.model.immediateEvent.InstantFreeTimeEvent;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 public class InstantFreeTimeFragment extends DialogFragment
 {
-    @Bind(R.id.freeTimeName) EditText nameEditText;
-    @Bind(R.id.freeTimeLocation) EditText locationEditText;
-    @Bind(R.id.endTimeTextClock) TextView endTimeTextView;
+    @Bind(R.id.freeTimeName)
+    EditText nameEditText;
+    @Bind(R.id.freeTimeLocation)
+    EditText locationEditText;
+    @Bind(R.id.endTimeTextClock)
+    TextView endTimeTextView;
 
-    private Calendar endTime;
+    private DateTime endTime;
+    private DateTimeFormatter dtf;
 
     public InstantFreeTimeFragment()
     {
@@ -78,25 +86,19 @@ public class InstantFreeTimeFragment extends DialogFragment
             }
         });
 
-        DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
-        dateFormat.setTimeZone(TimeZone.getDefault());
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 15);
-
-        endTime = calendar;
-
-        endTimeTextView.setText(dateFormat.format(calendar.getTime()));
+        endTime = DateTime.now().plusMinutes(15);
+        dtf = DateTimeFormat.forPattern("hh:mm a");
+        endTimeTextView.setText(dtf.print(endTime));
 
         return view;
     }
 
     @OnClick(R.id.endTimeTextClock)
-    public void onEndTimeTextViewClick (View textView)
+    public void onEndTimeTextViewClick(View textView)
     {
-        Calendar mcurrentTime = Calendar.getInstance();
-        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-        int minute = mcurrentTime.get(Calendar.MINUTE);
+        int hour = endTime.getHourOfDay();
+        int minute = endTime.getMinuteOfHour();
 
         TimePickerDialog mTimePicker = new TimePickerDialog(InstantFreeTimeFragment.this.getContext(), new TimePickerDialog.OnTimeSetListener()
         {
@@ -106,14 +108,13 @@ public class InstantFreeTimeFragment extends DialogFragment
                 DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
                 dateFormat.setTimeZone(TimeZone.getDefault());
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-                calendar.set(Calendar.MINUTE, selectedMinute);
 
-                if (calendar.after(Calendar.getInstance()))
+                DateTime pickedDateTime = DateTime.now().withHourOfDay(selectedHour).withMinuteOfHour(selectedMinute);
+
+                if (pickedDateTime.isAfter(DateTime.now()))
                 {
-                    endTime = calendar;
-                    endTimeTextView.setText(dateFormat.format(calendar.getTime()));
+                    endTime = pickedDateTime;
+                    endTimeTextView.setText(dtf.print(endTime));
                 }
                 else
                 {
@@ -132,14 +133,13 @@ public class InstantFreeTimeFragment extends DialogFragment
     }
 
     @OnClick(R.id.postButton)
-    public void post (View button)
+    public void post(View button)
     {
         final EHProgressDialog dialog = new EHProgressDialog(getContext());
         dialog.show();
-        LocalTime endTime = LocalTime.now(DateTimeZone.UTC);
 
-        InstantFreeTimeEvent freeTimeEvent = new InstantFreeTimeEvent(nameEditText.getText().toString(), endTime,
-                locationEditText.getText().toString());
+        InstantFreeTimeEvent freeTimeEvent = new InstantFreeTimeEvent(nameEditText.getText().toString(), endTime
+                .withZone(DateTimeZone.UTC).toLocalTime(), locationEditText.getText().toString());
 
         ImmediateEventManager.getSharedManager().createInstantFreeTimeEvent(freeTimeEvent, new BasicCompletionListener()
         {

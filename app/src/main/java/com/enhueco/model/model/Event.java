@@ -90,7 +90,7 @@ public class Event implements Serializable, Comparable<Event>
         this.name = Optional.of(iEvent.getName());
         this.location = Optional.of(iEvent.getLocation());
         this.endHour = iEvent.getEndHour();
-        this.startHour = iEvent.getEndHour();
+        this.startHour = DateTime.now(DateTimeZone.UTC).toLocalTime();
         this.startHourWeekday = DateTime.now(DateTimeZone.UTC).getDayOfWeek();
         this.endHourWeekday = DateTime.now(DateTimeZone.UTC).getDayOfWeek();
     }
