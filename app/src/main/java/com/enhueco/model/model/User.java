@@ -157,36 +157,23 @@ public class User extends EHSynchronizable implements Serializable
         String updatedOnString = (String) object.get("updated_on");
         DateTime updatedOn = Utilities.getDateTimeFromServerString(updatedOnString);
 
-        // if JSONObject updatedOn date is newer
-        boolean userIsNotUpdated = false;
-        if (userIsNotUpdated = updatedOn.isAfter(this.getUpdatedOn()))
-        {
-            this.username = object.getString("login");
-            this.firstNames = object.getString("firstNames");
-            this.lastNames = object.getString("lastNames");
-            this.imageURL = Optional.of(object.getString("imageURL"));
-            this.imageThumbnail = object.getString("image_thumbnail");
-            this.phoneNumber = object.getString("phoneNumber");
+        this.username = object.getString("login");
+        this.firstNames = object.getString("firstNames");
+        this.lastNames = object.getString("lastNames");
+        this.imageURL = Optional.of(object.getString("imageURL"));
+        this.imageThumbnail = object.getString("image_thumbnail");
+        this.phoneNumber = object.getString("phoneNumber");
 
-            this.setID(username);
-            this.setUpdatedOn(updatedOn);
+        this.setID(username);
+        this.setUpdatedOn(updatedOn);
+
+        if (object.has("gap_set"))
+        {
+            this.schedule = new Schedule(Utilities.getDateTimeFromServerString(object.getString
+                    ("schedule_updated_on")), object.getJSONArray("gap_set"));
         }
 
-        if (object.has("schedule_updated_on") && object.has("gap_set"))
-        {
-            boolean scheduleIsNotUpdated = false;
-
-            DateTime dateTime = Utilities.getDateTimeFromServerString(object.getString("schedule_updated_on"));
-            // Updates schedule only if schedule's last update date in server is newer
-            if (dateTime.isAfter(this.schedule.getUpdatedOn()))
-            {
-                this.schedule = new Schedule(Utilities.getDateTimeFromServerString(object.getString
-                        ("schedule_updated_on")), object.getJSONArray("gap_set"));
-            }
-        }
-
-        boolean containsImmediateEvent = object.has("immediate_event");
-        if (containsImmediateEvent)
+        if (object.has("immediate_event"))
         {
             instantFreeTimePeriod = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
         }
