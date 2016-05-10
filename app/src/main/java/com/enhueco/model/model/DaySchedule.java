@@ -133,8 +133,8 @@ public class DaySchedule implements Serializable
     {
         for (Event event : events)
         {
-
-            if (event.getStartHour().isEqual(startHour))
+            LocalTime eventHour = event.getStartHour();
+            if (eventHour.isEqual(startHour))
             {
                 return Optional.of(event);
             }

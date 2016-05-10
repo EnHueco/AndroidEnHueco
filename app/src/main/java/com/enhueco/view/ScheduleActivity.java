@@ -13,13 +13,16 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.bumptech.glide.util.Util;
 import com.enhueco.R;
+import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.Utilities;
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
+import org.joda.time.LocalTime;
 
 import java.util.*;
 
@@ -100,18 +103,24 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect)
     {
-        if (this.user == EnHueco.getInstance().getAppUser())
+        AppUser appUser = EnHueco.getInstance().getAppUser();
+        if (this.user == appUser)
         {
             Intent intent = new Intent(this, AddEditEventActivity.class);
 
-            DateTime startDateTime = new DateTime(event.getStartTime().getTime()).withZone(DateTimeZone.UTC);
+            DateTime startDateTimeUTC = new DateTime(event.getStartTime().getTime()).withSecondOfMinute(0)
+                    .withMillisOfSecond(0).withZone
+                (DateTimeZone.UTC);
+            DateTime startDateTimeLocal = startDateTimeUTC.withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
 
-            Event eventToEdit = EnHueco.getInstance().getAppUser().getSchedule().getWeekDays()[Utilities.jodaWeekDayToServerWeekDay(startDateTime
-                    .getDayOfWeek())]
-                    .getEventWithStartHour(startDateTime.toLocalTime()).get();
-
-            intent.putExtra("eventToEdit", eventToEdit);
-            startActivity(intent);
+            Optional<Event> eventOptional = appUser.getSchedule().getWeekDays()[Utilities.jodaWeekDayToServerWeekDay
+                    (startDateTimeLocal.getDayOfWeek())].getEventWithStartHour(startDateTimeUTC.toLocalTime());
+            if(eventOptional.isPresent())
+            {
+                intent.putExtra("eventToEdit", eventOptional.get());
+                startActivity(intent);
+            }
+            Log.e("SCHEDULE ACTIVITY", "EVENT NOT FOUND");
         }
     }
 
