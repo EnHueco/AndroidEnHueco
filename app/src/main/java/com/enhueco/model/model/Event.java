@@ -8,6 +8,7 @@ import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
 import org.joda.time.LocalTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -244,9 +245,13 @@ public class Event implements Serializable, Comparable<Event>
      */
     public boolean isCurrentlyHappening()
     {
-        LocalTime current = new LocalTime(DateTimeZone.UTC);
-        boolean happening = current.isAfter(this.startHour) && current.isBefore(this.endHour);
-        return happening;
+        DateTime startTime = DateTime.now(DateTimeZone.UTC).withDayOfWeek(startHourWeekday).withHourOfDay(startHour.getHourOfDay())
+                .withMinuteOfHour(startHour.getMinuteOfHour());
+        DateTime endTime = DateTime.now(DateTimeZone.UTC).withDayOfWeek(endHourWeekday).withHourOfDay(endHour
+                .getHourOfDay()).withMinuteOfHour(endHour.getMinuteOfHour());
+
+        Interval interval = new Interval(startTime, endTime);
+        return interval.containsNow();
     }
 
     //////////////////////////////////
