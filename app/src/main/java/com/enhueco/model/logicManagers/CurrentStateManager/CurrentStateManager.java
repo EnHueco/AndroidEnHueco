@@ -1,23 +1,14 @@
 package com.enhueco.model.logicManagers.CurrentStateManager;
 
-import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.content.LocalBroadcastManager;
-import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.ProximityUpdatesManager;
-import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
-import com.enhueco.model.other.BasicCompletionListener;
-import com.enhueco.model.other.EHURLS;
+import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,9 +61,19 @@ public class CurrentStateManager
 
         for (User friend : EnHueco.getInstance().getAppUser().getFriends().values())
         {
+            Optional<ImmediateEvent> immediateEvent = friend.getImmediateEvent();
+            if(friend.isInvisible())
+            {
+                continue;
+            }
+
             Optional<Event> currentFreeTimePeriod = friend.getCurrentFreeTimePeriod();
 
-            if (currentFreeTimePeriod.isPresent())
+            if(friend.isInInstantFreeTime())
+            {
+                friendsAndFreeTimePeriods.add(new Tuple<>(friend, new Event(friend.getImmediateEvent().get())));
+            }
+            else if (currentFreeTimePeriod.isPresent())
             {
                 friendsAndFreeTimePeriods.add(new Tuple<>(friend, currentFreeTimePeriod.get()));
             }

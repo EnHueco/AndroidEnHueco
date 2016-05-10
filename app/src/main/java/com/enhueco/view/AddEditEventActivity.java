@@ -222,6 +222,7 @@ public class AddEditEventActivity extends AppCompatActivity
 
     private void updateEvent()
     {
+        //TODO: Implement event updating
     }
 
     public void addEvents()

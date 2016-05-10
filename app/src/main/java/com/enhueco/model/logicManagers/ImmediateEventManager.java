@@ -2,7 +2,6 @@ package com.enhueco.model.logicManagers;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import com.enhueco.model.EHApplication;
 import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManagerNotification;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
@@ -19,8 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * Created by Diego on 5/1/16.
@@ -54,7 +51,7 @@ public class ImmediateEventManager extends LogicManager
                     {
                         ImmediateEvent event = null;
                         event = new ImmediateEvent(jsonResponse);
-                        EnHueco.getInstance().getAppUser().setInstantFreeTimePeriod(Optional.of(event));
+                        EnHueco.getInstance().getAppUser().setImmediateEvent(Optional.of(event));
 
                         PersistenceManager.getSharedManager().persistData();
 
@@ -99,7 +96,7 @@ public class ImmediateEventManager extends LogicManager
 
     private void deleteImmediateEvent(final BasicCompletionListener completionListener)
     {
-        Optional<ImmediateEvent> event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> event = EnHueco.getInstance().getAppUser().getImmediateEvent();
         if (event.isPresent())
         {
             LocalTime currentTime = new LocalTime(DateTimeZone.UTC);

@@ -1,14 +1,11 @@
 package com.enhueco.model.model;
 
-import android.app.VoiceInteractor;
-import com.bumptech.glide.util.Util;
 import com.enhueco.model.logicManagers.ProximityUpdatesManager;
 import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +13,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -65,10 +61,6 @@ public class User extends EHSynchronizable implements Serializable
      */
     private boolean isNearby;
 
-    /**
-     * User visibility state
-     */
-    private boolean invisible = false;
 
     /**
      * Current Beacon SSID to which user was connected
@@ -88,7 +80,7 @@ public class User extends EHSynchronizable implements Serializable
     /**
      * Current's day immediate event . Self-destroys when the period is over (i.e. currentTime > endHour)
      */
-    private Optional<ImmediateEvent> instantFreeTimePeriod = Optional.absent();
+    private Optional<ImmediateEvent> immediateEvent = Optional.absent();
 
 
     /**
@@ -142,7 +134,7 @@ public class User extends EHSynchronizable implements Serializable
 
         schedule = new Schedule(Utilities.getDateTimeFromServerString(object.getString("schedule_updated_on")),
                 (JSONArray) object.get("gap_set"));
-        instantFreeTimePeriod = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
+        immediateEvent = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
 
     }
 
@@ -175,7 +167,7 @@ public class User extends EHSynchronizable implements Serializable
 
         if (object.has("immediate_event"))
         {
-            instantFreeTimePeriod = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
+            immediateEvent = (Optional.of(new ImmediateEvent(object.getJSONObject("immediate_event"))));
         }
     }
 
@@ -380,16 +372,16 @@ public class User extends EHSynchronizable implements Serializable
         return firstNames + " " + lastNames;
     }
 
-    public Optional<ImmediateEvent> getInstantFreeTimePeriod()
+    public Optional<ImmediateEvent> getImmediateEvent()
     {
-        return instantFreeTimePeriod;
+        return immediateEvent;
     }
 
-    public void setInstantFreeTimePeriod(Optional<ImmediateEvent> instantFreeTimePeriod)
+    public void setImmediateEvent(Optional<ImmediateEvent> immediateEvent)
     {
-        this.instantFreeTimePeriod = instantFreeTimePeriod;
+        this.immediateEvent = immediateEvent;
 /*
-        if (instantFreeTimePeriod.isPresent())
+        if (immediateEvent.isPresent())
         {
             if (instantFreeTimePeriodDestroyTimer != null)
             {
@@ -401,13 +393,26 @@ public class User extends EHSynchronizable implements Serializable
             TimerTask deleteEvent = new TimerTask () {
                 @Override
                 public void run () {
-                    setInstantFreeTimePeriod(Optional.<ImmediateEvent>absent());
+                    setImmediateEvent(Optional.<ImmediateEvent>absent());
                 }
             };
 
-            instantFreeTimePeriodDestroyTimer.schedule(deleteEvent, instantFreeTimePeriod.get().getEndHourInDate(new Date()));
+            instantFreeTimePeriodDestroyTimer.schedule(deleteEvent, immediateEvent.get().getEndHourInDate(new Date()));
         }
         */
     }
 
+    public boolean isInvisible()
+    {
+        boolean invisible = immediateEvent.isPresent() && immediateEvent.get().isCurrentlyHappening() &&
+                immediateEvent.get().getType().equals(ImmediateEvent.ImmediateEventType.INVISIBILITY);
+        return invisible;
+    }
+
+    public boolean isInInstantFreeTime()
+    {
+        boolean invisible = immediateEvent.isPresent() && immediateEvent.get().isCurrentlyHappening() &&
+                immediateEvent.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT);
+        return invisible;
+    }
 }
