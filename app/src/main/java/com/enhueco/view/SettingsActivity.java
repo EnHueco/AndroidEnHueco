@@ -69,7 +69,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
     }
 
     @Override
@@ -136,5 +135,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
         }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
     }
 }
