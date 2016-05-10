@@ -1,5 +1,6 @@
 package com.enhueco.model.logicManagers;
 
+import android.util.Log;
 import com.bumptech.glide.util.Util;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.*;
@@ -94,14 +95,6 @@ public class ScheduleManager extends LogicManager
         }
         return commonFreeTimePeriodsSchedule;
 */
-    }
-
-    /**
-     * Reports the new event to the server.
-     */
-    public void reportNewEvent (Event event, final BasicCompletionListener completionListener)
-    {
-
     }
 
 
@@ -238,4 +231,114 @@ public class ScheduleManager extends LogicManager
             callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
         }
     }
+
+    public void updateEvent(final Event oldEvent, final Event newEvent, final BasicCompletionListener
+            completionListener)
+    {
+        try
+        {
+            String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT + oldEvent.getID() + "/" ;
+            JSONObject eventJSON = newEvent.toJSONObject();
+
+            ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.PUT,Optional
+                    .of(eventJSON.toString()));
+
+            ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
+            {
+                @Override
+                public void onSuccess(JSONObject jsonResponse)
+                {
+                    try
+                    {
+                        Event event = new Event(jsonResponse);
+                        Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
+
+                        Log.v("SCHEDULE-MANAGER", oldEvent.toJSONObject().toString());
+                        Log.v("SCHEDULE-MANAGER", event.toJSONObject().toString());
+
+                        int weekday = Utilities.jodaWeekDayToServerWeekDay(event.getLocalTimezoneWeekDay());
+                        if(schedule.getWeekDays()[weekday].removeEvent(oldEvent))
+                        {
+                            schedule.getWeekDays()[weekday].addEvent(event);
+                            PersistenceManager.getSharedManager().persistData();
+                            callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                        }
+                        else
+                        {
+                            callCompletionListenerFailureHandlerOnMainThread(completionListener, new Exception
+                                    ("Could not remove event"));
+                        }
+                    }
+                    catch (JSONException | IOException e)
+                    {
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+                    }
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
+                }
+            });
+
+        }
+        catch (JSONException e)
+        {
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+        }
+    }
+
+
+    public void deleteEvent(final Event event, final BasicCompletionListener completionListener)
+    {
+        try
+        {
+            String url = EHURLS.BASE + EHURLS.EVENTS_SEGMENT + event.getID() + "/" ;
+            JSONObject eventJSON = event.toJSONObject();
+
+            ConnectionManagerObjectRequest request = new ConnectionManagerObjectRequest(url, HTTPMethod.DELETE,Optional
+                    .of(eventJSON.toString()));
+
+            ConnectionManager.sendAsyncRequest(request, new ConnectionManagerCompletionHandler<JSONObject>()
+            {
+                @Override
+                public void onSuccess(JSONObject jsonResponse)
+                {
+                    try
+                    {
+                        Schedule schedule = EnHueco.getInstance().getAppUser().getSchedule();
+                        int weekday = Utilities.jodaWeekDayToServerWeekDay(event.getLocalTimezoneWeekDay());
+                        if(schedule.getWeekDays()[weekday].removeEvent(event))
+                        {
+                            PersistenceManager.getSharedManager().persistData();
+                            callCompletionListenerSuccessHandlerOnMainThread(completionListener);
+                        }
+                        else
+                        {
+                            callCompletionListenerFailureHandlerOnMainThread(completionListener, new Exception
+                                    ("Could not remove event"));
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+                    }
+                }
+
+                @Override
+                public void onFailure(ConnectionManagerCompoundError error)
+                {
+                    callCompletionListenerFailureHandlerOnMainThread(completionListener, error.error);
+                }
+            });
+
+        }
+        catch (JSONException e)
+        {
+            callCompletionListenerFailureHandlerOnMainThread(completionListener, e);
+        }
+    }
+
+
 }

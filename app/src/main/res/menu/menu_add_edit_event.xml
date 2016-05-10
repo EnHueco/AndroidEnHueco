@@ -4,15 +4,19 @@
 
 	<item android:id="@+id/menu_item_save_event"
 	      android:icon="@android:drawable/ic_menu_save"
-	      android:orderInCategory="100"
-	      app:showAsAction="always"
-	      android:title="">
+	      app:showAsAction="ifRoom"
+	      android:title="Guardar">
+	</item>
+
+	<item android:id="@+id/menu_item_delete_event"
+	      android:icon="@android:drawable/ic_menu_delete"
+	      app:showAsAction="ifRoom"
+	      android:title="Eliminar">
 	</item>
 
 	<item android:id="@+id/menu_item_cancel_event"
 	      android:icon="@android:drawable/ic_menu_close_clear_cancel"
-	      android:orderInCategory="101"
-	      app:showAsAction="always"
-	      android:title="">
+	      app:showAsAction="ifRoom"
+	      android:title="Cancelar">
 	</item>
 </menu>

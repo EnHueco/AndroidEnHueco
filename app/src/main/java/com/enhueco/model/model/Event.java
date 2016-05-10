@@ -22,7 +22,7 @@ import java.util.TimeZone;
  * Created by Diego on 10/9/15.
  */
 
-public class Event implements Serializable, Comparable<Event>
+public class Event extends EHSynchronizable implements Serializable, Comparable<Event>
 {
 
 
@@ -72,9 +72,10 @@ public class Event implements Serializable, Comparable<Event>
     //    Constructors & Helpers    //
     //////////////////////////////////
 
-    public Event(EventType type, Optional<String> name, Optional<String> location, int startHourWeekday, int
-            startHour, int startMinute, int endHourWeekday, int endHour, int endMinute)
+    public Event(String id, DateTime lastUpdatedOn, EventType type, Optional<String> name, Optional<String> location,
+                 int startHourWeekday, int startHour, int startMinute, int endHourWeekday, int endHour, int endMinute)
     {
+        super(id,lastUpdatedOn);
         this.type = type;
         this.name = name;
         this.location = location;
@@ -87,6 +88,8 @@ public class Event implements Serializable, Comparable<Event>
 
     public Event(ImmediateEvent iEvent)
     {
+        // TODO: Correct ehsynchronizable fields
+        super("", DateTime.now());
         this.type = EventType.FREE_TIME;
         this.name = Optional.of(iEvent.getName());
         this.location = Optional.of(iEvent.getLocation());
@@ -105,6 +108,8 @@ public class Event implements Serializable, Comparable<Event>
      */
     public Event(JSONObject object) throws JSONException
     {
+        super(object.getString("id"), Utilities.getDateTimeFromServerString(object.getString("created_on")));
+
         // Type
         String typeString = object.getString("type");
 
@@ -152,6 +157,7 @@ public class Event implements Serializable, Comparable<Event>
     {
         JSONObject object = new JSONObject();
 
+        object.put("id", this.getID());
         object.put("type", type);
         object.put("name", name.orNull());
         object.put("location", location.orNull());

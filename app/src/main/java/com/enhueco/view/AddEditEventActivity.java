@@ -10,10 +10,7 @@ import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TimePicker;
+import android.widget.*;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -88,9 +85,9 @@ public class AddEditEventActivity extends AppCompatActivity
             eventNameText.setText(eventToEdit.getName().orNull());
             eventLocationText.setText(eventToEdit.getLocation().orNull());
 
-            startTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getStartHourInLocalTimezone()).withZone
+            startTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getStartHour()).withZone
                     (DateTimeZone.forTimeZone(TimeZone.getDefault()));
-            endTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getEndHourInLocalTimezone()).withZone
+            endTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getEndHour()).withZone
                     (DateTimeZone.forTimeZone(TimeZone.getDefault()));
 
             updateTextEdit(startTimeText, startTime);
@@ -201,7 +198,14 @@ public class AddEditEventActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.menu_add_event, menu);
+        getMenuInflater().inflate(R.menu.menu_add_edit_event, menu);
+
+        MenuItem deleteItem = menu.findItem(R.id.menu_item_delete_event);
+        if(!eventToEdit.isPresent())
+        {
+            deleteItem.setVisible(false);
+        }
+
         return true;
     }
 
@@ -216,13 +220,59 @@ public class AddEditEventActivity extends AppCompatActivity
                 break;
             case R.id.menu_item_cancel_event:
                 finish();
+                break;
+            case R.id.menu_item_delete_event:
+                deleteEvent();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void deleteEvent()
+    {
+        final EHProgressDialog dialog = new EHProgressDialog(this);
+        dialog.show();
+        ScheduleManager.getSharedManager().deleteEvent(eventToEdit.get(), new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                dialog.dismiss();
+                Toast.makeText(AddEditEventActivity.this, "Evento eliminado", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+                dialog.dismiss();
+                Utilities.showErrorToast(AddEditEventActivity.this);
+            }
+        });
+    }
+
     private void updateEvent()
     {
-        //TODO: Implement event updating
+        final EHProgressDialog dialog = new EHProgressDialog(this);
+        dialog.show();
+        Event nEvent = createEventWithJodaWeekday(eventToEdit.get().getID(), eventToEdit.get().getLocalTimezoneWeekDay());
+        ScheduleManager.getSharedManager().updateEvent(eventToEdit.get(), nEvent, new BasicCompletionListener()
+        {
+            @Override
+            public void onSuccess()
+            {
+                dialog.dismiss();
+                Toast.makeText(AddEditEventActivity.this, "Evento actualizado", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Exception error)
+            {
+                dialog.dismiss();
+                Utilities.showErrorToast(AddEditEventActivity.this);
+            }
+        });
     }
 
     public void addEvents()
@@ -236,17 +286,7 @@ public class AddEditEventActivity extends AppCompatActivity
         {
             if (!selectedWeekDays[i]) continue;
 
-            Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
-
-            DateTime startTimeUTC = startTime.withDayOfWeek(Utilities.serverWeekDayToJodaWeekDay(i+1)).withZone
-                    (DateTimeZone.UTC);
-            DateTime endTimeUTC = endTime.withDayOfWeek(Utilities.serverWeekDayToJodaWeekDay(i + 1)).withZone
-                    (DateTimeZone.UTC);
-
-            Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of
-                    (eventLocationText.getText().toString()), startTimeUTC.getDayOfWeek(), startTimeUTC
-                    .getHourOfDay(), startTimeUTC.getMinuteOfHour(), endTimeUTC.getHourOfDay(),
-                    endTimeUTC.getHourOfDay(), endTimeUTC.getMinuteOfHour());
+            Event newEvent = createEventWithJodaWeekday("0", Utilities.serverWeekDayToJodaWeekDay( i+1 ));
 
             // TODO: Delete daySchedules
             DaySchedule daySchedule = weekDaysSchedule[newEvent.getLocalTimezoneWeekDay()];
@@ -296,5 +336,25 @@ public class AddEditEventActivity extends AppCompatActivity
                     .show();
         }
 
+    }
+
+    /**
+     * Creates a new event from view elements given a Joda time weekday
+     * @param weekday Joda time weekday (1-7)
+     * @return new event with time fields in UTC and according to view data
+     */
+    private Event createEventWithJodaWeekday(String id, int weekday)
+    {
+        Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
+
+        DateTime startTimeUTC = startTime.withDayOfWeek(weekday).withZone(DateTimeZone.UTC);
+        DateTime endTimeUTC = endTime.withDayOfWeek(weekday).withZone(DateTimeZone.UTC);
+
+        Event newEvent = new Event(id, new DateTime(), eventType, Optional.of(eventNameText.getText().toString()),
+                Optional.of(eventLocationText.getText().toString()), startTimeUTC.getDayOfWeek(), startTimeUTC
+                .getHourOfDay(), startTimeUTC.getMinuteOfHour(), endTimeUTC.getDayOfWeek(),
+                endTimeUTC.getHourOfDay(), endTimeUTC.getMinuteOfHour());
+
+        return newEvent;
     }
 }
