@@ -1,16 +1,12 @@
 package com.enhueco.model.model;
 
-import com.enhueco.model.model.immediateEvent.ImmediateEvent;
 import com.enhueco.model.other.Utilities;
-import com.google.common.base.Optional;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * Created by Diego on 10/11/15.
@@ -66,7 +62,7 @@ public class Schedule extends EHSynchronizable implements Serializable
             Event event = new Event(object);
 
             //Locate event in local array of weekdays based on its UTC startHour
-            int weekDay = event.getLocalWeekDay();
+            int weekDay = event.getLocalTimezoneWeekDay();
 
             // TODO : This doesn't work with DST. So stop using array of weekdays.
             // Add event

@@ -310,7 +310,7 @@ public class Event implements Serializable, Comparable<Event>
         return startHourWeekday;
     }
 
-    public int getLocalWeekDay()
+    public int getLocalTimezoneWeekDay()
     {
         DateTime dateTime = startHour.toDateTimeToday(DateTimeZone.UTC);
         while(dateTime.getDayOfWeek() != startHourWeekday) dateTime = dateTime.plusDays(1);
