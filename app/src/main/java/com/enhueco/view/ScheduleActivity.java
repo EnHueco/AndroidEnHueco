@@ -19,6 +19,7 @@ import com.enhueco.model.model.User;
 import com.enhueco.model.other.Utilities;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
 
 import java.util.*;
 
@@ -90,7 +91,7 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect)
     {
-        if(this.user == EnHueco.getInstance().getAppUser())
+        if (this.user == EnHueco.getInstance().getAppUser())
         {
             Intent intent = new Intent(this, AddEditEventActivity.class);
 
@@ -138,15 +139,24 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
             for (Event currentEvent : currentWeekDayEvents)
             {
-                // Update global Calendar to match start time
+                // Start date
+                DateTime UTCstartTime = time.withHourOfDay(currentEvent.getStartHour().getHourOfDay()).withMinuteOfHour
+                        (currentEvent.getStartHour().getMinuteOfHour()).withZone(DateTimeZone.UTC);
+                DateTime startTime = UTCstartTime.withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+                // Correct offset
+                int startDaysDifference = Days.daysBetween(UTCstartTime.toLocalDate(), startTime.toLocalDate()).getDays();
+                if(UTCstartTime.toLocalDate().isBefore(startTime.toLocalDate())) startDaysDifference*=-1;
+                startTime = startTime.plusDays(startDaysDifference);
 
-                DateTime startTime = time.withHourOfDay(currentEvent.getStartHour().getHourOfDay()).withMinuteOfHour
-                        (currentEvent.getStartHour().getMinuteOfHour()).withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+                // End date
+                DateTime UTCendTime = time.withHourOfDay(currentEvent.getEndHour().getHourOfDay()).withMinuteOfHour
+                        (currentEvent.getEndHour().getMinuteOfHour()).withZone(DateTimeZone.UTC);
+                DateTime endTime = UTCendTime.withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+                // Correct Offset
+                int endDaysDifference = Days.daysBetween(UTCendTime.toLocalDate(), endTime.toLocalDate()).getDays();
+                if(UTCendTime.toLocalDate().isBefore(endTime.toLocalDate())) endDaysDifference*=-1;
+                endTime = endTime.plusDays(endDaysDifference);
 
-                DateTime endTime = time.withHourOfDay(currentEvent.getEndHour().getHourOfDay()).withMinuteOfHour
-                        (currentEvent.getEndHour().getMinuteOfHour()).withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
-
-                // Add weekViewEvent
                 WeekViewEvent weekViewEvent = new WeekViewEvent(id++, currentEvent.getName().get(), startTime.toCalendar(null), endTime.toCalendar(null));
                 weekViewEvent.setColor(currentEvent.getType().equals(Event.EventType.FREE_TIME) ? Color.argb(35, 0, 150, 245) : Color.argb(35, 255, 213, 0));
                 events.add(weekViewEvent);
