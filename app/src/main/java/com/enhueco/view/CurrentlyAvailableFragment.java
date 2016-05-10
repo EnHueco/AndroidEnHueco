@@ -1,15 +1,11 @@
 package com.enhueco.view;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.*;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.view.*;
 import android.widget.*;
@@ -17,8 +13,8 @@ import com.enhueco.R;
 import com.enhueco.model.logicManagers.AppUserInformationManager;
 import com.enhueco.model.logicManagers.FriendsInformationManager;
 import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManager;
-import com.enhueco.model.logicManagers.CurrentStateManager.CurrentStateManagerNotification;
 import com.enhueco.model.logicManagers.ImmediateEventManager;
+import com.enhueco.model.model.AppUser;
 import com.enhueco.model.model.EnHueco;
 import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
@@ -29,16 +25,13 @@ import com.enhueco.model.other.Utilities;
 import com.enhueco.model.structures.Tuple;
 import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -77,7 +70,7 @@ public class CurrentlyAvailableFragment extends ListFragment
         currentlyAvailableFriends.clear();
         currentlyAvailableFriends.addAll(CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends());
 
-        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
+        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getImmediateEvent();
 
         if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
         {
@@ -107,7 +100,7 @@ public class CurrentlyAvailableFragment extends ListFragment
 
     private void switchImAvailable()
     {
-        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
+        ImmediateEvent event = EnHueco.getInstance().getAppUser().getImmediateEvent().get();
 
         if (EnHueco.getInstance().getAppUser().getCurrentFreeTimePeriod().isPresent())
         {
@@ -124,6 +117,7 @@ public class CurrentlyAvailableFragment extends ListFragment
                 public void onSuccess()
                 {
                     dialog.dismiss();
+                    refresh();
                 }
 
                 @Override
@@ -137,13 +131,14 @@ public class CurrentlyAvailableFragment extends ListFragment
         else
         {
             InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
+            fragment.setTargetFragment(this, InstantFreeTimeFragment.resultCode);
             fragment.show(getActivity().getSupportFragmentManager(), "¡Estoy en Hueco!");
         }
     }
 
     public void switchVisibility()
     {
-        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
+        ImmediateEvent event = EnHueco.getInstance().getAppUser().getImmediateEvent().get();
         if (event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.INVISIBILITY))
         {
             turnVisible();
@@ -164,6 +159,7 @@ public class CurrentlyAvailableFragment extends ListFragment
             public void onSuccess()
             {
                 dialog.dismiss();
+                refresh();
             }
 
             @Override
@@ -213,6 +209,7 @@ public class CurrentlyAvailableFragment extends ListFragment
             public void onSuccess()
             {
                 dialog.dismiss();
+                refresh();
             }
 
             @Override
@@ -271,26 +268,6 @@ public class CurrentlyAvailableFragment extends ListFragment
 
         if (isVisibleToUser)
         {
-            /*
-            //((MainTabbedActivity) getActivity()).getWindow().setStatusBarColor(getResources().getColor(R.color.mb_gray)=;
-            final AppBarLayout appBarLayout = ((MainTabbedActivity) getActivity()).getAppBarLayout();
-
-            Integer colorFrom = ((ColorDrawable)appBarLayout.getBackground()).getColor();
-            Integer colorTo = ContextCompat.getColor(getContext(), R.color.colorPrimary);
-            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-            colorAnimation.setDuration(400);
-
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-            {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator)
-                {
-                    appBarLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
-                }
-            });
-            colorAnimation.start();
-
-*/
             refresh();
 
             FriendsInformationManager.getSharedManager().fetchUpdatesForFriendsAndFriendSchedules(new BasicCompletionListener()
@@ -326,22 +303,29 @@ public class CurrentlyAvailableFragment extends ListFragment
 
     private void refresh()
     {
-        currentlyAvailableFriends.clear();
-
-        // Add user immediate event if currently happening
-        Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
-
-        if (instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get().isCurrentlyHappening() &&
-                instantFreeTimePeriod.get().getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
+        CurrentlyAvailableFragment.this.getActivity().runOnUiThread(new Runnable()
         {
-            currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
-        }
+            @Override
+            public void run()
+            {
+                currentlyAvailableFriends.clear();
 
-        // Add friends
-        List<Tuple<User, Event>> friends = CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends();
-        currentlyAvailableFriends.addAll(friends);
+                // Add user immediate event if currently happening
+                AppUser appUser = EnHueco.getInstance().getAppUser();
+                Optional<ImmediateEvent> instantFreeTimePeriod = appUser.getImmediateEvent();
 
-        adapter.notifyDataSetChanged();
+                if (appUser.isInInstantFreeTime())
+                {
+                    currentlyAvailableFriends.add(0, new Tuple<>((User) EnHueco.getInstance().getAppUser(), new Event(instantFreeTimePeriod.get())));
+                }
+                // Add friends
+                List<Tuple<User, Event>> friends = CurrentStateManager.getSharedManager().getCurrentlyAvailableFriends();
+                currentlyAvailableFriends.addAll(friends);
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     @Override
@@ -358,7 +342,7 @@ public class CurrentlyAvailableFragment extends ListFragment
 
         if (null != mListener)
         {
-            Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod();
+            Optional<ImmediateEvent> instantFreeTimePeriod = EnHueco.getInstance().getAppUser().getImmediateEvent();
             boolean instantFreeTimeActive = instantFreeTimePeriod.isPresent() && instantFreeTimePeriod.get()
                     .isCurrentlyHappening() && instantFreeTimePeriod.get().getType().equals(ImmediateEvent
                     .ImmediateEventType.EVENT);
@@ -368,6 +352,18 @@ public class CurrentlyAvailableFragment extends ListFragment
             intent.putExtra("friendID", currentlyAvailableFriends.get(position).first.getID());
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        // Stuff to do, dependent on requestCode and resultCode
+        if (requestCode == InstantFreeTimeFragment.resultCode && resultCode == InstantFreeTimeFragment.resultCode)
+        {
+            // This is the return result of your DialogFragment
+            refresh();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

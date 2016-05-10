@@ -45,6 +45,7 @@ public class InstantFreeTimeFragment extends DialogFragment
 
     private DateTime endTime;
     private DateTimeFormatter dtf;
+    public static final int resultCode = 1;
 
     public InstantFreeTimeFragment()
     {
@@ -147,6 +148,7 @@ public class InstantFreeTimeFragment extends DialogFragment
             public void onSuccess()
             {
                 dialog.dismiss();
+                getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, getActivity().getIntent());
                 dismiss();
             }
 
