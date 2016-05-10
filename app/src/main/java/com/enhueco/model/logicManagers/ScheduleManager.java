@@ -1,17 +1,12 @@
 package com.enhueco.model.logicManagers;
 
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.CalendarContract;
-import com.enhueco.model.EHApplication;
+import com.bumptech.glide.util.Util;
 import com.enhueco.model.logicManagers.genericManagers.connectionManager.*;
 import com.enhueco.model.model.*;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
 import com.enhueco.model.other.Utilities;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -219,8 +214,8 @@ public class ScheduleManager extends LogicManager
                             JSONObject eventJSON = (JSONObject) jsonResponse.get(i);
                             Event event = new Event(eventJSON);
 
-                            schedule.getWeekDays()[event.getLocalWeekDay()]
-                                    .addEvent(event);
+                            schedule.getWeekDays()[Utilities.jodaWeekDayToServerWeekDay(event.getLocalTimezoneWeekDay
+                                    ())].addEvent(event);
                         }
                         PersistenceManager.getSharedManager().persistData();
                         callCompletionListenerSuccessHandlerOnMainThread(completionListener);

@@ -25,7 +25,8 @@ import com.enhueco.R;
 import com.enhueco.view.dialog.EHProgressDialog;
 import com.google.common.base.Optional;
 import com.enhueco.model.model.EnHueco;
-import org.joda.time.LocalTime;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -48,7 +49,7 @@ public class AddEditEventActivity extends AppCompatActivity
     EditText endTimeText;
     @Bind(R.id.weekDaysEditText)
     EditText weekDaysText;
-    LocalTime startTime, endTime;
+    DateTime startTime, endTime;
     String[] weekDaysArray;
     boolean[] selectedWeekDays;
 
@@ -72,8 +73,8 @@ public class AddEditEventActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Evento");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        startTime = LocalTime.now();
-        endTime = LocalTime.now().plusMinutes(30);
+        startTime = DateTime.now();
+        endTime = DateTime.now().plusMinutes(30);
         selectedWeekDays = new boolean[7];
         weekDaysArray = getResources().getStringArray(R.array.weekDay_array);
 
@@ -87,8 +88,10 @@ public class AddEditEventActivity extends AppCompatActivity
             eventNameText.setText(eventToEdit.getName().orNull());
             eventLocationText.setText(eventToEdit.getLocation().orNull());
 
-            startTime = eventToEdit.getStartHourInLocalTimezone();
-            endTime = eventToEdit.getEndHourInLocalTimezone();
+            startTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getStartHourInLocalTimezone()).withZone
+                    (DateTimeZone.forTimeZone(TimeZone.getDefault()));
+            endTime = DateTime.now(DateTimeZone.UTC).withTime(eventToEdit.getEndHourInLocalTimezone()).withZone
+                    (DateTimeZone.forTimeZone(TimeZone.getDefault()));
 
             updateTextEdit(startTimeText, startTime);
             updateTextEdit(endTimeText, endTime);
@@ -97,7 +100,7 @@ public class AddEditEventActivity extends AppCompatActivity
         }
     }
 
-    private void updateTextEdit(EditText et, LocalTime time)
+    private void updateTextEdit(EditText et, DateTime time)
     {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("hh : mm a");
         String string = dtf.print(time);
@@ -215,14 +218,18 @@ public class AddEditEventActivity extends AppCompatActivity
 
             Event.EventType eventType = freeTimeEventTypeRadioButton.isChecked() ? Event.EventType.FREE_TIME : Event.EventType.CLASS;
 
+            DateTime startTimeUTC = startTime.withDayOfWeek(Utilities.serverWeekDayToJodaWeekDay(i+1)).withZone
+                    (DateTimeZone.UTC);
+            DateTime endTimeUTC = endTime.withDayOfWeek(Utilities.serverWeekDayToJodaWeekDay(i + 1)).withZone
+                    (DateTimeZone.UTC);
+
             Event newEvent = new Event(eventType, Optional.of(eventNameText.getText().toString()), Optional.of
-                    (eventLocationText.getText().toString()), Utilities.serverWeekDayToJodaWeekDay(i+1), startTime
-                    .getHourOfDay(), startTime
-                    .getMinuteOfHour(),Utilities.serverWeekDayToJodaWeekDay(i+1),endTime.getHourOfDay(), endTime
-                    .getMinuteOfHour());
+                    (eventLocationText.getText().toString()), startTimeUTC.getDayOfWeek(), startTimeUTC
+                    .getHourOfDay(), startTimeUTC.getMinuteOfHour(), endTimeUTC.getHourOfDay(),
+                    endTimeUTC.getHourOfDay(), endTimeUTC.getMinuteOfHour());
 
             // TODO: Delete daySchedules
-            DaySchedule daySchedule = weekDaysSchedule[newEvent.getLocalWeekDay()];
+            DaySchedule daySchedule = weekDaysSchedule[newEvent.getLocalTimezoneWeekDay()];
 
             if (!daySchedule.canAddEvent(newEvent, eventToEdit))
             {
