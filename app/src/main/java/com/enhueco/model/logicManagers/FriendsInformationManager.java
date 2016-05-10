@@ -70,10 +70,7 @@ public class FriendsInformationManager extends LogicManager
 
                         boolean isNewFriend = !appUser.getFriends().containsKey(userSync.getUsername());
 
-                        if (isNewFriend
-                                || appUser.getFriends().get(userSync.getUsername()).getUpdatedOn().isBefore(userSync.getUpdatedOn())
-                                || appUser.getFriends().get(userSync.getUsername()).getSchedule().getUpdatedOn()
-                                .isBefore(userSync.getScheduleUpdatedOn()))
+                        if (true)
                         {
                             friendsToSync.add(userSync);
                         }
