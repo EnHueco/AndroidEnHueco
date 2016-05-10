@@ -73,6 +73,15 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
         mWeekView.setMonthChangeListener(this);
         mWeekView.setEventLongPressListener(this);
 
+
+        for(int i = 1 ; i < user.getSchedule().getWeekDays().length; i++)
+        {
+            for(Event event : user.getSchedule().getWeekDays()[i].getEvents())
+            {
+                Log.v("USER DETAIL EVENTS", event.getName() + " - " + event.getStartHour() + " - " + event
+                        .getEndHour() + " - " + event.getStartHourWeekday() + " - " + event.getEndHourWeekday());
+            }
+        }
     }
 
     private void setIsAppUserOrFriend(String userID)
