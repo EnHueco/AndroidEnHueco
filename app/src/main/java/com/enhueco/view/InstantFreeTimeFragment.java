@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,6 +75,8 @@ public class InstantFreeTimeFragment extends DialogFragment
         super.onCreate(savedInstanceState);
 
         View view = inflater.inflate(R.layout.fragment_instant_free_time, container, false);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         ButterKnife.bind(this, view);
 
         Button cancelButton = (Button) view.findViewById(R.id.cancelButton);
