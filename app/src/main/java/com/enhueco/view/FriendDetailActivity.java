@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import butterknife.ButterKnife;
 import com.enhueco.R;
 import com.enhueco.model.logicManagers.FriendsManager;
 import com.enhueco.model.model.EnHueco;
+import com.enhueco.model.model.Event;
 import com.enhueco.model.model.User;
 import com.enhueco.model.other.BasicCompletionListener;
 import com.enhueco.model.other.EHURLS;
@@ -71,6 +73,14 @@ public class FriendDetailActivity extends AppCompatActivity
         TextView lastNamesTextView = (TextView) findViewById(R.id.lastNamesTextView);
         lastNamesTextView.setText(friend.getLastNames());
 
+        for(int i = 1 ; i < friend.getSchedule().getWeekDays().length; i++)
+        {
+            for(Event event : friend.getSchedule().getWeekDays()[i].getEvents())
+            {
+                Log.v("FRIEND DETAIL EVENTS", event.getName() + " - " + event.getStartHour() + " - " +event
+                        .getEndHour() + " - " + event.getStartHourWeekday() + " - " + event.getEndHourWeekday());
+            }
+        }
         /*FancyButton whatsappFB = (FancyButton) findViewById(R.id.fancyBtnWhatsapp);
         FancyButton callFB = (FancyButton) findViewById(R.id.fancyBtnCall);
 
