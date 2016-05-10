@@ -202,28 +202,22 @@ public class AddEditEventActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.menu_add_event, menu);
-        MenuItem addEventItem = menu.findItem(R.id.menu_item_save_event);
-        addEventItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
         {
-            @Override
-            public boolean onMenuItemClick(MenuItem item)
-            {
+            case R.id.menu_item_save_event:
                 if(eventToEdit.isPresent()) updateEvent();
                 else addEvents();
-                return true;
-            }
-        });
-        MenuItem cancelEvent = menu.findItem(R.id.menu_item_cancel_event);
-        cancelEvent.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-        {
-            @Override
-            public boolean onMenuItemClick(MenuItem item)
-            {
+                break;
+            case R.id.menu_item_cancel_event:
                 finish();
-                return true;
-            }
-        });
-        return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateEvent()

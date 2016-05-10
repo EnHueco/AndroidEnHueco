@@ -5,17 +5,16 @@
 
 
 	<item
-			android:id="@+id/action_turn_invisible"
+			android:id="@+id/menu_item_switch_visibility"
 			android:icon="@drawable/ic_invisible"
 			android:title="@string/action_turn_ivisible"
 			app:showAsAction="always"
-			android:onClick="onTurnInvisibleButtonPressed"/>
+			/>
 
 	<item
-			android:id="@+id/action_im_available"
+			android:id="@+id/menu_item_im_available"
 			android:icon="@drawable/ic_im_available"
 			android:title="@string/action_im_available"
-			android:onClick="onImAvailableButtonPressed"
 			app:showAsAction="always"/>
 
 </menu>

@@ -108,6 +108,7 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         {
             case R.id.menu_item_friend_requests:
                 openFriendRequestsView();
+                break;
         }
 
         //noinspection SimplifiableIfStatement
@@ -204,149 +205,10 @@ public class MainTabbedActivity extends AppCompatActivity implements FriendListF
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    public void onTurnInvisibleButtonPressed(MenuItem item)
-    {
-        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
-        if (event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.INVISIBILITY))
-        {
-            turnVisible();
-        }
-        else
-        {
-            turnInvisible();
-        }
-    }
-
-    private void turnInvisible()
-    {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        int selectedOption = -1;
-        CharSequence[] items = {"1:20 horas", "3 horas", "Resto del día"};
-        final int[] selectedItemTime = {90, 180, Utilities.getSecondsUntilTomorrow()};
-
-
-        alertDialog.setTitle("Duración").setSingleChoiceItems(items, 0, null).setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                int position = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-                        _turnInvisibleForInterval(selectedItemTime[position]);
-                dialog.dismiss();
-            }
-        }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.dismiss();
-            }
-        });
-        alertDialog.show();
-    }
-
-    private void _turnInvisibleForInterval(int seconds)
-    {
-        final EHProgressDialog dialog = new EHProgressDialog(this);
-        dialog.show();
-        ImmediateEventManager.getSharedManager().turnInvisibleForTimeInterval(seconds, new BasicCompletionListener()
-        {
-            @Override
-            public void onSuccess()
-            {
-                /*
-                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
-
-                if (drawable != null)
-                {
-                    drawable.mutate();
-                    drawable.setColorFilter(Color.rgb(220, 170, 255), PorterDuff.Mode.SRC_ATOP);
-                    drawable.setAlpha(1);
-                }
-                */
-                dialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Exception error)
-            {
-                dialog.dismiss();
-                Utilities.showErrorToast(getApplicationContext());
-            }
-        });
-    }
-
-    private void turnVisible()
-    {
-        final EHProgressDialog dialog = new EHProgressDialog(this);
-        dialog.show();
-        ImmediateEventManager.getSharedManager().turnVisible(new BasicCompletionListener()
-        {
-            @Override
-            public void onSuccess()
-            {
-                /*
-                Drawable drawable = optionsMenu.findItem(R.id.action_turn_invisible).getIcon();
-
-                if (drawable != null)
-                {
-                    drawable.mutate();
-                    drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-                    drawable.setAlpha(1);
-                }
-                */
-                dialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Exception error)
-            {
-                dialog.dismiss();
-                Utilities.showErrorToast(MainTabbedActivity.this);
-            }
-        });
-    }
-
     // TODO: Change profile image
     public void profileImagePressed(View view)
     {
 
-    }
-
-    public void onImAvailableButtonPressed(MenuItem item)
-    {
-        ImmediateEvent event = EnHueco.getInstance().getAppUser().getInstantFreeTimePeriod().get();
-
-        if(EnHueco.getInstance().getAppUser().getCurrentFreeTimePeriod().isPresent())
-        {
-            Toast.makeText(this,"Ya te encuentras en hueco",Toast.LENGTH_SHORT).show();
-        }
-
-        else if(event.isCurrentlyHappening() && event.getType().equals(ImmediateEvent.ImmediateEventType.EVENT))
-        {
-            final EHProgressDialog dialog = new EHProgressDialog(this);
-            dialog.show();
-            ImmediateEventManager.getSharedManager().deleteInstantFreeTimeEvent(new BasicCompletionListener()
-            {
-                @Override
-                public void onSuccess()
-                {
-                    dialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(Exception error)
-                {
-                    dialog.dismiss();
-                    Utilities.showErrorToast(MainTabbedActivity.this);
-                }
-            });
-        }
-        else
-        {
-            InstantFreeTimeFragment fragment = InstantFreeTimeFragment.newInstance();
-            fragment.show(getSupportFragmentManager(), "¡Estoy en Hueco!");
-        }
     }
 
     public void onProfileImagePressed(View view)
