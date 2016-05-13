@@ -53,21 +53,10 @@ public class ScheduleActivity extends AppCompatActivity implements WeekView.Even
 
         fab = (FloatingActionButton) findViewById(R.id.addEventButton);
 
-        findViewById(R.id.importButton).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent(ScheduleActivity.this, SelectCalendarActivity.class);
-                startActivity(intent);
-            }
-        });
-
         if (!isAppUser)
         {
             fab.setVisibility(View.GONE);
             getSupportActionBar().setTitle("Horario");
-            findViewById(R.id.importButton).setVisibility(View.GONE);
         }
 
         mWeekView = (WeekView) findViewById(R.id.weekView);
